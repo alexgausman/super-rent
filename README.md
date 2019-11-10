@@ -63,7 +63,7 @@ Install/update NodeJS global dependencies:
 
 Install local dependencies.
 
-`cd` into the `backend` directory (i.e. SuperRent/backend)
+`cd` into the `backend` directory
 
 `$ npm install`
 
@@ -93,7 +93,7 @@ If postgres is not already running, start it now.
 
 `$ pg_ctl -D /usr/local/var/postgres start`
 
-`cd` into the `backend` directory (i.e. SuperRent/backend)
+`cd` into the `backend` directory
 
 Start NodeJS server.
 
