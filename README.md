@@ -27,7 +27,7 @@ If not, install PostgreSQL.
 
 `$ brew install postgresql`
 
-### Run Postgres & Setup Database
+### Start Postgres & Setup Database
 
 Start postgres.
 
