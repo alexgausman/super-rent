@@ -87,7 +87,7 @@ Port: `5432`
 
 Remember use the *refresh* button in the bottom left after making changes via the API.
 
-### Startup Backend Server
+### Start NodeJS Server
 
 If postgres is not already running, start it now.
 
