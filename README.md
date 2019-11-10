@@ -127,7 +127,7 @@ If at any point you wish to clear all the tables from the database, send an HTTT
 ### API Calls (Starter)
 
 |          desc         | action |                  url                 |          body fields          |
-|:---------------------:|:------:|:------------------------------------:|:-----------------------------:|
+|-----------------------|--------|--------------------------------------|-------------------------------|
 | DB tables: clear      | POST   | localhost:4000/admin/clear-db        | *none*                        |
 | DB tables: list       | GET    | localhost:4000/admin/db-tables-list  | *none*                        |
 | DB tables: initialize | POST   | localhost:4000/admin/init-db         | *none*                        |
