@@ -39,18 +39,21 @@ Login to postgres.
 
 Create a user and password and give them create database access.
 
-`=# CREATE ROLE api_user WITH LOGIN PASSWORD 'password';
-=# ALTER ROLE api_user CREATEDB;`
+`=# CREATE ROLE api_user WITH LOGIN PASSWORD 'password';`
+
+`=# ALTER ROLE api_user CREATEDB;`
 
 Logout of the root user and login to the newly created user.
 
-`=# \q
-$ psql -d postgres -U api_user`
+`=# \q`
+
+`$ psql -d postgres -U api_user`
 
 Create a `super_rent` database and connect to it.
 
-`=> CREATE DATABASE super_rent;
-=> \c super_rent`
+`=> CREATE DATABASE super_rent;`
+
+`=> \c super_rent`
 
 ### Install NodeJS Backend Dependencies
 
