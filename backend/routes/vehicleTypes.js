@@ -2,7 +2,7 @@ const router = require('express').Router();
 const { database } = require('../config');
 const formatQuery = require('../utils/formatQuery');
 
-// @route   GET vehicle-types
+// @route   GET vehicletypes
 // @desc    Index VehicleTypes
 router.get('/', (req, res) => {
   const text = `
@@ -21,7 +21,7 @@ router.get('/', (req, res) => {
     }));
 });
 
-// @route   POST vehicle-types
+// @route   POST vehicletypes
 // @desc    Create a VehicleType
 router.post('/', (req, res) => {
   const text = `
@@ -62,7 +62,7 @@ router.post('/', (req, res) => {
     }));
 })
 
-// @route   DELETE vehicle-types
+// @route   DELETE vehicletypes
 // @desc    Delete a VehicleType
 router.delete( '/', (req, res) => {
   const { vtname } = req.body;

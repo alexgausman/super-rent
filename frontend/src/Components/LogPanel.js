@@ -6,10 +6,6 @@ class LogPanel extends Component {
     super(props);
   }
 
-  onClickArrow() {
-
-  }
-
   render() {
     const { isOpen } = this.props;
     return (
@@ -41,25 +37,19 @@ class LogPanel extends Component {
           width: '100%',
           backgroundColor: 'rgba(0,0,0,0.85)',
           display: (isOpen ? 'block' : 'none'),
+          overflowY: 'scroll',
         }}>
-          <p style={{
-            color: 'white',
-            padding: '10px 15px',
-            fontFamily: 'monospace',
-          }}>
-            CREATE TABLE VehicleTypes (
-              vtname VARCHAR (40),
-              features TEXT,
-              wrate MONEY,
-              drate MONEY,
-              hrate MONEY,
-              wirate MONEY,
-              dirate MONEY,
-              hirate MONEY,
-              krate MONEY,
-              PRIMARY KEY (vtname)
-            );
-          </p>
+          {this.props.queries.map((q,i) => (
+            <div key={i} style={{
+              color: 'white',
+              padding: '10px 15px',
+              fontFamily: 'monospace',
+            }}>
+              {q.split('\n\n').map((s,i) => (
+                <p key={i}>{s}</p>
+              ))}
+            </div>
+          ))}
         </div>
       </div>
     );
@@ -69,6 +59,7 @@ class LogPanel extends Component {
 LogPanel.propTypes = {
   isOpen: PropTypes.bool.isRequired,
   onClickArrow: PropTypes.func.isRequired,
+  queries: PropTypes.array.isRequired,
 }
 
 export default LogPanel;

@@ -14,6 +14,11 @@ function SideNav() {
         </h6>
         <ul className="nav flex-column mb-2">
           <li className="nav-item">
+            <Link className="nav-link pb-1 pt-0" to="/tables/branches">
+              Branches
+            </Link>
+          </li>
+          <li className="nav-item">
             <Link className="nav-link pb-1 pt-0" to="/tables/customers">
               Customers
             </Link>

@@ -15,3 +15,11 @@ code {
 table th, table td {
   white-space: nowrap;
 }
+
+.dropdown-menu a.dropdown-item.disabled {
+  cursor: not-allowed !important;
+}
+
+.dropdown-menu a.dropdown-item.text-danger.disabled {
+  color: #dc3545 !important;
+}

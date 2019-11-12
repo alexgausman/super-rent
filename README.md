@@ -117,13 +117,13 @@ If you now go to the *PSequel* app and click refresh in the bottom left, you sho
 
 Now, let's go back to *Postman* and try adding a new VehicleType.
 
-Keep the HTTP Action set to `POST` and set the request URL to `localhost:4000/vehicle-types`. Below the request URL, select the `Body` tab and the `x-www-form-urlencoded` subtab. Add a key `vtname` and a value `truck`. Click *Send*.
+Keep the HTTP Action set to `POST` and set the request URL to `localhost:4000/tables/vehicletypes`. Below the request URL, select the `Body` tab and the `x-www-form-urlencoded` subtab. Add a key `vtname` and a value `truck`. Click *Send*.
 
 In the response we should see both the query entered and the result row which was added. Likewise, in *PSequel*, if we hit refresh we will see a new VehicleType row with a vtname of truck.
 
-To get a list of the current VehicleTypes via the API, go back to *Postman* and change the HTTP Action from `POST` to `GET`. Keep the request URL set as `localhost:4000/vehicle-types` and uncheck the (key, value) added in the body. Then click Send. The returned response will appear similar to the previous one, with the query entered and a list of the rows (which currently only includes truck).
+To get a list of the current VehicleTypes via the API, go back to *Postman* and change the HTTP Action from `POST` to `GET`. Keep the request URL set as `localhost:4000/tables/vehicletypes` and uncheck the (key, value) added in the body. Then click Send. The returned response will appear similar to the previous one, with the query entered and a list of the rows (which currently only includes truck).
 
-To delete the truck VehicleType, change the HTTP Action from `GET` to `DELETE`, set the request URL to `localhost:4000/vehicle-types/truck`, and click *Send*.
+To delete the truck VehicleType, change the HTTP Action from `GET` to `DELETE`, set the request URL to `localhost:4000/tables/vehicletypes/`, re-add the (key, value) pair (vtname, truck) and click *Send*.
 
 If at any point you wish to clear all the tables from the database, send an HTTTP `POST` request to `localhost:4000/admin/clear-db`. After the database is cleared, you can make a `POST` request to `localhost:4000/admin/init-db` to initialize the tables again.
 
@@ -137,7 +137,7 @@ If at any point you wish to clear all the tables from the database, send an HTTT
 | DB tables: seed       | POST   | localhost:4000/admin/seed-db         | *none*                        |
 | VehicleTypes: list    | GET    | localhost:4000/vehicle-types         | *none*                        |
 | VehicleTypes: add     | POST   | localhost:4000/vehicle-types         | vtname, features, wrate, ...  |
-| Vehicletypes: remove  | DELETE | localhost:4000/vehicle-types/:vtname | *none*                        |
+| Vehicletypes: remove  | DELETE | localhost:4000/vehicle-types/:vtname | vtname                        |
 
 ### Backend Project Structure & TODOs
 

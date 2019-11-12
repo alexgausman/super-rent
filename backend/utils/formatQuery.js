@@ -13,7 +13,8 @@ const formatQuery = (text, values) => {
       text = text.split(match[0]).join(value);
     } else {
       text = text.replace(/\s+/g, ' ');
-      text = text.split('<multi-break>').join('\n\n');
+      text = text.replace(/(<multi-break>)(\s)*/g, '\n\n');
+      // text = text.split('<multi-break>').join('\n\n');
       return text.trim();
     }
   }

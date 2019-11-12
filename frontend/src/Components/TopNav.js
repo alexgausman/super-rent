@@ -1,7 +1,8 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import PropTypes from 'prop-types';
 
-function TopNav() {
+function TopNav(props) {
   return (
     <nav className="navbar navbar-expand-lg navbar-dark bg-primary">
       <Link className="navbar-brand px-2" to="/">
@@ -14,15 +15,25 @@ function TopNav() {
               <i className="fas fa-database"></i>
             </a>
             <div className="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown" style={{position: 'absolute'}}>
-              <a className="dropdown-item" href="#">Initialize</a>
+              <a className={`dropdown-item ${props.dbHasTables && 'disabled'}`} href="#" onClick={props.initTables}>
+                Initialize
+              </a>
               <a className="dropdown-item disabled" href="#">Seed</a>
               <div className="dropdown-divider"></div>
-              <a className="dropdown-item text-danger" href="#">Destroy</a>
+              <a className={`dropdown-item text-danger ${!props.dbHasTables && 'disabled'}`} href="#" onClick={props.destroyTables}>
+                Destroy
+              </a>
             </div>
           </li>
         </ul>
     </nav>
   );
+}
+
+TopNav.propTypes = {
+  dbHasTables: PropTypes.bool.isRequired,
+  initTables: PropTypes.func.isRequired,
+  destroyTables: PropTypes.func.isRequired,
 }
 
 export default TopNav;

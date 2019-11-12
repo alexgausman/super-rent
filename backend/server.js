@@ -20,13 +20,13 @@ const vehicles = require('./routes/vehicles');
 const vehicleTypes = require('./routes/vehicleTypes');
 
 app.use('/admin', admin);
-app.use('/branches', branches);
-app.use('/customers', customers);
-app.use('/rentals', rentals);
-app.use('/reservations', reservations);
-app.use('/returns', returns);
-app.use('/vehicles', vehicles);
-app.use('/vehicle-types', vehicleTypes);
+app.use('/tables/branches', branches);
+app.use('/tables/customers', customers);
+app.use('/tables/rentals', rentals);
+app.use('/tables/reservations', reservations);
+app.use('/tables/returns', returns);
+app.use('/tables/vehicles', vehicles);
+app.use('/tables/vehicletypes', vehicleTypes);
 
 const PORT = process.env.port || 4000;
 app.listen(PORT, () => {

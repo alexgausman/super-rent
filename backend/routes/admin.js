@@ -15,6 +15,31 @@ router.get('/db-tables-list', (req, res) => {
     .catch(error => res.status(400).json(error));
 });
 
+// @route   GET db-table-columns/:tname
+// @desc    Get a column list of a specific table
+router.get('/db-table-columns/:tname', (req, res) => {
+  database
+    .query(`
+      SELECT *
+      FROM INFORMATION_SCHEMA.COLUMNS
+      WHERE TABLE_NAME='${req.params.tname}'
+    `)
+    .then(result => res.status(200).json(result.rows))
+    .catch(error => res.status(400).json(error));
+});
+
+// @route GET db-table-row-count/:tname
+// @desc Get a row count of a specific table
+router.get('/db-table-row-count/:tname', (req, res) => {
+  database
+    .query(`
+      SELECT COUNT (*)
+      FROM ${req.params.tname}
+    `)
+    .then(result => res.status(200).json(result))
+    .catch(error => res.status(400).json(error));
+});
+
 // @route   POST clear-db
 // @desc    Clear all tables and data from db
 router.post('/clear-db', (req, res) => {
