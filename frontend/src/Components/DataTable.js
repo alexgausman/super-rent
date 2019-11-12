@@ -2,9 +2,10 @@ import React from 'react';
 
 function DataTable(props) {
   let { tableName } = props.match.params;
+  tableName = convertTableNameParam(tableName);
 
   return (
-    <span>Table: {convertTableNameParam(tableName)}</span>
+    <span>{tableName}</span>
   );
 }
 
