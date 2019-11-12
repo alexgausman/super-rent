@@ -21,7 +21,7 @@ router.get('/', (req, res) => {
 });
 
 // @route   POST customers
-// @desc    Create Customer
+// @desc    Create a Customer
 router.post('/', (req, res) => {
   const text = `
     -- TODO
@@ -41,10 +41,10 @@ router.post('/', (req, res) => {
     }));
 })
 
-// @route   DELETE customers/:cellphone
-// @desc    Delete Customer
-router.delete( '/:cellphone', (req, res) => {
-  const { cellphone } = req.params;
+// @route   DELETE customers
+// @desc    Delete a Customer
+router.delete( '/', (req, res) => {
+  const { cellphone } = req.body;
   const text = `
     -- TODO
   `;

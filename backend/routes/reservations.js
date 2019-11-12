@@ -21,7 +21,7 @@ router.get('/', (req, res) => {
 });
 
 // @route   POST reservations
-// @desc    Create Reservation
+// @desc    Create a Reservation
 router.post('/', (req, res) => {
   const text = `
     -- TODO
@@ -41,10 +41,10 @@ router.post('/', (req, res) => {
     }));
 })
 
-// @route   DELETE reservations/:confNo
-// @desc    Delete Reservation
-router.delete( '/:confNo', (req, res) => {
-  const { confNo } = req.params;
+// @route   DELETE reservations
+// @desc    Delete a Reservation
+router.delete( '/', (req, res) => {
+  const { confNo } = req.body;
   const text = `
     -- TODO
   `;

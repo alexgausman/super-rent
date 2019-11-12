@@ -21,7 +21,7 @@ router.get('/', (req, res) => {
 });
 
 // @route   POST returns
-// @desc    Create Return
+// @desc    Create a Return
 router.post('/', (req, res) => {
   const text = `
     -- TODO
@@ -41,10 +41,10 @@ router.post('/', (req, res) => {
     }));
 })
 
-// @route   DELETE returns/:rid
-// @desc    Delete Return
-router.delete( '/:rid', (req, res) => {
-  const { rid } = req.params;
+// @route   DELETE returns
+// @desc    Delete a Return
+router.delete( '/', (req, res) => {
+  const { rid } = req.body;
   const text = `
     -- TODO
   `;

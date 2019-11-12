@@ -21,7 +21,7 @@ router.get('/', (req, res) => {
 });
 
 // @route   POST branches
-// @desc    Create Branch
+// @desc    Create a Branch
 router.post('/', (req, res) => {
   const text = `
     -- TODO
@@ -41,10 +41,10 @@ router.post('/', (req, res) => {
     }));
 })
 
-// @route   DELETE branches/:location/:city
-// @desc    Delete Branch
-router.delete( '/:location/:city', (req, res) => {
-  const { location, city } = req.params;
+// @route   DELETE branches
+// @desc    Delete a Branch
+router.delete( '/', (req, res) => {
+  const { location, city } = req.body;
   const text = `
     -- TODO
   `;

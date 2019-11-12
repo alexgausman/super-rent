@@ -21,7 +21,7 @@ router.get('/', (req, res) => {
 });
 
 // @route   POST rentals
-// @desc    Create Rental
+// @desc    Create a Rental
 router.post('/', (req, res) => {
   const text = `
     -- TODO
@@ -41,10 +41,10 @@ router.post('/', (req, res) => {
     }));
 })
 
-// @route   DELETE rentals/:rid
-// @desc    Delete Rental
-router.delete( '/:rid', (req, res) => {
-  const { rid } = req.params;
+// @route   DELETE rentals
+// @desc    Delete a Rental
+router.delete( '/', (req, res) => {
+  const { rid } = req.body;
   const text = `
     -- TODO
   `;

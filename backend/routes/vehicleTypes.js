@@ -22,7 +22,7 @@ router.get('/', (req, res) => {
 });
 
 // @route   POST vehicle-types
-// @desc    Create VehicleType
+// @desc    Create a VehicleType
 router.post('/', (req, res) => {
   const text = `
     INSERT INTO VehicleTypes (
@@ -62,10 +62,10 @@ router.post('/', (req, res) => {
     }));
 })
 
-// @route   DELETE vehicle-types/:vtname
-// @desc    Delete VehicleType
-router.delete( '/:vtname', (req, res) => {
-  const { vtname } = req.params;
+// @route   DELETE vehicle-types
+// @desc    Delete a VehicleType
+router.delete( '/', (req, res) => {
+  const { vtname } = req.body;
   const text = `
     DELETE
     FROM VehicleTypes

@@ -21,7 +21,7 @@ router.get('/', (req, res) => {
 });
 
 // @route   POST vehicles
-// @desc    Create Vehicle
+// @desc    Create a Vehicle
 router.post('/', (req, res) => {
   const text = `
     -- TODO
@@ -41,10 +41,10 @@ router.post('/', (req, res) => {
     }));
 })
 
-// @route   DELETE vehicles/:vid
-// @desc    Delete Vehicle
-router.delete( '/:vid', (req, res) => {
-  const { vid } = req.params;
+// @route   DELETE vehicles
+// @desc    Delete a Vehicle
+router.delete( '/', (req, res) => {
+  const { vid } = req.body;
   const text = `
     -- TODO
   `;
