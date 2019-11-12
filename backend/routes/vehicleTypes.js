@@ -49,7 +49,7 @@ router.post('/', (req, res) => {
     req.body.dirate,
     req.body.hirate,
     req.body.krate
-  ]
+  ];
   database
     .query(text, values)
     .then(result => res.status(200).json({

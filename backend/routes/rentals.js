@@ -28,7 +28,7 @@ router.post('/', (req, res) => {
   `;
   const values = [
     // TODO
-  ]
+  ];
   database
     .query(text, values)
     .then(result => res.status(200).json({
