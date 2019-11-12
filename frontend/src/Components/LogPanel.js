@@ -24,7 +24,6 @@ class LogPanel extends Component {
 
           backgroundColor: 'rgba(0,0,0,0.75)',
           alignItems: 'center',
-          justifyContent: 'flex-end',
           overflow: 'hidden',
         }}>
           <div onClick={this.props.onClickArrow} style={{
