@@ -71,7 +71,7 @@ class App extends Component {
           let tables = prevState.tables;
           tables = tables.map(t => {
             if (t.name === tableName) {
-              t.rowCount = res.data.rowCount;
+              t.rowCount = parseInt(res.data.rows[0].count);
               return t;
             }
           });
@@ -94,7 +94,6 @@ class App extends Component {
   initTables() {
     axios.post('/admin/init-db')
       .then(res => {
-        console.log(res.data.query);
         this.setState({ queries: [res.data.query] }, () => {
           this.getSetTablesInfo();
         })
@@ -114,7 +113,7 @@ class App extends Component {
   }
 
   render() {
-    const { logPanelIsOpen } = this.state;
+    const { loading, tables, queries, logPanelIsOpen } = this.state;
     return (
       <BrowserRouter>
         <div className="App">
@@ -138,7 +137,13 @@ class App extends Component {
                   alignItems: 'center',
                   justifyContent: 'center',
                 }}>
-                  <Route exact path="/" component={Dashboard} />
+                  <Route exact path="/" >
+                    <Dashboard
+                      loading={loading}
+                      tables={tables}
+                      queries={queries}
+                    />
+                  </Route>
                   <Route path="/tables/:tableName" component={DataTable} />
                 </div>
                 <LogPanel

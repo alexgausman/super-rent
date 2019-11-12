@@ -2,10 +2,6 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
 class LogPanel extends Component {
-  constructor(props) {
-    super(props);
-  }
-
   render() {
     const { isOpen } = this.props;
     return (
