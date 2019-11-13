@@ -2,6 +2,40 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
 class LogPanel extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      unreadErrors: false,
+    };
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    console.log('LOG PANEL UPDATED')
+    let newUnreadErrors = prevState.unreadErrors;
+    if (this.props.isOpen) {
+      console.log('IS OPEN')
+      newUnreadErrors = false;
+    } else {
+      console.log('IS NOT OPEN')
+      const prevQueriesLength = prevProps.queries.length;
+      console.log('prevQueriesLength: ' + prevQueriesLength)
+      console.log('this.props.queries.length: ' + this.props.queries.length)
+      console.log(prevProps.queries)
+      console.log(this.props.queries)
+      if (this.props.queries.length > prevQueriesLength) {
+        console.log('LENGTH IS LONGER')
+        this.props.queries.forEach((q, i) => {
+          if ((i + 1 > prevQueriesLength) && q.error) {
+            newUnreadErrors = true;
+          }
+        });
+      }
+    }
+    if (newUnreadErrors !== prevState.unreadErrors) {
+      this.setState({ unreadErrors: newUnreadErrors });
+    }
+  }
+
   render() {
     const { isOpen } = this.props;
     return (
@@ -20,12 +54,17 @@ class LogPanel extends Component {
         }}>
           <div onClick={this.props.onClickArrow} style={{
             float: 'right',
-            marginRight: '13px',
+            marginRight: '8px',
             color: 'white',
             fontSize: '29px',
             cursor: 'pointer',
           }}>
-            <i className={`fas fa-angle-${isOpen ? 'down' : 'up'}`}></i>
+            <i className={`fas fa-angle-${isOpen ? 'down' : 'up'}`} style={{
+              lineHeight: 0.8,
+              backgroundColor: (this.state.unreadErrors ? 'red' : ''),
+              padding: '3px 5px',
+              borderRadius: '50%',
+            }}></i>
           </div>
         </div>
         <div id="inner-log-panel" style={{
@@ -46,7 +85,7 @@ class LogPanel extends Component {
                 {query.split('\n\n').map((s,i) => (
                   <p key={i}>{s}</p>
                 ))}
-                {error && <p className="text-danger">{error}</p>}
+                {error && <p className="text-danger">Error: {error}</p>}
               </div>
             );
           })}

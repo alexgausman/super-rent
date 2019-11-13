@@ -96,7 +96,7 @@ class App extends Component {
 
   logQuery(q, err) {
     this.setState(prevState => {
-      const { queries } = prevState;
+      const queries = prevState.queries.map(q => q);
       const newQuery = { query: q }
       if (err) {
         newQuery.error = err;
@@ -117,7 +117,16 @@ class App extends Component {
         this.logQuery(res.data.query);
         this.getSetTablesInfo();
       })
-      .catch(err => console.log(err));
+      .catch(err => {
+        if (err.response && err.response.data) {
+          const { query, error_message } = err.response.data;
+          if (query && error_message) {
+            this.logQuery(query, error_message);
+            return;
+          }
+        }
+        console.log(err);
+      });
   }
 
   seedTables() {
@@ -126,7 +135,16 @@ class App extends Component {
         this.logQuery(res.data.query);
         this.getSetTablesInfo();
       })
-      .catch(err => console.log(err));
+      .catch(err => {
+        if (err.response && err.response.data) {
+          const { query, error_message } = err.response.data;
+          if (query && error_message) {
+            this.logQuery(query, error_message);
+            return;
+          }
+        }
+        console.log(err);
+      });
   }
 
   destroyTables() {
