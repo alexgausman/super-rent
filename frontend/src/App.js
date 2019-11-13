@@ -14,7 +14,6 @@ class App extends Component {
     super();
     this.state = {
       logPanelIsOpen: false,
-      // loading: false,
       tables: [],
       queries: [],
     };
@@ -22,7 +21,6 @@ class App extends Component {
     this.getSetTablesInfo = this.getSetTablesInfo.bind(this);
     this.getSetTableColumns = this.getSetTableColumns.bind(this);
     this.getSetTableRowCount = this.getSetTableRowCount.bind(this);
-    // this.checkIfLoadingComplete = this.checkIfLoadingComplete.bind(this);
     this.logQuery = this.logQuery.bind(this);
     this.dbHasTables = this.dbHasTables.bind(this);
     this.initTables = this.initTables.bind(this);
@@ -64,9 +62,7 @@ class App extends Component {
             }
           });
           return { tables: tables };
-        }, () => {
-          // this.checkIfLoadingComplete())
-        })
+        });
       })
       .catch(err => console.log(err));
   }
@@ -83,30 +79,10 @@ class App extends Component {
             }
           });
           return { tables: tables };
-        }, () => {
-          // this.checkIfLoadingComplete())
-        })
+        });
       })
       .catch(err => console.log(err));
   }
-
-  // checkIfLoadingComplete() {
-  //   this.setState(prevState => {
-  //     if (prevState.loading) {
-  //       let complete = true;
-  //       prevState.tables.forEach(t => {
-  //         if (!t.columns || (!t.rowCount && t.rowCount !== 0)) {
-  //           complete = false;
-  //         }
-  //       });
-  //       if (complete) {
-  //         console.log('App: this.state.loading == false');
-  //         return { loading: false };
-  //       }
-  //     }
-  //     return {};
-  //   });
-  // }
 
   dbHasTables() {
     return (this.state.tables.length > 0);
