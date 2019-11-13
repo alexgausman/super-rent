@@ -35,17 +35,21 @@ class LogPanel extends Component {
           display: (isOpen ? 'block' : 'none'),
           overflowY: 'scroll',
         }}>
-          {this.props.queries.map((q,i) => (
-            <div className="log-block" key={i} style={{
-              color: 'white',
-              margin: '10px 15px',
-              fontFamily: 'monospace',
-            }}>
-              {q.split('\n\n').map((s,i) => (
-                <p key={i}>{s}</p>
-              ))}
-            </div>
-          ))}
+          {this.props.queries.map((queryObj, i) => {
+            const { query, error } = queryObj;
+            return (
+              <div className="log-block" key={i} style={{
+                color: 'white',
+                margin: '10px 15px',
+                fontFamily: 'monospace',
+              }}>
+                {query.split('\n\n').map((s,i) => (
+                  <p key={i}>{s}</p>
+                ))}
+                {error && <p className="text-danger">{error}</p>}
+              </div>
+            );
+          })}
         </div>
       </div>
     );

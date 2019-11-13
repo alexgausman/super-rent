@@ -60,7 +60,7 @@ router.post('/clear-db', (req, res) => {
     .catch(error => res.status(400).json({
       action: 'clear-db',
       success: false,
-      error: error,
+      error_message: error.message,
     }));
 });
 
@@ -104,7 +104,7 @@ router.post('/init-db', (req, res) => {
       query: formatQuery(text),
       action: 'init-db',
       success: false,
-      error: error,
+      error_message: error.message,
     }));
 });
 
@@ -224,7 +224,7 @@ router.post('/seed-db', (req, res) => {
       query: formatQuery(text),
       action: 'seed-db',
       success: false,
-      error: error,
+      error_message: error.message,
     }));
 })
 

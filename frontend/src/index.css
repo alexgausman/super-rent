@@ -39,8 +39,8 @@ table th, table td {
 
 .refresh-button {
   position: absolute;
-  right: 29px;
-  top: 25px;
+  right: -10px;
+  top: -20px;
   font-size: 25px;
   cursor: pointer;
   opacity: 0.7;

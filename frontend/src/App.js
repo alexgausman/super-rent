@@ -118,10 +118,14 @@ class App extends Component {
     }), () => this.scrollLogsToBottom());
   }
 
-  logQuery(query) {
+  logQuery(q, err) {
     this.setState(prevState => {
       const { queries } = prevState;
-      queries.push(query);
+      const newQuery = { query: q }
+      if (err) {
+        newQuery.error = err;
+      }
+      queries.push(newQuery);
       return { queries: queries };
     }, () => this.scrollLogsToBottom());
   }

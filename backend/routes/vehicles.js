@@ -16,7 +16,7 @@ router.get('/', (req, res) => {
     }))
     .catch(error => res.status(400).json({
       query: formatQuery(text),
-      error: error,
+      error_message: error.message,
     }));
 });
 
@@ -36,8 +36,8 @@ router.post('/', (req, res) => {
       result: result.rows,
     }))
     .catch(error => res.status(400).json({
-      query: formatQuery(text, values),
-      error: error,
+      query: formatQuery(text),
+      error_message: error.message,
     }));
 })
 
@@ -56,7 +56,7 @@ router.post( '/delete-row', (req, res) => {
     }))
     .catch(error => res.status(400).json({
       query: formatQuery(text),
-      error: error,
+      error_message: error.message,
     }));
 });
 

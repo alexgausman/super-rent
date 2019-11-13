@@ -6,7 +6,8 @@ class DataTable extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      rows: [],
+      rows: null,
+      tableDataRetrieved: false,
     }
     this.getSetRows = this.getSetRows.bind(this);
     this.upperCaseTableName = this.upperCaseTableName.bind(this);
@@ -20,7 +21,15 @@ class DataTable extends Component {
   componentDidUpdate(prevProps, prevState) {
     const { tableName } = this.props.match.params.tableName;
     if (prevProps.match.params.tableName !== this.props.match.params.tableName) {
-      this.getSetRows();
+      this.setState({
+        rows: null,
+        tableDataRetrieved: false,
+      }, () => this.getSetRows());
+    }
+    if (!prevState.tableDataRetrieved) {
+      if (this.props.tablesInfo.length > 0 && this.state.rows) {
+        this.setState({ tableDataRetrieved: true });
+      }
     }
   }
 
@@ -30,7 +39,14 @@ class DataTable extends Component {
         this.setState({ rows: res.data.result });
         this.props.logQuery(res.data.query);
       })
-      .catch(err => console.log(err))
+      .catch(err => {
+        const { query, error_message } = err.response.data;
+        if (query && error_message) {
+          this.props.logQuery(query, error_message);
+        } else {
+          console.log(err);
+        }
+      });
   }
 
   upperCaseTableName() {
@@ -107,7 +123,7 @@ class DataTable extends Component {
       );
 
       html = (
-        <div style={{ width: '100%' }}>
+        <div style={{ width: '100%', position: 'relative' }}>
           <div className="refresh-button" onClick={this.getSetRows}>
             <i className="fas fa-sync-alt"></i>
           </div>

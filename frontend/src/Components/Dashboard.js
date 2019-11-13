@@ -11,6 +11,9 @@ class Dashboard extends Component {
   render() {
     const { tables, queries } = this.props;
     const tuplesCount = tables.reduce((acc, t) => acc + (t.rowCount || 0), 0 );
+    const errCount = queries.reduce((acc, q) => {
+      return acc + (q.error_message ? 0: 1);
+    }, 0);
     return (
       <div className="dashboard-container" style={{
         width: '100%',
@@ -24,7 +27,7 @@ class Dashboard extends Component {
         </div>
         <div>
           <DashboardCard title="Queries" value={queries.length} />
-          <DashboardCard color="#CC0000" title="Errors" />
+          <DashboardCard color="#CC0000" title="Errors" value={errCount} />
         </div>
       </div>
     );
