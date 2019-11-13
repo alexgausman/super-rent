@@ -12,7 +12,7 @@ class Dashboard extends Component {
     const { tables, queries } = this.props;
     const tuplesCount = tables.reduce((acc, t) => acc + (t.rowCount || 0), 0 );
     const errCount = queries.reduce((acc, q) => {
-      return acc + (q.error_message ? 0: 1);
+      return acc + (q.error ? 1: 0);
     }, 0);
     return (
       <div className="dashboard-container" style={{
