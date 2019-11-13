@@ -26,6 +26,7 @@ class App extends Component {
     this.logQuery = this.logQuery.bind(this);
     this.dbHasTables = this.dbHasTables.bind(this);
     this.initTables = this.initTables.bind(this);
+    this.seedTables = this.seedTables.bind(this);
     this.destroyTables = this.destroyTables.bind(this);
     this.onClickLogPanelArrow = this.onClickLogPanelArrow.bind(this);
   }
@@ -139,6 +140,15 @@ class App extends Component {
       .catch(err => console.log(err));
   }
 
+  seedTables() {
+    axios.post('/admin/seed-db')
+      .then(res => {
+        this.logQuery(res.data.query);
+        this.getSetTablesInfo();
+      })
+      .catch(err => console.log(err));
+  }
+
   destroyTables() {
     axios.post('/admin/clear-db')
       .then(res => {
@@ -158,11 +168,17 @@ class App extends Component {
           <TopNav
             dbHasTables={this.dbHasTables()}
             initTables={this.initTables}
+            seedTables={this.seedTables}
             destroyTables={this.destroyTables}
           />
           <div className="container-fluid">
             <div className="row">
-              <SideNav />
+              <Route
+                path="/"
+                render={props => (
+                  <SideNav match={props.match} />
+                )}
+              />
               <div style={{
                 position: 'relative',
                 width: 'calc(100vw - 240px)',
@@ -193,6 +209,12 @@ class App extends Component {
                       />
                     )}
                   />
+                  <Route path="/customer-actions/:action">
+                    <span>TODO</span>
+                  </Route>
+                  <Route path="/clerk-actions/:action">
+                    <span>TODO</span>
+                  </Route>
                 </div>
                 <LogPanel
                   isOpen={this.state.logPanelIsOpen}

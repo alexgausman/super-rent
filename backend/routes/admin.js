@@ -108,4 +108,124 @@ router.post('/init-db', (req, res) => {
     }));
 });
 
+// @route   POST seed-db
+// @desc    Seed db with data
+router.post('/seed-db', (req, res) => {
+  const text = `
+  -- TODO: INSERT INTO Branches --
+
+  -- TODO: INSERT INTO Customers --
+
+  INSERT INTO VehicleTypes (
+    vtname,
+    features,
+    wrate,
+    drate,
+    hrate,
+    wirate,
+    dirate,
+    hirate,
+    krate
+  )
+  VALUES
+    ( 'Econony',
+      NULL,
+      92.99,
+      18.99,
+      0.94,
+      34.99,
+      6.69,
+      0.39,
+      0.04
+    ),
+    (
+      'Compact',
+      NULL,
+      89.99,
+      18.37,
+      0.90,
+      33.86,
+      6.47,
+      0.37,
+      0.04
+    ),
+    (
+      'Mid-size',
+      NULL,
+      94.49,
+      19.29,
+      0.96,
+      35.55,
+      6.79,
+      0.40,
+      0.04
+    ),
+    (
+      'Standard',
+      NULL,
+      95.79,
+      19.56,
+      0.97,
+      36.04,
+      6.89,
+      0.41,
+      0.04
+    ),
+    (
+      'Full-size',
+      NULL,
+      96.99,
+      19.79,
+      0.98,
+      36.49,
+      6.98,
+      0.41,
+      0.04
+    ),
+    (
+      'SUV',
+      NULL,
+      97.99,
+      19.99,
+      0.99,
+      36.87,
+      7.04,
+      0.41,
+      0.04
+    ),
+    (
+      'Truck',
+      NULL,
+      97.49,
+      19.90,
+      0.98,
+      36.68,
+      7.01,
+      0.41,
+      0.04
+    );
+
+  -- TODO: INSERT INTO Vehicles --
+
+  -- TODO: INSERT INTO Reservations --
+
+  -- TODO: INSERT INTO Rentals --
+
+  -- TODO: INSERT INTO Returns --
+  `;
+  database
+    .query(text)
+    .then(result => res.status(200).json({
+      query: formatQuery(text),
+      action: 'seed-db',
+      success: true,
+    }))
+    .catch(error => res.status(400).json({
+      query: formatQuery(text),
+      action: 'seed-db',
+      success: false,
+      error: error,
+    }));
+})
+
 module.exports = router;

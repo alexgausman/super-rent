@@ -18,7 +18,9 @@ function TopNav(props) {
               <a className={`dropdown-item ${props.dbHasTables && 'disabled'}`} href="#" onClick={props.initTables}>
                 Initialize
               </a>
-              <a className="dropdown-item disabled" href="#">Seed</a>
+              <a className={`dropdown-item ${!props.dbHasTables && 'disabled'}`} href="#" onClick={props.seedTables}>
+                Seed
+              </a>
               <div className="dropdown-divider"></div>
               <a className={`dropdown-item text-danger ${!props.dbHasTables && 'disabled'}`} href="#" onClick={props.destroyTables}>
                 Destroy
@@ -33,6 +35,7 @@ function TopNav(props) {
 TopNav.propTypes = {
   dbHasTables: PropTypes.bool.isRequired,
   initTables: PropTypes.func.isRequired,
+  seedTables: PropTypes.func.isRequired,
   destroyTables: PropTypes.func.isRequired,
 }
 

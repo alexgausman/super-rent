@@ -2,7 +2,6 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 
 function SideNav(props) {
-  console.log(window.location.href)
   return (
     <nav className="col-md-2 d-none d-md-block bg-light sidebar" style={{
       height: 'calc(100vh - 56px)',
@@ -39,36 +38,38 @@ function SideNav(props) {
           <span>Customer Actions</span>
         </h6>
         <ul className="nav flex-column mb-2">
-          <li className="nav-item">
-            <Link className="nav-link pb-1 pt-0" to="/customer-actions/view-available-vehicles">
-              View Available Vehicles
-            </Link>
-          </li>
-          <li className="nav-item">
-            <Link className="nav-link pb-1 pt-0" to="/customer-actions/make-a-reservation">
-              Make a Reservation
-            </Link>
-          </li>
+          {[
+            { text: 'View Available Vehicles', link: '/customer-actions/view-available-vehicles' },
+            { text: 'Make a Reservation', link: '/customer-actions/make-a-reservation'},
+          ].map((item, index) => {
+            const isActive = window.location.href.includes(item.link);
+            return (
+              <li className={`nav-item ${isActive && 'active'}`} key={index}>
+                <Link className="nav-link pb-1 pt-0" to={item.link}>
+                  {item.text}
+                </Link>
+              </li>
+            );
+          })}
         </ul>
         <h6 className="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-2 text-muted">
           <span>Clerk Actions</span>
         </h6>
         <ul className="nav flex-column mb-2">
-          <li className="nav-item">
-            <Link className="nav-link pb-1 pt-0" to="/clerk-actions/rent-vehicle">
-              Rent Vehicle
-            </Link>
-          </li>
-          <li className="nav-item">
-            <Link className="nav-link pb-1 pt-0" to="/clerk-actions/return-vehicle">
-              Return Vehicle
-            </Link>
-          </li>
-          <li className="nav-item">
-            <Link className="nav-link pb-1 pt-0" to="/clerk-actions/generate-report">
-              Generate Report
-            </Link>
-          </li>
+          {[
+            { text: 'Rent Vehicle', link: '/clerk-actions/rent-vehicle' },
+            { text: 'Return Vehicle', link: '/clerk-actions/return-vehicle'},
+            { text: 'Generate Report', link: '/clerk-actions/generate-report'},
+          ].map((item, index) => {
+            const isActive = window.location.href.includes(item.link);
+            return (
+              <li className={`nav-item ${isActive && 'active'}`} key={index}>
+                <Link className="nav-link pb-1 pt-0" to={item.link}>
+                  {item.text}
+                </Link>
+              </li>
+            );
+          })}
         </ul>
       </div>
     </nav>
