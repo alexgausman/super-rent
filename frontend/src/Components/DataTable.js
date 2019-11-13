@@ -7,8 +7,10 @@ class DataTable extends Component {
     super(props);
     this.state = {
       rows: null,
-      tableDataRetrieved: false,
+      tableInfoSaved: null,
+      dataAlreadyRetrieved: false,
     }
+    this.getTableInfoFromProps = this.getTableInfoFromProps.bind(this);
     this.getSetRows = this.getSetRows.bind(this);
     this.upperCaseTableName = this.upperCaseTableName.bind(this);
     this.deleteRow = this.deleteRow.bind(this);
@@ -23,14 +25,31 @@ class DataTable extends Component {
     if (prevProps.match.params.tableName !== this.props.match.params.tableName) {
       this.setState({
         rows: null,
-        tableDataRetrieved: false,
+        tableInfoSaved: null,
+        dataAlreadyRetrieved: false,
       }, () => this.getSetRows());
     }
-    if (!prevState.tableDataRetrieved) {
+    if (!prevState.dataAlreadyRetrieved) {
       if (this.props.tablesInfo.length > 0 && this.state.rows) {
-        this.setState({ tableDataRetrieved: true });
+        const tableInfo = this.getTableInfoFromProps();
+        if (tableInfo) {
+          this.setState({
+            tableInfoSaved: tableInfo,
+            dataAlreadyRetrieved: true,
+          });
+        }
       }
     }
+  }
+
+  getTableInfoFromProps() {
+    let tableInfo;
+    this.props.tablesInfo.forEach(t => {
+      if (t.name === this.lowerCaseTableName() && t.columns) {
+        tableInfo = t;
+      }
+    });
+    return tableInfo;
   }
 
   getSetRows() {
@@ -40,12 +59,19 @@ class DataTable extends Component {
         this.props.logQuery(res.data.query);
       })
       .catch(err => {
-        const { query, error_message } = err.response.data;
-        if (query && error_message) {
-          this.props.logQuery(query, error_message);
-        } else {
-          console.log(err);
+        if (err.response && err.response.data) {
+          const { query, error_message } = err.response.data;
+          if (query && error_message) {
+            this.props.logQuery(query, error_message);
+            this.setState({
+              rows: null,
+              tableInfoSaved: this.getTableInfoFromProps(),
+              dataAlreadyRetrieved: false,
+            });
+            return;
+          }
         }
+        console.log(err);
       });
   }
 
@@ -77,15 +103,13 @@ class DataTable extends Component {
   }
 
   render() {
-    let tableInfo;
-    this.props.tablesInfo.forEach(t => {
-      if (t.name === this.lowerCaseTableName() && t.columns) {
-        tableInfo = t;
-      }
-    });
-
-    let html = <span>{this.upperCaseTableName()} table does not exist.</span>
-    if (tableInfo) {
+    const tableInfo = this.state.tableInfoSaved;
+    let html = (
+      <div style={{ textAlign: 'center' }}>
+        {this.upperCaseTableName()} table does not exist.
+      </div>
+    )
+    if (tableInfo && this.state.rows) {
       const items = (
         this.state.rows.map((r,i) => {
           return (
@@ -123,10 +147,7 @@ class DataTable extends Component {
       );
 
       html = (
-        <div style={{ width: '100%', position: 'relative' }}>
-          <div className="refresh-button" onClick={this.getSetRows}>
-            <i className="fas fa-sync-alt"></i>
-          </div>
+        <div>
           <h1 className="pb-4">{this.upperCaseTableName()}</h1>
 
           <table className="table table-responsive-lg table-hover">
@@ -148,7 +169,14 @@ class DataTable extends Component {
       );
     }
 
-    return html;
+    return (
+      <div style={{ width: '100%', position: 'relative' }}>
+        <div className="refresh-button" onClick={this.getSetRows}>
+          <i className="fas fa-sync-alt"></i>
+        </div>
+        {html}
+      </div>
+    );
   }
 }
 
