@@ -5,9 +5,9 @@ function DashboardCard(props) {
   return (
     <div className="card" style={{
       display: 'inline-block',
-      width: '16rem',
+      width: '14rem',
       margin: '1rem',
-      borderColor: 'rgba(0,0,0,0.5)',
+      borderColor: 'rgba(0,0,0,0.35)',
     }}>
       <div className="card-body" style={{
         padding: '0.75rem 1rem',
@@ -15,7 +15,7 @@ function DashboardCard(props) {
         <h5 className="card-title" style={{
           fontSize: '24px',
           marginBottom: 0,
-          color: 'rgba(0,0,0,0.7)',
+          color: 'rgba(0,0,0,0.65)',
         }}>{props.title}</h5>
         <p className="card-value" style={{
           float: 'right',

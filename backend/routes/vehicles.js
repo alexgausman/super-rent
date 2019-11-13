@@ -41,9 +41,9 @@ router.post('/', (req, res) => {
     }));
 })
 
-// @route   DELETE vehicles
+// @route   POST vehicles/delete-row
 // @desc    Delete a Vehicle
-router.delete( '/', (req, res) => {
+router.post( '/delete-row', (req, res) => {
   const { vid } = req.body;
   const text = `
     -- TODO

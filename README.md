@@ -123,7 +123,7 @@ In the response we should see both the query entered and the result row which wa
 
 To get a list of the current VehicleTypes via the API, go back to *Postman* and change the HTTP Action from `POST` to `GET`. Keep the request URL set as `localhost:4000/tables/vehicletypes` and uncheck the (key, value) added in the body. Then click Send. The returned response will appear similar to the previous one, with the query entered and a list of the rows (which currently only includes truck).
 
-To delete the truck VehicleType, change the HTTP Action from `GET` to `DELETE`, set the request URL to `localhost:4000/tables/vehicletypes/`, re-add the (key, value) pair (vtname, truck) and click *Send*.
+To delete the truck VehicleType, change the HTTP Action from `GET` to `POST`, set the request URL to `localhost:4000/tables/vehicletypes/delete-row`, re-add the (key, value) pair (vtname, truck) and click *Send*.
 
 If at any point you wish to clear all the tables from the database, send an HTTTP `POST` request to `localhost:4000/admin/clear-db`. After the database is cleared, you can make a `POST` request to `localhost:4000/admin/init-db` to initialize the tables again.
 

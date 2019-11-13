@@ -28,7 +28,7 @@ class LogPanel extends Component {
             <i className={`fas fa-angle-${isOpen ? 'down' : 'up'}`}></i>
           </div>
         </div>
-        <div style={{
+        <div id="inner-log-panel" style={{
           height: '240px',
           width: '100%',
           backgroundColor: 'rgba(0,0,0,0.85)',
@@ -36,9 +36,9 @@ class LogPanel extends Component {
           overflowY: 'scroll',
         }}>
           {this.props.queries.map((q,i) => (
-            <div key={i} style={{
+            <div className="log-block" key={i} style={{
               color: 'white',
-              padding: '10px 15px',
+              margin: '10px 15px',
               fontFamily: 'monospace',
             }}>
               {q.split('\n\n').map((s,i) => (

@@ -41,9 +41,9 @@ router.post('/', (req, res) => {
     }));
 })
 
-// @route   DELETE reservations
+// @route   POST reservations/delete-row
 // @desc    Delete a Reservation
-router.delete( '/', (req, res) => {
+router.post( '/delete-row', (req, res) => {
   const { confNo } = req.body;
   const text = `
     -- TODO

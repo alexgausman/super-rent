@@ -41,9 +41,9 @@ router.post('/', (req, res) => {
     }));
 })
 
-// @route   DELETE branches
+// @route   POST branches/delete-row
 // @desc    Delete a Branch
-router.delete( '/', (req, res) => {
+router.post( '/delete-row', (req, res) => {
   const { location, city } = req.body;
   const text = `
     -- TODO

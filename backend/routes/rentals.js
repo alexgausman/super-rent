@@ -41,9 +41,9 @@ router.post('/', (req, res) => {
     }));
 })
 
-// @route   DELETE rentals
+// @route   POST rentals/delete-row
 // @desc    Delete a Rental
-router.delete( '/', (req, res) => {
+router.post( '/delete-row', (req, res) => {
   const { rid } = req.body;
   const text = `
     -- TODO

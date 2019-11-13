@@ -23,3 +23,41 @@ table th, table td {
 .dropdown-menu a.dropdown-item.text-danger.disabled {
   color: #dc3545 !important;
 }
+
+@media (max-width: 1350px) {
+  .dashboard-container {
+    flex-direction: column !important;
+    align-items: center;
+    justify-content: flex-start !important;
+  }
+}
+
+.sidebar-sticky .nav .nav-item.active a.nav-link {
+  pointer-events: none;
+  color: #0056b3 !important;
+}
+
+.refresh-button {
+  position: absolute;
+  right: 29px;
+  top: 25px;
+  font-size: 25px;
+  cursor: pointer;
+  opacity: 0.7;
+}
+
+.refresh-button:hover {
+  opacity: 1;
+}
+
+.refresh-button i {
+  pointer-events: none;
+}
+
+.log-block:not(:last-child) {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.3)
+}
+
+.log-block p:first-child {
+  padding-top: 0.4rem;
+}
