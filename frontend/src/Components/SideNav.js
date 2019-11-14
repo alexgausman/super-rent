@@ -10,7 +10,7 @@ function SideNav(props) {
       maxWidth: 'none',
       flex: 'none',
     }}>
-      <div className="sidebar-sticky">
+      <div className="sidebar-sticky" style={{ marginTop: '44px' }}>
         <h6 className="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-2 text-muted">
           <span>Tables</span>
         </h6>

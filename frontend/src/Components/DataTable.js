@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import axios from 'axios';
+import pluralize from 'pluralize';
 
 class DataTable extends Component {
   constructor(props) {
@@ -13,6 +14,7 @@ class DataTable extends Component {
     this.getTableInfoFromProps = this.getTableInfoFromProps.bind(this);
     this.getSetRows = this.getSetRows.bind(this);
     this.upperCaseTableName = this.upperCaseTableName.bind(this);
+    this.insertRow = this.insertRow.bind(this);
     this.deleteRow = this.deleteRow.bind(this);
   }
 
@@ -53,7 +55,7 @@ class DataTable extends Component {
   }
 
   getSetRows() {
-    axios.get('/tables/' + this.upperCaseTableName())
+    axios.get('/tables/' + this.lowerCaseTableName())
       .then(res => {
         this.setState({ rows: res.data.result });
         this.props.logQuery(res.data.query);
@@ -83,6 +85,41 @@ class DataTable extends Component {
     return this.upperCaseTableName().toLowerCase();
   }
 
+  insertRow() {
+    const newItem = {};
+    const inputs = document.getElementsByClassName('new-item-input');
+    for(let i = 0; i < inputs.length; i++) {
+      const input = inputs[i];
+      if (input.value) {
+        const name = input.getAttribute('placeholder');
+        newItem[name] = input.value;
+      }
+    }
+    axios.post('/tables/' + this.lowerCaseTableName(), newItem)
+      .then(res => {
+        this.setState(prevState => {
+          const newRows = prevState.rows;
+          newRows.push(newItem);
+          return { rows: newRows };
+        });
+        this.props.logQuery(res.data.query);
+        const inputs = document.getElementsByClassName('new-item-input');
+        for(let i = 0; i < inputs.length; i++) {
+          inputs[i].value = '';
+        }
+      })
+      .catch(err => {
+        if (err.response && err.response.data) {
+          const { query, error_message } = err.response.data;
+          if (query && error_message) {
+            this.props.logQuery(query, error_message);
+            return;
+          }
+        }
+        console.log(err);
+      });
+  }
+
   deleteRow(e) {
     const rowIndex = parseInt(e.target.getAttribute('rowindex'));
     const rowData = this.state.rows[rowIndex];
@@ -99,7 +136,16 @@ class DataTable extends Component {
         });
         this.props.logQuery(res.data.query);
       })
-      .catch(err => console.log(err))
+      .catch(err => {
+        if (err.response && err.response.data) {
+          const { query, error_message } = err.response.data;
+          if (query && error_message) {
+            this.props.logQuery(query, error_message);
+            return;
+          }
+        }
+        console.log(err);
+      });
   }
 
   render() {
@@ -165,6 +211,58 @@ class DataTable extends Component {
               {items}
             </tbody>
           </table>
+          <button
+            type="button"
+            className="btn btn-success"
+            style={{
+              marginBottom: '20px',
+            }}
+            data-toggle="modal"
+            data-target="#newItemModal"
+          >
+            <i className="fas fa-plus" style={{
+              fontSize: '13px',
+              position: 'relative',
+              bottom: '1px',
+              paddingRight: '6px',
+            }}></i>
+            New Item
+          </button>
+          <div className="modal fade" id="newItemModal" tabIndex="-1" role="dialog" aria-labelledby="newItemModalLabel" aria-hidden="true">
+            <div className="modal-dialog" role="document">
+              <div className="modal-content">
+                <div className="modal-header">
+                  <h5 className="modal-title" id="newItemModalLabel">
+                    New {singularizeTableName(this.props.match.params.tableName)}
+                  </h5>
+                  <button type="button" className="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <div className="modal-body">
+                  <form>
+                    {tableInfo.columns.map((c,i) => (
+                      <div className="form-group" key={i}>
+                        <input
+                          type="text"
+                          className="form-control new-item-input"
+                          id={c.column_name + '-input'}
+                          placeholder={c.column_name}
+                          style={{ color: '#000' }}
+                        />
+                      </div>
+                    ))}
+                  </form>
+                </div>
+                <div className="modal-footer">
+                  <button type="button" className="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                  <button type="button" className="btn btn-primary" data-dismiss="modal" onClick={this.insertRow}>
+                    Insert Row
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       );
     }
@@ -184,6 +282,13 @@ const convertTableNameParam = tableName => {
   let parts = tableName.split('-');
   parts = parts.map(str => str.charAt(0).toUpperCase() + str.slice(1));
   return parts.join('');
+}
+
+const singularizeTableName = tableName => {
+  let parts = tableName.split('-');
+  const newLastPart = pluralize.singular(parts[parts.length - 1]);
+  parts[parts.length - 1] = newLastPart;
+  return convertTableNameParam(parts.join('-'));
 }
 
 DataTable.propTypes = {
