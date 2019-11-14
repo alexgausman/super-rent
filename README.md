@@ -145,7 +145,7 @@ If at any point you wish to clear all the tables from the database, send an HTTT
 
 ### Backend Project Structure & TODOs
 
-The DB initialize query is in backend/routes/admin.js. Multiple TODOs are listed where the CREATE TABLE statements should go. There is also a seed-db route with TODOs seeding data.
+The DB initialize query is in backend/routes/admin.js. Multiple TODOs are listed where the CREATE TABLE statements should go. There is also a seed-db route with TODOs for seeding data.
 
 The VehicleTypes API is complete and can be viewed in backend/routes/vehicleTypes.js. I have added (index, create, delete) function stubs for branches, customers, rentals, reservations, returns, and vehicles as well. So, I think, all that needs to be done with those is for the SQL TODOs to get filled in.
 
@@ -172,5 +172,7 @@ Start NodeJS server.
 `$ npm start`
 
 ### Interacting With The Frontend
+
+Once you have both the backend and frontend running in seperate terminal windows, visit `localhost:3000` in your browser.
 
 Open the database dropdown menu in the top right corner and click 'Initialize'. After that, open the dropdown menu again and click 'Seed'. Click on 'VehicleTypes' on the left sidebar to see the VehicleTypes table. You can delete rows, insert rows, and refresh the table. There is also a console on the bottom of the screen that can be opened to show the query history as well as any errors.
