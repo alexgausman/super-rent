@@ -1,4 +1,4 @@
-<img src="https://raw.githubusercontent.com/alexgausman/super-rent/master/preview.png?sanitize=true&raw=true" />
+<img src="https://raw.githubusercontent.com/alexgausman/super-rent/master/preview.png" />
 
 ---
 
