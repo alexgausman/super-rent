@@ -66,9 +66,6 @@ router.post('/', (req, res) => {
 // @desc    Delete a VehicleType
 router.post( '/delete-row', (req, res) => {
   const { vtname } = req.body;
-  console.log(req.body);
-  console.log('DELETE: ' + vtname);
-
   const text = `
     DELETE
     FROM VehicleTypes
