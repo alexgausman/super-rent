@@ -93,6 +93,7 @@ class DataTable extends Component {
       if (input.value) {
         const name = input.getAttribute('placeholder');
         newItem[name] = input.value;
+        input.value = '';
       }
     }
     axios.post('/tables/' + this.lowerCaseTableName(), newItem)
@@ -103,10 +104,6 @@ class DataTable extends Component {
           return { rows: newRows };
         });
         this.props.logQuery(res.data.query);
-        const inputs = document.getElementsByClassName('new-item-input');
-        for(let i = 0; i < inputs.length; i++) {
-          inputs[i].value = '';
-        }
       })
       .catch(err => {
         if (err.response && err.response.data) {

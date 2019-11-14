@@ -87,7 +87,7 @@ Port: `5432`
 
 Remember use the *refresh* button in the bottom left after making changes via the API.
 
-### Start NodeJS Server
+### Start NodeJS Backend Server
 
 If postgres is not already running, start it now.
 
@@ -129,22 +129,44 @@ If at any point you wish to clear all the tables from the database, send an HTTT
 
 ### API Calls (Starter)
 
-|          desc         | action |                  url                 |          body fields          |
-|-----------------------|--------|--------------------------------------|-------------------------------|
-| DB tables: clear      | POST   | localhost:4000/admin/clear-db        | *none*                        |
-| DB tables: list       | GET    | localhost:4000/admin/db-tables-list  | *none*                        |
-| DB tables: initialize | POST   | localhost:4000/admin/init-db         | *none*                        |
-| DB tables: seed       | POST   | localhost:4000/admin/seed-db         | *none*                        |
-| VehicleTypes: list    | GET    | localhost:4000/vehicle-types         | *none*                        |
-| VehicleTypes: add     | POST   | localhost:4000/vehicle-types         | vtname, features, wrate, ...  |
-| Vehicletypes: remove  | DELETE | localhost:4000/vehicle-types/:vtname | vtname                        |
+|          desc         | action |                   url                   |          body fields          |
+|-----------------------|--------|-----------------------------------------|-------------------------------|
+| DB tables: clear      | POST   | localhost:4000/admin/clear-db           | *none*                        |
+| DB tables: list       | GET    | localhost:4000/admin/db-tables-list     | *none*                        |
+| DB tables: initialize | POST   | localhost:4000/admin/init-db            | *none*                        |
+| DB tables: seed       | POST   | localhost:4000/admin/seed-db            | *none*                        |
+| VehicleTypes: list    | GET    | localhost:4000/vehicle-types            | *none*                        |
+| VehicleTypes: add     | POST   | localhost:4000/vehicle-types            | vtname, features, wrate, ...  |
+| Vehicletypes: remove  | POST   | localhost:4000/vehicle-types/delete-row | vtname                        |
 
 ### Backend Project Structure & TODOs
 
-The DB initialize query is in backend/routes/admin.js. Multiple TODOs are listed where other CREATE TABLE statements should go.
+The DB initialize query is in backend/routes/admin.js. Multiple TODOs are listed where the CREATE TABLE statements should go. There is also a seed-db route with TODOs seeding data.
 
 The VehicleTypes API is complete and can be viewed in backend/routes/vehicleTypes.js. I have added (index, create, delete) function stubs for branches, customers, rentals, reservations, returns, and vehicles as well. So, I think, all that needs to be done with those is for the SQL TODOs to get filled in.
 
 Once all the Table APIs are complete we can move on to the "actions" for part 3.
 
-I will also get started on a front end for the app. I'll probably just use React and Bootstrap for that.
+# Frontend
+
+### Install NodeJS Backend Dependencies
+
+Install local dependencies.
+
+`cd` into the `frontend` directory
+
+`$ npm install`
+
+### Start NodeJS Frontend
+
+Make sure the backend server is running.
+
+`cd` into the `frontend` directory
+
+Start NodeJS server.
+
+`$ npm`
+
+### Interacting With The Frontend
+
+Open the database dropdown menu in the top right corner and click 'Initialize'. After that, open the dropdown menu again and click 'Seed'. Click on 'VehicleTypes' on the left sidebar to see the VehicleTypes table. You can delete rows, insert rows, and refresh the table. There is also a console on the bottom of the screen that can be opened to show the query history as well as any errors. 
