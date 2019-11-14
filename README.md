@@ -165,8 +165,8 @@ Make sure the backend server is running.
 
 Start NodeJS server.
 
-`$ npm`
+`$ npm start`
 
 ### Interacting With The Frontend
 
-Open the database dropdown menu in the top right corner and click 'Initialize'. After that, open the dropdown menu again and click 'Seed'. Click on 'VehicleTypes' on the left sidebar to see the VehicleTypes table. You can delete rows, insert rows, and refresh the table. There is also a console on the bottom of the screen that can be opened to show the query history as well as any errors. 
+Open the database dropdown menu in the top right corner and click 'Initialize'. After that, open the dropdown menu again and click 'Seed'. Click on 'VehicleTypes' on the left sidebar to see the VehicleTypes table. You can delete rows, insert rows, and refresh the table. There is also a console on the bottom of the screen that can be opened to show the query history as well as any errors.
