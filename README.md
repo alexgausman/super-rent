@@ -1,3 +1,5 @@
+<img src="https://raw.githubusercontent.com/alexgausman/super-rent/master/preview.png?sanitize=true&raw=true" />
+
 > When entering commands in the terminal, omit `$`, `=#`, and `=>`. These prefixes are only added below for context.
 
 # NodeJS Installation
