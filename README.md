@@ -153,7 +153,7 @@ Once all the Table APIs are complete we can move on to the "actions" for part 3.
 
 # Frontend
 
-### Install NodeJS Backend Dependencies
+### Install NodeJS Frontend Dependencies
 
 Install local dependencies.
 
