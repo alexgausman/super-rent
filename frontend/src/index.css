@@ -61,3 +61,45 @@ table th, table td {
 .log-block p:first-child {
   padding-top: 0.4rem;
 }
+
+.bootstrap-select {
+  width: 100% !important;
+}
+
+div.dropdown.bootstrap-select button.dropdown-toggle {
+  color: #495057 !important;
+  background-color: #fff !important;
+  border: 1px solid #ced4da !important;
+  outline-width: 0 !important;
+}
+
+div.dropdown.bootstrap-select button.dropdown-toggle:hover {
+  background-color: #f8f9fa !important;
+}
+
+div.dropdown.bootstrap-select.show button.dropdown-toggle,
+div.dropdown.bootstrap-select button.dropdown-toggle:focus {
+  border-color: #80bdff;
+  outline: 0;
+  box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
+}
+
+.bootstrap-datetimepicker-widget {
+  font-size: 13px;
+}
+
+.bootstrap-datetimepicker-widget thead tr th {
+  border-top: none;
+}
+
+.bootstrap-datetimepicker-widget .datepicker-days tbody tr:last-of-type {
+  border-bottom: 1px solid rgba(0,0,0,.1);
+}
+
+.bootstrap-datetimepicker-widget th.picker-switch[title="Select Month"] {
+  pointer-events: none;
+}
+
+.bootstrap-datetimepicker-widget li.picker-switch td {
+  padding-top: 3px;
+}

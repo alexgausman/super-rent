@@ -10,20 +10,12 @@ class LogPanel extends Component {
   }
 
   componentDidUpdate(prevProps, prevState) {
-    console.log('LOG PANEL UPDATED')
     let newUnreadErrors = prevState.unreadErrors;
     if (this.props.isOpen) {
-      console.log('IS OPEN')
       newUnreadErrors = false;
     } else {
-      console.log('IS NOT OPEN')
       const prevQueriesLength = prevProps.queries.length;
-      console.log('prevQueriesLength: ' + prevQueriesLength)
-      console.log('this.props.queries.length: ' + this.props.queries.length)
-      console.log(prevProps.queries)
-      console.log(this.props.queries)
       if (this.props.queries.length > prevQueriesLength) {
-        console.log('LENGTH IS LONGER')
         this.props.queries.forEach((q, i) => {
           if ((i + 1 > prevQueriesLength) && q.error) {
             newUnreadErrors = true;

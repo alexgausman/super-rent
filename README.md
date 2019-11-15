@@ -139,9 +139,9 @@ If at any point you wish to clear all the tables from the database, send an HTTT
 | DB tables: list       | GET    | localhost:4000/admin/db-tables-list     | *none*                        |
 | DB tables: initialize | POST   | localhost:4000/admin/init-db            | *none*                        |
 | DB tables: seed       | POST   | localhost:4000/admin/seed-db            | *none*                        |
-| VehicleTypes: list    | GET    | localhost:4000/vehicle-types            | *none*                        |
-| VehicleTypes: add     | POST   | localhost:4000/vehicle-types            | vtname, features, wrate, ...  |
-| Vehicletypes: remove  | POST   | localhost:4000/vehicle-types/delete-row | vtname                        |
+| VehicleTypes: list    | GET    | localhost:4000/vehicletypes             | *none*                        |
+| VehicleTypes: add     | POST   | localhost:4000/vehicletypes             | vtname, features, wrate, ...  |
+| Vehicletypes: remove  | POST   | localhost:4000/vehicletypes/delete-row  | vtname                        |
 
 ### Backend Project Structure & TODOs
 

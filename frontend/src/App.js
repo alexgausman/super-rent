@@ -8,6 +8,7 @@ import LogPanel from './Components/LogPanel';
 
 import Dashboard from './Components/Dashboard';
 import DataTable from './Components/DataTable';
+import AvailVehicles from './Components/AvailVehicles';
 
 class App extends Component {
   constructor() {
@@ -207,7 +208,10 @@ class App extends Component {
                       />
                     )}
                   />
-                  <Route path="/customer-actions/:action">
+                  <Route exact path="/customer-actions/view-available-vehicles">
+                    <AvailVehicles logQuery={this.logQuery}/>
+                  </Route>
+                  <Route exact path="/customer-actions/make-a-reservation">
                     <span>TODO</span>
                   </Route>
                   <Route path="/clerk-actions/:action">
