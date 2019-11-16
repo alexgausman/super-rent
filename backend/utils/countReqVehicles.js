@@ -1,6 +1,7 @@
 // Desc: Computes number of required vehicles to fulfill reservations
 //       where all reservations are for a single vehicle type.
 // Param: Array of objects { fromDateTime: string, toDateTime: string, ... }
+//        ordered by ascending toDateTime
 const countReqVehicles = reserves => {
   const multipleVReserves = [];
   while (reserves.length > 0) {
