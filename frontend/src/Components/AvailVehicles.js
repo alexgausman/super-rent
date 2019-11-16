@@ -25,15 +25,11 @@ class AvailVehicles extends Component {
 		  //locale: 'nl',
 		  useCurrent: true,
 		  format: 'MM/DD/YYYY HH:mm',
-		  // sideBySide: true,
-		  // date: '12/18/2019 18:30',
 		});
     window.$('#untilDateTimePicker').datetimepicker({
 		  //locale: 'nl',
 		  useCurrent: true,
 		  format: 'MM/DD/YYYY HH:mm',
-		  // sideBySide: true,
-		  // date: '12/18/2019 18:30',
 		});
   }
 
@@ -92,7 +88,7 @@ class AvailVehicles extends Component {
   }
 
   refresh() {
-    console.log('TODO');
+    // TODO
   }
 
   onSubmit() {
@@ -124,16 +120,11 @@ class AvailVehicles extends Component {
 
 
   render() {
-    return (
-      <div style={{
-        width: '100%',
-        position: 'relative',
-        display: 'flex',
-        justifyContent: 'center',
-      }}>
-        <div className="refresh-button" onClick={this.refresh}>
-          <i className="fas fa-sync-alt"></i>
-        </div>
+    let html = (
+      <span>TODO</span>
+    );
+    if (!this.state.submission) {
+      html = (
         <div style={{
           width: '450px',
         }}>
@@ -175,6 +166,19 @@ class AvailVehicles extends Component {
             Submit
           </button>
         </div>
+      );
+    }
+    return (
+      <div style={{
+        width: '100%',
+        position: 'relative',
+        display: 'flex',
+        justifyContent: 'center',
+      }}>
+        <div className="refresh-button" onClick={this.refresh}>
+          <i className="fas fa-sync-alt"></i>
+        </div>
+        {html}
       </div>
 
     );
