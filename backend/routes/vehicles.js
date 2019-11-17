@@ -60,7 +60,6 @@ router.post('/', (req, res) => {
     .catch(error => res.status(400).json({
       query: formatQuery(text),
       error_message: error.message,
-      error_detail: error.detail,
     }));
 })
 
@@ -69,7 +68,9 @@ router.post('/', (req, res) => {
 router.post( '/delete-row', (req, res) => {
   const { vid } = req.body;
   const text = `
-    -- TODO
+    DELETE
+    FROM Vehicles
+    WHERE vid='${vid}'
   `;
   database
     .query(text)

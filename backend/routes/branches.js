@@ -6,8 +6,7 @@ const formatQuery = require('../utils/formatQuery');
 // @desc    Index Branches
 router.get('/', (req, res) => {
   const text = `
-    SELECT *
-    FROM Branches
+    -- TODO
   `;
   database
     .query(text)

@@ -39,7 +39,6 @@ class App extends Component {
       axios.get('/admin/db-tables-list')
         .then(res => {
           const tables = [];
-          console.log(res.data);
           res.data.forEach(d => tables.push({ name: d.table_name }));
           this.setState({tables: tables}, () => {
             this.state.tables.forEach(t => {
@@ -55,14 +54,21 @@ class App extends Component {
   getSetTableColumns(tableName) {
     axios.get('/admin/db-table-columns/' + tableName)
       .then(res => {
+        console.log(res.data)
         this.setState(prevState => {
           let tables = prevState.tables;
           tables = tables.map(t => {
             if (t.name === tableName) {
+              res.data.sort((a, b) => {
+                const a_pos = a.ordinal_position;
+                const b_pos = b.ordinal_position;
+                return (a_pos > b_pos) ? 1 : -1;
+              });
               t.columns = res.data;
             }
             return t;
           });
+          console.log(tables);
           return { tables: tables };
         });
       })
