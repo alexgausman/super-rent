@@ -4,7 +4,19 @@
 
 > When entering commands in the terminal, omit `$`, `=#`, and `=>`. These prefixes are only added below for context.
 
-# NodeJS Installation
+# Setup
+
+### Docker
+
+Check if Docker is installed.
+
+`$ docker -v`
+
+If not, follow the instructions to install Docker CE (Community Edition).
+
+https://docs.docker.com/v17.09/engine/installation/
+
+### NodeJS
 
 Check if NodeJS is installed.
 
@@ -18,58 +30,39 @@ Update npm.
 
 `$ npm i -g npm`
 
-
-# Backend
-
-### Setup PostgreSQL
-
-Check if PostgreSQL is installed.
-
-`$ psql --version`
-
-If not, install PostgreSQL.
-
-`$ brew install postgresql`
-
-### Start Postgres & Setup Database
-
-Start postgres.
-
-`$ pg_ctl -D /usr/local/var/postgres start`
-
-Login to postgres.
-
-`$ psql postgres`
-
-Create a user and password and give them create database access.
-
-`=# CREATE ROLE api_user WITH LOGIN PASSWORD 'password';`
-
-`=# ALTER ROLE api_user CREATEDB;`
-
-Logout of the root user and login to the newly created user.
-
-`=# \q`
-
-`$ psql -d postgres -U api_user`
-
-Create a `super_rent` database and connect to it.
-
-`=> CREATE DATABASE super_rent;`
-
-`=> \c super_rent`
-
-### Install NodeJS Backend Dependencies
-
-Install/update NodeJS global dependencies:
-
-`$ npm i -D nodemon`
-
-Install local dependencies.
+### Backend Dependencies
 
 `cd` into the `backend` directory
 
 `$ npm install`
+
+### Frontend Dependencies
+
+`cd` into the `frontend` directory
+
+`$ npm install`
+
+# Startup
+
+Use three seperate terminal windows for running docker, the backend, and the frontend.
+
+### Run PostgreSQL Docker Container
+
+`$ docker run --rm -p 4001:5432 -e POSTGRES_PASSWORD=password -e POSTGRES_USER=api_user -e POSTGRES_DB=super_rent -v pgdata:/var/lib/postgresql/data postgres`
+
+### Run NodeJS Backend Server
+
+`cd` into the `backend` directory
+
+`$ npm start`
+
+### Run NodeJS Frontend Client
+
+`cd` into the `frontend` directory
+
+`$ npm start`
+
+# Development
 
 ### Inspecting The PostgreSQL Database
 
@@ -77,9 +70,7 @@ You can use a GUI app like PSequel for inspecting the database.
 
 http://www.psequel.com/
 
-If postgres is not already running, start it now.
-
-`$ pg_ctl -D /usr/local/var/postgres start`
+Make sure postgres is running via Docker.
 
 Connect to the db in the PSequel app with the following params.
 
@@ -87,21 +78,9 @@ Host: `localhost`
 User: `api_user`
 Password: `password`
 Database: `super_rent`
-Port: `5432`
+Port: `4001`
 
 Remember use the *refresh* button in the bottom left after making changes via the API.
-
-### Start NodeJS Backend Server
-
-If postgres is not already running, start it now.
-
-`$ pg_ctl -D /usr/local/var/postgres start`
-
-`cd` into the `backend` directory
-
-Start NodeJS server.
-
-`$ nodemon server`
 
 ### Interacting With The Server API
 
@@ -145,31 +124,11 @@ If at any point you wish to clear all the tables from the database, send an HTTT
 
 ### Backend Project Structure & TODOs
 
-The DB initialize query is in backend/routes/admin.js. Multiple TODOs are listed where the CREATE TABLE statements should go. There is also a seed-db route with TODOs for seeding data.
+The DB initialize query is in backend/routes/admin.js.
 
 The VehicleTypes API is complete and can be viewed in backend/routes/vehicleTypes.js. I have added (index, create, delete) function stubs for branches, customers, rentals, reservations, returns, and vehicles as well. So, I think, all that needs to be done with those is for the SQL TODOs to get filled in.
 
 Once all the Table APIs are complete we can move on to the "actions" for part 3.
-
-# Frontend
-
-### Install NodeJS Frontend Dependencies
-
-Install local dependencies.
-
-`cd` into the `frontend` directory
-
-`$ npm install`
-
-### Start NodeJS Frontend
-
-Make sure the backend server is running.
-
-`cd` into the `frontend` directory
-
-Start NodeJS server.
-
-`$ npm start`
 
 ### Interacting With The Frontend
 
