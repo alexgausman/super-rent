@@ -1,6 +1,7 @@
 const router = require('express').Router();
 const { database } = require('../config');
 const formatQuery = require('../utils/formatQuery');
+const faker = require('faker');
 
 // @route   GET db-tables-list
 // @desc    Get a list of current tables in db
@@ -68,9 +69,19 @@ router.post('/clear-db', (req, res) => {
 // @desc    Init db with CREATE TABLE statements
 router.post('/init-db', (req, res) => {
   const text = `
-    -- TODO: CREATE TABLE Branches --
+    CREATE TABLE Branches (
+      location VARCHAR (20),
+      city VARCHAR (20),
+      PRIMARY KEY (location, city)
+    );
 
-    -- TODO: CREATE TABLE Customers --
+    CREATE TABLE Customers (
+      cellphone CHAR (12),
+      name VARCHAR (40),
+      address VARCHAR (40),
+      dlicense CHAR (7),
+      PRIMARY KEY (cellphone)
+    );
 
     CREATE TABLE VehicleTypes (
       vtname VARCHAR (40),
@@ -85,13 +96,64 @@ router.post('/init-db', (req, res) => {
       PRIMARY KEY (vtname)
     );
 
-    -- TODO: CREATE TABLE Vehicles --
+    CREATE TABLE Vehicles (
+      vid SMALLSERIAL,
+      vlicense VARCHAR (7),
+      make VARCHAR (16),
+      model VARCHAR (16),
+      color VARCHAR (16),
+      odometer INTEGER,
+      status CHAR (8),
+      vtname VARCHAR (10),
+      location VARCHAR (20),
+      city VARCHAR (20),
+      PRIMARY KEY (vid),
+      FOREIGN KEY (vtname) REFERENCES VehicleTypes (vtname),
+      FOREIGN KEY (location, city) REFERENCES Branches (location, city)
+    );
 
-    -- TODO: CREATE TABLE Reservations --
+    CREATE TABLE Reservations (
+      confNo SMALLSERIAL,
+      vtname VARCHAR (10),
+      cellphone CHAR (12),
+      fromDateTime TIMESTAMP,
+      toDateTime TIMESTAMP,
+      location VARCHAR (20),
+      city VARCHAR (20),
+      PRIMARY KEY (confNo),
+      FOREIGN KEY (vtname) REFERENCES VehicleTypes (vtname),
+      FOREIGN KEY (cellphone) REFERENCES Customers (cellphone),
+      FOREIGN KEY (location, city) REFERENCES Branches (location, city)
+    );
 
-    -- TODO: CREATE TABLE Rentals --
+    CREATE TABLE Rentals (
+      rid SMALLSERIAL,
+      vid SMALLSERIAL,
+      cellphone CHAR (12),
+      confNo SMALLSERIAL,
+      fromDateTime TIMESTAMP,
+      toDateTime TIMESTAMP,
+      odometer INTEGER,
+      cardName VARCHAR (12),
+      cardNo CHAR (16),
+      ExpDate CHAR (4),
+      location VARCHAR (20),
+      city VARCHAR (20),
+      PRIMARY KEY (rid),
+      FOREIGN KEY (vid) REFERENCES Vehicles (vid),
+      FOREIGN KEY (cellphone) REFERENCES Customers (cellphone),
+      FOREIGN KEY (location, city) REFERENCES Branches (location, city)
+    );
 
-    -- TODO: CREATE TABLE Returns --
+    CREATE TABLE Returns (
+      rid SMALLSERIAL,
+      dateTime TIMESTAMP,
+      odometer INTEGER,
+      fullTank BOOLEAN,
+      totalCost MONEY,
+      PRIMARY KEY (rid),
+      FOREIGN KEY (rid) REFERENCES Rentals (rid)
+    )
   `;
   database
     .query(text)
@@ -111,10 +173,29 @@ router.post('/init-db', (req, res) => {
 // @route   POST seed-db
 // @desc    Seed db with data
 router.post('/seed-db', (req, res) => {
+  const customerValues = [];
+  while (customerValues.length < 20) {
+    const phone = faker.phone.phoneNumberFormat(0);
+    const dl = faker.finance.account(7);
+    if (customerValues.every(c => !c.includes(phone) && !c.includes(dl))) {
+      customerValues.push(`(
+        '${phone}',
+        '${faker.name.findName().split(`''`).join(`''`)}',
+        '${faker.address.streetAddress().split(`'`).join(`''`)}',
+        '${dl}'
+      )`);
+    }
+  }
   const text = `
-  -- TODO: INSERT INTO Branches --
+  INSERT INTO Branches ( location, city )
+  VALUES
+  ( 'Kitsilano', 'Vancouver' ),
+  ( 'Yaletown', 'Vancouver' ),
+  ( 'James Bay', 'Victoria' ),
+  ( 'Yorkville', 'Toronto' ),
+  ( 'Pointe-Claire', 'Montreal');
 
-  -- TODO: INSERT INTO Customers --
+  INSERT INTO Customers (cellphone, name, address, dlicense) VALUES ${customerValues.join(', ')};
 
   INSERT INTO VehicleTypes (
     vtname,

@@ -59,8 +59,8 @@ class App extends Component {
           tables = tables.map(t => {
             if (t.name === tableName) {
               t.columns = res.data;
-              return t;
             }
+            return t;
           });
           return { tables: tables };
         });
@@ -76,8 +76,8 @@ class App extends Component {
           tables = tables.map(t => {
             if (t.name === tableName) {
               t.rowCount = parseInt(res.data.rows[0].count);
-              return t;
             }
+            return t;
           });
           return { tables: tables };
         });

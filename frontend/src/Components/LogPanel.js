@@ -40,7 +40,7 @@ class LogPanel extends Component {
           height: '40px',
           width: '100%',
 
-          backgroundColor: 'rgba(0,0,0,0.75)',
+          backgroundColor: '#404040',
           alignItems: 'center',
           overflow: 'hidden',
         }}>

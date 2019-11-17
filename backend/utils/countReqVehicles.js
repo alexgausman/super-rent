@@ -1,8 +1,12 @@
 // Desc: Computes number of required vehicles to fulfill reservations
 //       where all reservations are for a single vehicle type.
 // Param: Array of objects { fromDateTime: string, toDateTime: string, ... }
-//        ordered by ascending toDateTime
 const countReqVehicles = reserves => {
+  reserves.sort((a, b) => {
+    const a_toDateTime = new Date(a.toDateTime);
+    const b_toDateTime = new Date(b.toDateTime);
+    return (a_toDateTime > b_toDateTime) ? 1 : -1;
+  });
   const multipleVReserves = [];
   while (reserves.length > 0) {
     const singleVReserves = [reserves.shift()];
