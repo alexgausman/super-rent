@@ -4,7 +4,7 @@
 
 > When entering commands in the terminal, omit `$`, `=#`, and `=>`. These prefixes are only added below for context.
 
-# Setup
+# Installation
 
 ### Docker
 
@@ -42,9 +42,9 @@ Update npm.
 
 `$ npm install`
 
-# Startup
+# Setup
 
-Use three seperate terminal windows for running docker, the backend, and the frontend.
+Use three seperate terminal windows for the following processes.
 
 ### Run PostgreSQL Docker Container
 
