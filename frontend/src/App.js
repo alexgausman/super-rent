@@ -39,6 +39,7 @@ class App extends Component {
       axios.get('/admin/db-tables-list')
         .then(res => {
           const tables = [];
+          console.log(res.data);
           res.data.forEach(d => tables.push({ name: d.table_name }));
           this.setState({tables: tables}, () => {
             this.state.tables.forEach(t => {

@@ -6,7 +6,8 @@ const formatQuery = require('../utils/formatQuery');
 // @desc    Index Customers
 router.get('/', (req, res) => {
   const text = `
-    -- TODO
+    SELECT *
+    FROM Customers
   `;
   database
     .query(text)
@@ -24,10 +25,19 @@ router.get('/', (req, res) => {
 // @desc    Create a Customer
 router.post('/', (req, res) => {
   const text = `
-    -- TODO
+    INSERT INTO Customers (
+      cellphone,
+      name,
+      address,
+      dlicense
+    )
+    VALUES ( $1, $2, $3, $4 )
   `;
   const values = [
-    // TODO
+    req.body.cellphone,
+    req.body.name,
+    req.body.address,
+    req.body.dlicense
   ];
   database
     .query(text, values)
@@ -46,7 +56,9 @@ router.post('/', (req, res) => {
 router.post( '/delete-row', (req, res) => {
   const { cellphone } = req.body;
   const text = `
-    -- TODO
+    DELETE
+    FROM Customers
+    WHERE cellphone='${cellphone}'
   `;
   database
     .query(text)

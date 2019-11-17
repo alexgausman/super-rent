@@ -6,7 +6,8 @@ const formatQuery = require('../utils/formatQuery');
 // @desc    Index Vehicles
 router.get('/', (req, res) => {
   const text = `
-    -- TODO
+    SELECT *
+    FROM Vehicles
   `;
   database
     .query(text)
@@ -24,10 +25,31 @@ router.get('/', (req, res) => {
 // @desc    Create a Vehicle
 router.post('/', (req, res) => {
   const text = `
-    -- TODO
+    INSERT INTO Vehicles (
+      vid,
+      vlicense,
+      make,
+      model,
+      color,
+      odometer,
+      status,
+      vtname,
+      location,
+      city
+    )
+    VALUES ( $1, $2, $3, $4, $5, $6, $7, $8, $9, $10 )
   `;
   const values = [
-    // TODO
+    req.body.vid,
+    req.body.vlicense,
+    req.body.make,
+    req.body.model,
+    req.body.color,
+    req.body.odometer,
+    req.body.status,
+    req.body.vtname,
+    req.body.location,
+    req.body.city,
   ];
   database
     .query(text, values)
@@ -38,6 +60,7 @@ router.post('/', (req, res) => {
     .catch(error => res.status(400).json({
       query: formatQuery(text),
       error_message: error.message,
+      error_detail: error.detail,
     }));
 })
 

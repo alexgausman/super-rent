@@ -212,6 +212,7 @@ class DataTable extends Component {
             type="button"
             className="btn btn-success"
             style={{
+              marginTop: '10px',
               marginBottom: '20px',
             }}
             data-toggle="modal"
