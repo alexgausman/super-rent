@@ -285,7 +285,7 @@ router.post('/seed-db', (req, res) => {
     let loopIndex = 0;
     do {
       loopIndex += 1;
-      if (loopIndex > 10) throw new Error('No available vehicles');
+      if (loopIndex > 15) throw new Error('No available vehicles');
       rentalData = genRandomReservationData(minFrom, maxFrom);
       rentalData.cIndex = cIndex;
     } while ((() => {
