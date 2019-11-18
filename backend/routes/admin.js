@@ -378,6 +378,7 @@ router.post('/seed-db', (req, res) => {
     r.fromDateTime,
     r.toDateTime,
     r.startOdometer,
+    (chance.bool({ likelihood: 65}) ? 'Visa' : 'Mastercard'),
     faker.finance.account(16),
     genExpDate(),
     r.location,
@@ -410,7 +411,7 @@ router.post('/seed-db', (req, res) => {
     INSERT INTO Branches ( location, city )
     VALUES
     ${branchValues.map(arr => `(
-      ${arr.map(item => `'${item}'`).join(', ')})
+      ${arr.map(item => item === 'NULL' ? item : `'${item}'`).join(', ')})
     `).join(', ')};
 
     INSERT INTO Customers (
@@ -421,7 +422,7 @@ router.post('/seed-db', (req, res) => {
     )
     VALUES
     ${customerValues.map(arr => `(
-      ${arr.map(item => `'${item}'`).join(', ')})
+      ${arr.map(item => item === 'NULL' ? item : `'${item}'`).join(', ')})
     `).join(', ')};
 
     INSERT INTO VehicleTypes (
@@ -454,14 +455,53 @@ router.post('/seed-db', (req, res) => {
     )
     VALUES
     ${vehicleValues.map(arr => `(
-      ${arr.map(item => `'${item}'`).join(', ')})
+      ${arr.map(item => item === 'NULL' ? item : `'${item}'`).join(', ')})
     `).join(', ')};
 
-    -- TODO: INSERT INTO Reservations --
+    INSERT INTO Reservations (
+      confNo,
+      vtname,
+      cellphone,
+      fromDateTime,
+      toDateTime,
+      location,
+      city
+    )
+    VALUES
+    ${resValues.map(arr => `(
+      ${arr.map(item => item === 'NULL' ? item : `'${item}'`).join(', ')})
+    `).join(', ')};
 
-    -- TODO: INSERT INTO Rentals --
+    INSERT INTO Rentals (
+      rid,
+      vid,
+      cellphone,
+      confNo,
+      fromDateTime,
+      toDateTime,
+      odometer,
+      cardName,
+      cardNo,
+      expDate,
+      location,
+      city
+    )
+    VALUES
+    ${rentValues.map(arr => `(
+      ${arr.map(item => item === 'NULL' ? item : `'${item}'`).join(', ')})
+    `).join(', ')};
 
-    -- TODO: INSERT INTO Returns --
+    INSERT INTO Returns (
+      rid,
+      dateTime,
+      odometer,
+      fullTank,
+      totalCost
+    )
+    VALUES
+    ${returnValues.map(arr => `(
+      ${arr.map(item => item === 'NULL' ? item : `'${item}'`).join(', ')})
+    `).join(', ')};
   `;
   database
     .query(text)
