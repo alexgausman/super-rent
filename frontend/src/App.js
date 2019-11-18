@@ -54,7 +54,6 @@ class App extends Component {
   getSetTableColumns(tableName) {
     axios.get('/admin/db-table-columns/' + tableName)
       .then(res => {
-        console.log(res.data)
         this.setState(prevState => {
           let tables = prevState.tables;
           tables = tables.map(t => {
@@ -68,7 +67,6 @@ class App extends Component {
             }
             return t;
           });
-          console.log(tables);
           return { tables: tables };
         });
       })
