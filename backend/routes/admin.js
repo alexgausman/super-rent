@@ -277,29 +277,41 @@ router.post('/seed-db', (req, res) => {
   }
 
   const resObjects = [];
-  customerValues.forEach((c, cIndex) => {
-    const cPhone = c[0];
-    const minFrom = Date.now() - oneMonth;
-    const maxFrom = Date.now() + oneMonth;
-    let rentalData;
-    let loopIndex = 0;
-    do {
-      loopIndex += 1;
-      if (loopIndex > 15) throw new Error('No available vehicles');
-      rentalData = genRandomReservationData(minFrom, maxFrom);
-      rentalData.cIndex = cIndex;
-    } while ((() => {
-      const rentalsOfTypeXBranchY = resObjects.filter(r => (
-        r.vtIndex === rentalData.vtIndex && r.bIndex === rentalData.bIndex
-      ));
-      const reqVs = countReqVehicles(rentalsOfTypeXBranchY);
-      const numVs = countNumVehiclesTypeXBranchY(
-        rentalData.vtIndex, rentalData.bIndex
-      );
-      return reqVs >= numVs;
-    })())
-    resObjects.push(rentalData);
-  });
+  try {
+    customerValues.forEach((c, cIndex) => {
+      const cPhone = c[0];
+      const minFrom = Date.now() - oneMonth;
+      const maxFrom = Date.now() + oneMonth;
+      let rentalData;
+      let loopIndex = 0;
+      do {
+        loopIndex += 1;
+        if (loopIndex > 25) throw new Error(
+          'No available vehicles due to randomness. Try seeding again.'
+        );
+        rentalData = genRandomReservationData(minFrom, maxFrom);
+        rentalData.cIndex = cIndex;
+      } while ((() => {
+        const rentalsOfTypeXBranchY = resObjects.filter(r => (
+          r.vtIndex === rentalData.vtIndex && r.bIndex === rentalData.bIndex
+        ));
+        const reqVs = countReqVehicles(rentalsOfTypeXBranchY);
+        const numVs = countNumVehiclesTypeXBranchY(
+          rentalData.vtIndex, rentalData.bIndex
+        );
+        return reqVs >= numVs;
+      })())
+      resObjects.push(rentalData);
+    });
+  }
+  catch (error) {
+    return res.status(400).json({
+      query: '-- Attempted generating seed data',
+      action: 'seed-db',
+      success: false,
+      error_message: error.message
+    });
+  }
   let resValues = resObjects.map((r, rIndex) => [
     10000 + rIndex,
     vehicleTypeValues[r.vtIndex][0],
