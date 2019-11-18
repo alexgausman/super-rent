@@ -369,16 +369,32 @@ router.post('/seed-db', (req, res) => {
       rentObjects.push(newRentObject);
     }
   }
+  oldToNewConfNos = {};
+  for (let i = 0; i < resValues.length; i++) {
+    const res = resValues[i]
+    const oldConfNo = res[0];
+    const newConfNo = 10000 + i;
+    resValues[i][0] = newConfNo;
+    oldToNewConfNos[oldConfNo] = newConfNo;
+  }
+  for (let i = 0; i < rentObjects.length; i++) {
+    const rent = rentObjects[i]
+    const oldConfNo = rent.confNo;
+    const newConfNo = oldToNewConfNos[oldConfNo];
+    if (newConfNo) {
+    rentObjects[i].confNo = newConfNo;
+    }
+  }
   rentObjects = rentObjects.reverse();
   const rentValues = rentObjects.map((r, i) => [
-    i,
+    i + 1,
     r.vid,
     r.cellphone,
     r.confNo,
     r.fromDateTime,
     r.toDateTime,
     r.startOdometer,
-    (chance.bool({ likelihood: 65}) ? 'Visa' : 'Mastercard'),
+    (chance.bool({ likelihood: 70}) ? 'Visa' : 'Mastercard'),
     faker.finance.account(16),
     genExpDate(),
     r.location,
@@ -398,7 +414,7 @@ router.post('/seed-db', (req, res) => {
       let distance = rent.endOdometer - rent.startOdometer;
       cost += vtype[7] * distance;
       returnValues.push([
-        returnValues.length,
+        returnValues.length + 1,
         rent.toDateTime,
         rent.endOdometer,
         chance.bool({ likelihood: 40 }),
