@@ -1,11 +1,9 @@
-// Desc: Computes number of required vehicles to fulfill reservations
-//       where all reservations are for a single vehicle type.
+// Desc: Groups reservations sequentially, such that each group can be
+//       fulfilled by one vehicle.
 // Param: Array of objects { fromDateTime: string, toDateTime: string, ... }
-const countReqVehicles = reserves => {
+const scheduleReservations = reserves => {
   reserves.sort((a, b) => {
-    const a_toDateTime = new Date(a.toDateTime);
-    const b_toDateTime = new Date(b.toDateTime);
-    return (a_toDateTime > b_toDateTime) ? 1 : -1;
+    return (new Date(a.toDateTime) > new Date(b.toDateTime)) ? 1 : -1;
   });
   const multipleVReserves = [];
   while (reserves.length > 0) {
@@ -13,7 +11,7 @@ const countReqVehicles = reserves => {
     while (true) {
       let prevRes = singleVReserves[singleVReserves.length -1];
       let nextResIndex;
-      for(let i = 0; i < reserves.length; i++) {
+      for (let i = 0; i < reserves.length; i++) {
         const reserve = reserves[i];
         if (new Date(reserve.fromDateTime) >= new Date(prevRes.toDateTime)) {
           nextResIndex = i;
@@ -29,7 +27,11 @@ const countReqVehicles = reserves => {
     }
     multipleVReserves.push(singleVReserves);
   }
-  return multipleVReserves.length;
+  return multipleVReserves;
+}
+
+const countReqVehicles = reserves => {
+  return scheduleReservations(reserves).length;
 }
 
 module.exports = countReqVehicles;

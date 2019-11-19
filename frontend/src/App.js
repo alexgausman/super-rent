@@ -58,6 +58,11 @@ class App extends Component {
           let tables = prevState.tables;
           tables = tables.map(t => {
             if (t.name === tableName) {
+              res.data.sort((a, b) => {
+                const a_pos = a.ordinal_position;
+                const b_pos = b.ordinal_position;
+                return (a_pos > b_pos) ? 1 : -1;
+              });
               t.columns = res.data;
             }
             return t;
