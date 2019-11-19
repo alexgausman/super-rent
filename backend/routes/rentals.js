@@ -6,7 +6,8 @@ const formatQuery = require('../utils/formatQuery');
 // @desc    Index Rentals
 router.get('/', (req, res) => {
   const text = `
-    -- TODO
+    SELECT *
+    FROM Rentals
   `;
   database
     .query(text)
@@ -24,10 +25,34 @@ router.get('/', (req, res) => {
 // @desc    Create a Rental
 router.post('/', (req, res) => {
   const text = `
-    -- TODO
+    INSERT INTO Rentals (
+      rid,
+      vid,
+      cellphone,
+      confno,
+      fromdatetime,
+      todatetime,
+      odometer,
+      cardno,
+      expdate,
+      location,
+      city
+    )
+    VALUES ( $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+    RETURNING *
   `;
   const values = [
-    // TODO
+      req.body.rid,
+      req.body.vid,
+      req.body.cellphone,
+      req.body.confno,
+      req.body.fromdatetime,
+      req.body.todatetime,
+      req.body.odometer,
+      req.body.cardno,
+      req.body.expdate,
+      req.body.location,
+      req.body.city
   ];
   database
     .query(text, values)
@@ -46,7 +71,9 @@ router.post('/', (req, res) => {
 router.post( '/delete-row', (req, res) => {
   const { rid } = req.body;
   const text = `
-    -- TODO
+    DELETE
+    FROM Rentals
+    WHERE rid='${rid}'
   `;
   database
     .query(text)
