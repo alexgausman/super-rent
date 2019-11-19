@@ -44,7 +44,7 @@ Update npm.
 
 # Setup
 
-Use three seperate terminal windows for the following processes.
+Use seperate terminal windows for the following processes.
 
 ### Run PostgreSQL Docker Container
 
