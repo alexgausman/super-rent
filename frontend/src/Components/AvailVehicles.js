@@ -11,47 +11,39 @@ class AvailVehicles extends Component {
       submission: null,
       result: null,
     };
-    this.getSetlocOptions = this.getSetlocOptions.bind(this);
+    this.setup = this.setup.bind(this);
+    this.getSetLocOptions = this.getSetLocOptions.bind(this);
     this.getSetTypeOptions = this.getSetTypeOptions.bind(this);
     this.refresh = this.refresh.bind(this);
+    this.goBack = this.goBack.bind(this);
     this.onSubmit = this.onSubmit.bind(this);
+
   }
 
   componentDidMount() {
-    this.getSetlocOptions()
+    this.setup();
+  }
+
+  setup() {
+    this.getSetLocOptions()
     this.getSetTypeOptions();
-    window.$('select').selectpicker();
     window.$('#fromDateTimePicker').datetimepicker({
-		  //locale: 'nl',
-		  useCurrent: true,
+		  useCurrent: false,
 		  format: 'MM/DD/YYYY HH:mm',
+      minDate: 'now',
 		});
     window.$('#untilDateTimePicker').datetimepicker({
-		  //locale: 'nl',
-		  useCurrent: true,
+		  useCurrent: false,
 		  format: 'MM/DD/YYYY HH:mm',
+      minDate: 'now',
 		});
   }
 
-  componentDidUpdate(prevProps, prevState) {
-    const prevlocOptions = JSON.stringify(prevState.locOptions);
-    const newlocOptions = JSON.stringify(this.state.locOptions);
-    if (prevlocOptions !== newlocOptions) {
-      window.$('select#locSelect').selectpicker('refresh');
-    }
-    const prevtypeOptions = JSON.stringify(prevState.typeOptions);
-    const newtypeOptions = JSON.stringify(this.state.typesList);
-    if (prevtypeOptions !== newtypeOptions) {
-      window.$('select#typeSelect').selectpicker('refresh');
-    }
-  }
-
-  getSetlocOptions() {
+  getSetLocOptions() {
     axios.get('/tables/branches')
       .then(res => {
-        // TODO: fetch locations from res.data.result
-        const locs = ['Vancouver', 'Calgary', 'Montreal'];
-        this.setState({ locOptions: locs });
+        const locations = res.data.result.map(r => r.location);
+        this.setState({ locOptions: locations });
         this.props.logQuery(res.data.query);
       })
       .catch(err => {
@@ -88,20 +80,39 @@ class AvailVehicles extends Component {
   }
 
   refresh() {
-    // TODO
+    if (!this.state.submission) {
+      this.setup();
+      window.$('#locSelect').val('any');
+      window.$('#typeSelect').val('any');
+      window.$('#fromDateTimePicker').val('');
+      window.$('#untilDateTimePicker').val('');
+    }
+  }
+
+  goBack() {
+    const { submission } = this.state;
+    this.setState({ submission: null }, () => {
+      this.setup();
+      window.$('#locSelect').val(submission.location);
+      window.$('#typeSelect').val(submission.vehicleType);
+      window.$('#fromDateTimePicker').val(submission.fromDateTime);
+      window.$('#untilDateTimePicker').val(submission.toDateTime);
+    })
   }
 
   onSubmit() {
     const newSubmission = {
-      locations: window.$('select#locSelect').val(),
-      vehicleTypes: window.$('select#typeSelect').val(),
+      location: window.$('select#locSelect').val(),
+      vehicleType: window.$('select#typeSelect').val(),
       fromDateTime: window.$('#fromDateTimePicker').data('date'),
       toDateTime: window.$('#untilDateTimePicker').data('date'),
     };
+    console.log(newSubmission)
     this.setState({ submission: newSubmission });
     axios.post('/customer-actions/find-available-vehicles', newSubmission)
       .then(res => {
         // TODO
+        console.log(res);
         this.props.logQuery(res.data.query);
       })
       .catch(err => {
@@ -134,17 +145,21 @@ class AvailVehicles extends Component {
 
           <div className="form-group">
             <label htmlFor="locSelect">Location</label>
-            <select className="selectpicker" multiple id="locSelect" title="Any">
+            <select className="form-control" id="locSelect">
+              <option value="any">Any</option>
+              <option disabled>─────────────────────────</option>
               {this.state.locOptions.map((loc, i) => (
-                <option key={i}>{loc}</option>
+                <option key={i} value={loc}>{loc}</option>
               ))}
             </select>
           </div>
           <div className="form-group">
             <label htmlFor="typeSelect">Type</label>
-            <select className="selectpicker" multiple id="typeSelect" title="Any">
+            <select className="form-control" id="typeSelect">
+              <option value="any">Any</option>
+              <option disabled>─────────────────────────</option>
               {this.state.typeOptions.map((type, i) => (
-                <option key={i}>{type}</option>
+                <option key={i} value={type}>{type}</option>
               ))}
             </select>
           </div>
@@ -175,6 +190,12 @@ class AvailVehicles extends Component {
         display: 'flex',
         justifyContent: 'center',
       }}>
+        {(this.state.submission) && (
+          <div className="back-button" onClick={this.goBack}>
+            <i className="far fa-arrow-alt-circle-left"></i>
+          </div>
+        )}
+
         <div className="refresh-button" onClick={this.refresh}>
           <i className="fas fa-sync-alt"></i>
         </div>
