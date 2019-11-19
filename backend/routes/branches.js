@@ -53,7 +53,7 @@ router.post( '/delete-row', (req, res) => {
   const { location, city } = req.body;
   const text = `
     DELETE
-    FROM Reservations
+    FROM Branches
     WHERE location='${location}' AND city='${city}'
   `;
   database
