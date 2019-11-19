@@ -5,8 +5,9 @@ const formatQuery = require('../utils/formatQuery');
 // @route   GET branches
 // @desc    Index Branches
 router.get('/', (req, res) => {
-  const text = `
-    -- TODO
+    const text = `
+    SELECT *
+    FROM Branches
   `;
   database
     .query(text)
@@ -23,12 +24,17 @@ router.get('/', (req, res) => {
 // @route   POST branches
 // @desc    Create a Branch
 router.post('/', (req, res) => {
-  const text = `
-    -- TODO
+    const text = `
+    INSERT INTO Branches (
+      location,
+      city
+    )
+    VALUES ( $1, $2 )
   `;
-  const values = [
-    // TODO
-  ];
+    const values = [
+        req.body.location,
+        req.body.city
+    ];
   database
     .query(text, values)
     .then(result => res.status(200).json({
@@ -46,7 +52,9 @@ router.post('/', (req, res) => {
 router.post( '/delete-row', (req, res) => {
   const { location, city } = req.body;
   const text = `
-    -- TODO
+    DELETE
+    FROM Reservations
+    WHERE location='${location}' AND city='${city}'
   `;
   database
     .query(text)
