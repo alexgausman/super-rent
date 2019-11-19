@@ -26,13 +26,33 @@ router.get('/', (req, res) => {
 router.post('/', (req, res) => {
   const text = `
     INSERT INTO Rentals (
-
+      rid,
+      vid,
+      cellphone,
+      confno,
+      fromdatetime,
+      todatetime,
+      odometer,
+      cardno,
+      expdate,
+      location,
+      city
     )
-    VALUES ()
+    VALUES ( $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
     RETURNING *
   `;
   const values = [
-    // TODO
+      req.body.rid,
+      req.body.vid,
+      req.body.cellphone,
+      req.body.confno,
+      req.body.fromdatetime,
+      req.body.todatetime,
+      req.body.odometer,
+      req.body.cardno,
+      req.body.expdate,
+      req.body.location,
+      req.body.city
   ];
   database
     .query(text, values)

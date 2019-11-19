@@ -27,7 +27,7 @@ router.post('/', (req, res) => {
 
     const text = `
     INSERT INTO Reservations (
-      confNo,
+      confno,
       vtname,
       cellphone,
       fromdate,
@@ -62,11 +62,11 @@ router.post('/', (req, res) => {
 // @route   POST reservations/delete-row
 // @desc    Delete a Reservation
 router.post('/delete-row', (req, res) => {
-    const {confNo} = req.body;
+    const {confno} = req.body;
     const text = `
     DELETE
     FROM Reservations
-    WHERE confNo='${confNo}'
+    WHERE confNo='${confno}'
   `;
     database
         .query(text)
