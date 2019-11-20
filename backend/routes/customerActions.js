@@ -7,24 +7,32 @@ const countReqVehicles = require('../utils/countReqVehicles');
 // @desc    List available vehicles
 router.post('/find-available-vehicles', (req, res) => {
   let {
-    locations,
-    vehicleTypes,
+    location,
+    vehicleType,
     fromDateTime,
     toDateTime,
   } = req.body;
+  const hasLocation = (location && location !== 'any');
   const text = `
-    -- TODO
+    SELECT V.location, V.vtname, Count (*) AS NumVehicles
+    FROM Vehicles V
+    WHERE V.status='for_rent' ${(
+      hasLocation ? `AND V.location='${location}'` : ''
+    )}
+    GROUP BY (V.location, V.vtname)
   `;
   database
     .query(text)
     .then(result => res.status(200).json({
-      query: formatQuery(text),
-      result: result.rows,
+        query: formatQuery(text),
+        result: result.rows,
     }))
     .catch(error => res.status(400).json({
       query: formatQuery(text),
       error_message: error.message,
     }));
 });
+
+
 
 module.exports = router;

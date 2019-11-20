@@ -11,47 +11,37 @@ class AvailVehicles extends Component {
       submission: null,
       result: null,
     };
-    this.getSetlocOptions = this.getSetlocOptions.bind(this);
+    this.setup = this.setup.bind(this);
+    this.getSetLocOptions = this.getSetLocOptions.bind(this);
     this.getSetTypeOptions = this.getSetTypeOptions.bind(this);
-    this.refresh = this.refresh.bind(this);
+    this.goBack = this.goBack.bind(this);
     this.onSubmit = this.onSubmit.bind(this);
   }
 
   componentDidMount() {
-    this.getSetlocOptions()
+    this.setup();
+  }
+
+  setup() {
+    this.getSetLocOptions()
     this.getSetTypeOptions();
-    window.$('select').selectpicker();
     window.$('#fromDateTimePicker').datetimepicker({
-		  //locale: 'nl',
-		  useCurrent: true,
+		  useCurrent: false,
 		  format: 'MM/DD/YYYY HH:mm',
+      minDate: 'now',
 		});
     window.$('#untilDateTimePicker').datetimepicker({
-		  //locale: 'nl',
-		  useCurrent: true,
+		  useCurrent: false,
 		  format: 'MM/DD/YYYY HH:mm',
+      minDate: 'now',
 		});
   }
 
-  componentDidUpdate(prevProps, prevState) {
-    const prevlocOptions = JSON.stringify(prevState.locOptions);
-    const newlocOptions = JSON.stringify(this.state.locOptions);
-    if (prevlocOptions !== newlocOptions) {
-      window.$('select#locSelect').selectpicker('refresh');
-    }
-    const prevtypeOptions = JSON.stringify(prevState.typeOptions);
-    const newtypeOptions = JSON.stringify(this.state.typesList);
-    if (prevtypeOptions !== newtypeOptions) {
-      window.$('select#typeSelect').selectpicker('refresh');
-    }
-  }
-
-  getSetlocOptions() {
+  getSetLocOptions() {
     axios.get('/tables/branches')
       .then(res => {
-        // TODO: fetch locations from res.data.result
-        const locs = ['Vancouver', 'Calgary', 'Montreal'];
-        this.setState({ locOptions: locs });
+        const locations = res.data.result.map(r => r.location);
+        this.setState({ locOptions: locations });
         this.props.logQuery(res.data.query);
       })
       .catch(err => {
@@ -87,22 +77,29 @@ class AvailVehicles extends Component {
       });
   }
 
-  refresh() {
-    // TODO
+  goBack() {
+    const { submission } = this.state;
+    this.setState({ submission: null }, () => {
+      this.setup();
+      window.$('#locSelect').val(submission.location);
+      window.$('#typeSelect').val(submission.vehicleType);
+      window.$('#fromDateTimePicker').val(submission.fromDateTime);
+      window.$('#untilDateTimePicker').val(submission.toDateTime);
+    })
   }
 
   onSubmit() {
     const newSubmission = {
-      locations: window.$('select#locSelect').val(),
-      vehicleTypes: window.$('select#typeSelect').val(),
+      location: window.$('select#locSelect').val(),
+      vehicleType: window.$('select#typeSelect').val(),
       fromDateTime: window.$('#fromDateTimePicker').data('date'),
       toDateTime: window.$('#untilDateTimePicker').data('date'),
     };
     this.setState({ submission: newSubmission });
     axios.post('/customer-actions/find-available-vehicles', newSubmission)
       .then(res => {
-        // TODO
         this.props.logQuery(res.data.query);
+        this.setState({ result: res.data.result });
       })
       .catch(err => {
         if (err.response && err.response.data) {
@@ -120,41 +117,44 @@ class AvailVehicles extends Component {
 
 
   render() {
-    let html = (
-      <span>TODO</span>
-    );
-    if (!this.state.submission) {
+    const { submission, locOptions, typeOptions, result } = this.state;
+    let html;
+    if (!submission) {
       html = (
         <div style={{
           width: '450px',
         }}>
           <h3 style={{ textAlign: 'center', marginBottom: '28px' }}>
-            Find Available Vehicles
+            Filter Rentable Vehicles
           </h3>
 
           <div className="form-group">
             <label htmlFor="locSelect">Location</label>
-            <select className="selectpicker" multiple id="locSelect" title="Any">
+            <select className="form-control" id="locSelect">
+              <option value="any">Any</option>
+              <option disabled>─────────────────────────</option>
               {this.state.locOptions.map((loc, i) => (
-                <option key={i}>{loc}</option>
+                <option key={i} value={loc}>{loc}</option>
               ))}
             </select>
           </div>
           <div className="form-group">
             <label htmlFor="typeSelect">Type</label>
-            <select className="selectpicker" multiple id="typeSelect" title="Any">
+            <select className="form-control" id="typeSelect">
+              <option value="any">Any</option>
+              <option disabled>─────────────────────────</option>
               {this.state.typeOptions.map((type, i) => (
-                <option key={i}>{type}</option>
+                <option key={i} value={type}>{type}</option>
               ))}
             </select>
           </div>
 
 
-          <div className="form-group">
+          <div className="form-group" style={{ display: 'none' }}>
             <label htmlFor="fromDateTimePicker">From</label>
             <input type="text" className="form-control datetimepicker-input" id="fromDateTimePicker" data-toggle="datetimepicker" data-target="#fromDateTimePicker" autoComplete="off" />
           </div>
-          <div className="form-group">
+          <div className="form-group" style={{ display: 'none' }}>
             <label htmlFor="untilDateTimePicker">Until</label>
             <input type="text" className="form-control datetimepicker-input" id="untilDateTimePicker" data-toggle="datetimepicker" data-target="#untilDateTimePicker" autoComplete="off" />
           </div>
@@ -162,9 +162,57 @@ class AvailVehicles extends Component {
           <button type="button" className="btn btn-primary" onClick={this.onSubmit} style={{
             marginTop: '12px',
             width: '100%',
+            marginBottom: '25px',
           }}>
             Submit
           </button>
+        </div>
+      );
+    } else if (result) {
+      const tables = [];
+      locOptions.forEach((loc, i) => {
+        const data = result.filter(r => r.location === loc);
+        const rows = [];
+        if (data.length > 0) {
+          tables.push(
+            <div key={i}>
+              <h3 className="pb-2" style={{
+                marginTop: '30px',
+              }}>{loc}</h3>
+              <table className="table table-responsive-lg table-hover">
+                <thead>
+                  <tr>
+                    <th scope="col">VehicleType</th>
+                    <th scope="col">Count</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {typeOptions.forEach((type, i) => {
+                    const vtData = data.find(d => d.vtname === type);
+                    let numVehicles = 0;
+                    if (vtData) {
+                      numVehicles = vtData.numvehicles;
+                    }
+                    let svt = submission.vehicleType;
+                    if (svt === 'any' || svt === type) {
+                      rows.push(
+                        <tr key={i}>
+                          <td style={{ lineHeight: '1.8' }}>{type}</td>
+                          <td style={{ lineHeight: '1.8' }}>{numVehicles}</td>
+                        </tr>
+                      );
+                    }
+                  })}
+                  {rows}
+                </tbody>
+              </table>
+            </div>
+          );
+        }
+      });
+      html = (
+        <div style={{ width: '100%' }}>
+          {tables}
         </div>
       );
     }
@@ -175,9 +223,11 @@ class AvailVehicles extends Component {
         display: 'flex',
         justifyContent: 'center',
       }}>
-        <div className="refresh-button" onClick={this.refresh}>
-          <i className="fas fa-sync-alt"></i>
-        </div>
+        {(this.state.submission) && (
+          <div className="back-button" onClick={this.goBack}>
+            <i class="far fa-times-circle"></i>
+          </div>
+        )}
         {html}
       </div>
 
