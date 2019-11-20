@@ -39,7 +39,7 @@ function SideNav(props) {
         </h6>
         <ul className="nav flex-column mb-2">
           {[
-            { text: 'View Available Vehicles', link: '/customer-actions/view-available-vehicles' },
+            { text: 'List Rentable Vehicles', link: '/customer-actions/view-available-vehicles' },
             { text: 'Make a Reservation', link: '/customer-actions/make-a-reservation'},
           ].map((item, index) => {
             const isActive = window.location.href.includes(item.link);

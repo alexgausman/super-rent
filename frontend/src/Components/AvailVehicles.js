@@ -14,10 +14,8 @@ class AvailVehicles extends Component {
     this.setup = this.setup.bind(this);
     this.getSetLocOptions = this.getSetLocOptions.bind(this);
     this.getSetTypeOptions = this.getSetTypeOptions.bind(this);
-    this.refresh = this.refresh.bind(this);
     this.goBack = this.goBack.bind(this);
     this.onSubmit = this.onSubmit.bind(this);
-
   }
 
   componentDidMount() {
@@ -79,16 +77,6 @@ class AvailVehicles extends Component {
       });
   }
 
-  refresh() {
-    if (!this.state.submission) {
-      this.setup();
-      window.$('#locSelect').val('any');
-      window.$('#typeSelect').val('any');
-      window.$('#fromDateTimePicker').val('');
-      window.$('#untilDateTimePicker').val('');
-    }
-  }
-
   goBack() {
     const { submission } = this.state;
     this.setState({ submission: null }, () => {
@@ -107,13 +95,11 @@ class AvailVehicles extends Component {
       fromDateTime: window.$('#fromDateTimePicker').data('date'),
       toDateTime: window.$('#untilDateTimePicker').data('date'),
     };
-    console.log(newSubmission)
     this.setState({ submission: newSubmission });
     axios.post('/customer-actions/find-available-vehicles', newSubmission)
       .then(res => {
-        // TODO
-        console.log(res);
         this.props.logQuery(res.data.query);
+        this.setState({ result: res.data.result });
       })
       .catch(err => {
         if (err.response && err.response.data) {
@@ -131,16 +117,15 @@ class AvailVehicles extends Component {
 
 
   render() {
-    let html = (
-      <span>TODO</span>
-    );
-    if (!this.state.submission) {
+    const { submission, locOptions, typeOptions, result } = this.state;
+    let html;
+    if (!submission) {
       html = (
         <div style={{
           width: '450px',
         }}>
           <h3 style={{ textAlign: 'center', marginBottom: '28px' }}>
-            Find Available Vehicles
+            Filter Rentable Vehicles
           </h3>
 
           <div className="form-group">
@@ -165,11 +150,11 @@ class AvailVehicles extends Component {
           </div>
 
 
-          <div className="form-group">
+          <div className="form-group" style={{ display: 'none' }}>
             <label htmlFor="fromDateTimePicker">From</label>
             <input type="text" className="form-control datetimepicker-input" id="fromDateTimePicker" data-toggle="datetimepicker" data-target="#fromDateTimePicker" autoComplete="off" />
           </div>
-          <div className="form-group">
+          <div className="form-group" style={{ display: 'none' }}>
             <label htmlFor="untilDateTimePicker">Until</label>
             <input type="text" className="form-control datetimepicker-input" id="untilDateTimePicker" data-toggle="datetimepicker" data-target="#untilDateTimePicker" autoComplete="off" />
           </div>
@@ -177,9 +162,57 @@ class AvailVehicles extends Component {
           <button type="button" className="btn btn-primary" onClick={this.onSubmit} style={{
             marginTop: '12px',
             width: '100%',
+            marginBottom: '25px',
           }}>
             Submit
           </button>
+        </div>
+      );
+    } else if (result) {
+      const tables = [];
+      locOptions.forEach((loc, i) => {
+        const data = result.filter(r => r.location === loc);
+        const rows = [];
+        if (data.length > 0) {
+          tables.push(
+            <div key={i}>
+              <h3 className="pb-2" style={{
+                marginTop: '30px',
+              }}>{loc}</h3>
+              <table className="table table-responsive-lg table-hover">
+                <thead>
+                  <tr>
+                    <th scope="col">VehicleType</th>
+                    <th scope="col">Count</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {typeOptions.forEach((type, i) => {
+                    const vtData = data.find(d => d.vtname === type);
+                    let numVehicles = 0;
+                    if (vtData) {
+                      numVehicles = vtData.numvehicles;
+                    }
+                    let svt = submission.vehicleType;
+                    if (svt === 'any' || svt === type) {
+                      rows.push(
+                        <tr key={i}>
+                          <td style={{ lineHeight: '1.8' }}>{type}</td>
+                          <td style={{ lineHeight: '1.8' }}>{numVehicles}</td>
+                        </tr>
+                      );
+                    }
+                  })}
+                  {rows}
+                </tbody>
+              </table>
+            </div>
+          );
+        }
+      });
+      html = (
+        <div style={{ width: '100%' }}>
+          {tables}
         </div>
       );
     }
@@ -192,13 +225,9 @@ class AvailVehicles extends Component {
       }}>
         {(this.state.submission) && (
           <div className="back-button" onClick={this.goBack}>
-            <i className="far fa-arrow-alt-circle-left"></i>
+            <i class="far fa-times-circle"></i>
           </div>
         )}
-
-        <div className="refresh-button" onClick={this.refresh}>
-          <i className="fas fa-sync-alt"></i>
-        </div>
         {html}
       </div>
 

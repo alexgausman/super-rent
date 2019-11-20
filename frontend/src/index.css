@@ -40,18 +40,17 @@ table th, table td {
 .refresh-button, .back-button {
   position: absolute;
   top: -20px;
+  right: -10px;
   cursor: pointer;
   opacity: 0.7;
 }
 
 .refresh-button {
   font-size: 25px;
-  right: -10px;
 }
 
 .back-button {
   font-size: 32px;
-  left: -10px;
 }
 
 .refresh-button:hover, .back-button:hover {
