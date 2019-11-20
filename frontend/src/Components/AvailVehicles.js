@@ -225,7 +225,7 @@ class AvailVehicles extends Component {
       }}>
         {(this.state.submission) && (
           <div className="back-button" onClick={this.goBack}>
-            <i class="far fa-times-circle"></i>
+            <i className="far fa-times-circle"></i>
           </div>
         )}
         {html}
