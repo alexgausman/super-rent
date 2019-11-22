@@ -19,6 +19,7 @@ const returns = require('./routes/returns');
 const vehicles = require('./routes/vehicles');
 const vehicleTypes = require('./routes/vehicleTypes');
 const customerActions = require('./routes/customerActions');
+const clerkActions = require('./routes/clerkActions');
 
 app.use('/admin', admin);
 app.use('/tables/branches', branches);
@@ -29,6 +30,7 @@ app.use('/tables/returns', returns);
 app.use('/tables/vehicles', vehicles);
 app.use('/tables/vehicletypes', vehicleTypes);
 app.use('/customer-actions', customerActions);
+app.use('/clerk-actions', clerkActions);
 
 const PORT = process.env.port || 4000;
 app.listen(PORT, () => {

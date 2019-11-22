@@ -138,6 +138,7 @@ class AvailVehicles extends Component {
               ))}
             </select>
           </div>
+
           <div className="form-group">
             <label htmlFor="typeSelect">Type</label>
             <select className="form-control" id="typeSelect">

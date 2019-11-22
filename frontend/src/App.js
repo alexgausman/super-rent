@@ -9,6 +9,7 @@ import LogPanel from './Components/LogPanel';
 import Dashboard from './Components/Dashboard';
 import DataTable from './Components/DataTable';
 import AvailVehicles from './Components/AvailVehicles';
+import ReturnVehicle from './Components/ReturnVehicle';
 
 class App extends Component {
   constructor() {
@@ -219,7 +220,13 @@ class App extends Component {
                   <Route exact path="/customer-actions/make-a-reservation">
                     <span>TODO</span>
                   </Route>
-                  <Route path="/clerk-actions/:action">
+                  <Route path="/clerk-actions/rent-vehicle">
+                    <span>TODO</span>
+                  </Route>
+                  <Route path="/clerk-actions/return-vehicle">
+                    <ReturnVehicle logQuery={this.logQuery}/>
+                  </Route>
+                  <Route path="/clerk-actions/generate-report">
                     <span>TODO</span>
                   </Route>
                 </div>
