@@ -13,6 +13,25 @@ router.post('/return-vehicle', (req, res) => {
         tankFull
     } = req.body;
 
+    const input_errors = {};
+    if (!rentalID) {
+      input_errors.rentalID = 'Rental ID is required';
+    }
+    if (!returnOdometer) {
+      input_errors.returnOdometer = 'Odometer value is required';
+    } else if (isNaN(parseInt(returnOdometer))) {
+      input_errors.returnOdometer = 'Odometer value is invalid';
+    }
+    if (!returnDateTime) {
+      input_errors.returnDateTime = 'Return time is required';
+    } else if (isNaN(new Date(returnDateTime).valueOf())) {
+      input_errors.returnDateTime = 'Return time is invalid';
+    }
+    if (Object.keys(input_errors).length > 0) {
+      return res.status(400).json({
+          input_errors: input_errors,
+      });
+    }
     const q1 = `
       SELECT *
       FROM Rentals R, Vehicles V, VehicleTypes VT, Customers C
@@ -22,9 +41,29 @@ router.post('/return-vehicle', (req, res) => {
         .query(q1)
         .then(result => {
             const combinedInfo = result.rows[0];
-            const start = new Date(combinedInfo.fromdatetime);
-            const end = new Date(returnDateTime);
-            let durationHrs = (end.valueOf() - start.valueOf()) / 3600000;
+            let start, end, duration;
+            if (!combinedInfo) {
+              input_errors.rentalID = 'RID not found';
+            } else {
+              if (!(returnOdometer >= combinedInfo.odometer)) {
+                input_errors.returnOdometer = 'Odometer must be > starting value';
+              }
+              if (!input_errors.returnDateTime) {
+                start = new Date(combinedInfo.fromdatetime);
+                end = new Date(returnDateTime);
+                duration = (end.valueOf() - start.valueOf());
+                if (!(duration > 0)) {
+                  input_errors.returnDateTime = 'Return time must be after start time';
+                }
+              }
+            }
+            if (Object.keys(input_errors).length > 0) {
+              return res.status(400).json({
+                  query: formatQuery(q1),
+                  input_errors: input_errors,
+              });
+            }
+            const durationHrs = duration / 3600000;
             const weeks = Math.trunc(durationHrs / 168);
             let remainingHrs = Math.trunc(durationHrs % 168);
             const days = Math.trunc(remainingHrs / 24);
