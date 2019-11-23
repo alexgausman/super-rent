@@ -6,8 +6,9 @@ class ReturnVehicle extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            rid: Number,
-            odometer: Number,
+            rid: null,
+            odometer: null,
+            tankFull: null,
             rentedVehicleIDs: [],
             submission: null,
             result: null,
@@ -15,6 +16,7 @@ class ReturnVehicle extends Component {
         this.setup = this.setup.bind(this);
         this.getSetRentedIds = this.getSetRentedIds.bind(this);
         this.handleOdometerChange = this.handleOdometerChange.bind(this);
+        this.handleTankFullChange = this.handleTankFullChange.bind(this);
         this.handleRIDChange = this.handleRIDChange.bind(this);
         this.goBack = this.goBack.bind(this);
         this.onSubmit = this.onSubmit.bind(this);
@@ -65,6 +67,7 @@ class ReturnVehicle extends Component {
             rentalID: parseInt(this.state.rid),
             odometer: parseInt(this.state.odometer),
             toDateTime: window.$('#untilDateTimePicker').data('date'),
+            tankFull: this.state.tankFull === "true",
         };
         this.setState({submission: newSubmission});
         axios.post('/clerk-actions/return-vehicle', newSubmission)
@@ -93,6 +96,10 @@ class ReturnVehicle extends Component {
         this.setState({odometer: event.target.value})
     }
 
+    handleTankFullChange(event) {
+        this.setState({tankFull: event.target.value})
+    }
+
     render() {
         const {submission, rentedVehicleIDs, result} = this.state;
         let html;
@@ -107,17 +114,28 @@ class ReturnVehicle extends Component {
 
                     <div className="form-group">
                         <label htmlFor="rid">Rental ID</label>
-                        <input placeholder={"Rental ID"} type="int" className="form-control" onChange={this.handleRIDChange} id="rid"/>
+                        <input placeholder={"Rental ID"} type="int" className="form-control"
+                               onChange={this.handleRIDChange} id="rid"/>
                     </div>
 
                     <div className="form-group">
                         <label htmlFor="odometer">Return Odometer</label>
-                        <input placeholder={"Return Odometer"} type="text" className="form-control" onChange={this.handleOdometerChange} id="odometer"/>
+                        <input placeholder={"Return Odometer"} type="text" className="form-control"
+                               onChange={this.handleOdometerChange} id="odometer"/>
+                    </div>
+
+                    <div className="form-group">
+                        <label htmlFor="tankFull">Tank Full?</label>
+                        <select className="form-control" id="tankFull" onChange={this.handleTankFullChange}>
+                            <option value="true">True</option>
+                            <option value="false">False</option>
+                        </select>
                     </div>
 
                     <div className="form-group">
                         <label htmlFor="untilDateTimePicker">Return Time</label>
-                        <input placeholder={"Return Date and Time"} type="text" className="form-control datetimepicker-input" id="untilDateTimePicker"
+                        <input placeholder={"Return Date and Time"} type="text"
+                               className="form-control datetimepicker-input" id="untilDateTimePicker"
                                data-toggle="datetimepicker" data-target="#untilDateTimePicker" autoComplete="off"/>
                     </div>
 

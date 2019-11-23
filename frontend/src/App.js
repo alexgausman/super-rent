@@ -10,6 +10,7 @@ import Dashboard from './Components/Dashboard';
 import DataTable from './Components/DataTable';
 import AvailVehicles from './Components/AvailVehicles';
 import ReturnVehicle from './Components/ReturnVehicle';
+import GenerateReport from "./Components/GenerateReport";
 
 class App extends Component {
   constructor() {
@@ -227,7 +228,7 @@ class App extends Component {
                     <ReturnVehicle logQuery={this.logQuery}/>
                   </Route>
                   <Route path="/clerk-actions/generate-report">
-                    <span>TODO</span>
+                    <GenerateReport logQuery={this.logQuery}/>
                   </Route>
                 </div>
                 <LogPanel
