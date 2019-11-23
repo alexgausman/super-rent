@@ -117,16 +117,16 @@ router.post('/generate-report', (req, res) => {
         }
         case "daily-returns": {
             text = `
-            SELECT R.location, V.vtname, Count (*) AS NumRentals
+            SELECT R1.location, V.vtname, Count (*) AS NumRentals
             FROM Returns R, Rentals R1, Vehicles V
             WHERE TO_CHAR(R.datetime, 'MM/DD/YYYY')='${reportDate}' AND R1.vid=V.vid AND R.rid=R1.rid
-            GROUP BY (R.location, V.vtname)
+            GROUP BY (R1.location, V.vtname)
             `;
             break;
         }
         case "daily-returns-branch": {
             text = `
-            SELECT R.location, VT.vtname Count (*) AS NumRentals
+            SELECT R1.location, VT.vtname Count (*) AS NumRentals
             FROM Returns R, Rentals R1, Vehicles V
             WHERE TO_CHAR(R.datetime, 'MM/DD/YYYY')='${reportDate}' AND R.location='${location}' AND R1.vid=V.vid AND R.rid=R1.rid
             )}

@@ -23,7 +23,7 @@ class AvailVehicles extends Component {
   }
 
   setup() {
-    this.getSetLocOptions()
+    this.getSetLocOptions();
     this.getSetTypeOptions();
     window.$('#fromDateTimePicker').datetimepicker({
 		  useCurrent: false,
