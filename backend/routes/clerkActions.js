@@ -56,7 +56,7 @@ router.post('/return-vehicle', (req, res) => {
             VALUES
             (
               ${rentalID},
-              ${returnDateTime},
+              '${returnDateTime}',
               ${returnOdometer},
               ${tankFull},
               ${totalCost}
