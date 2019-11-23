@@ -22,26 +22,16 @@ router.post('/return-vehicle', (req, res) => {
         .query(q1)
         .then(result => {
           const d = result.rows[0];
-          console.log(d)
-          console.log(typeof d.fromdatetime)
-          console.log(d.fromdatetime)
           const start = new Date(d.fromdatetime)
-          console.log(start)
           const end = new Date(returnDateTime);
-          console.log(end)
           let durationHrs = (end.valueOf() - start.valueOf()) / 3600000;
-          console.log(durationHrs)
           const weeks = Math.trunc(durationHrs / 168);
           let remainingHrs = Math.trunc(durationHrs % 168);
           const days = Math.trunc(remainingHrs / 24);
           const hours = Math.trunc(remainingHrs % 24);
           // TODO Something with the tank emptiness
           const getRate = strRate => parseFloat(strRate.substring(1));
-          console.log(typeof weeks)
-          console.log(getRate(d.wrate) + getRate(d.wirate));
-          console.log(weeks)
           let cost = (getRate(d.wrate) + getRate(d.wirate)) * weeks;
-          console.log(cost)
           cost += (getRate(d.drate) + getRate(d.dirate)) * days;
           cost += (getRate(d.hrate) + getRate(d.hirate)) * hours;
           const distance = returnOdometer - d.odometer;
