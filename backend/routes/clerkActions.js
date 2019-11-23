@@ -43,7 +43,7 @@ router.post('/return-vehicle', (req, res) => {
             console.log(insuranceCost);
             console.log(carCost);
             console.log(totalCost);
-            let confNo = combinedInfo.confNo;
+            let confNo = combinedInfo.confno;
 
             const q2 = `
             INSERT INTO Returns (

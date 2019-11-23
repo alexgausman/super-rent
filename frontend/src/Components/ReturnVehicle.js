@@ -149,30 +149,33 @@ class ReturnVehicle extends Component {
                 </div>
             );
         } else if (result) {
+            let insuranceCost = '$' + result.insuranceCost.toFixed(2).toString();
+            let vehicleCost = '$' + result.vehicleCost.toFixed(2).toString();
+            let totalCost = '$' + result.totalCost.toFixed(2).toString();
             html = (
                 <div style={{
                     width: '450px',
                 }}>
                     <h3 className="pb-2" style={{marginTop: '30px',}}>Rental Reciept: </h3>
-                    <div>
-                        <span>Rental ID:</span>
+                    <div style={{padding: '20px',}}>
+                        <span style={{paddingRight: '10px', fontWeight: 'bold'}}>Rental ID:</span>
                         <span>{result.rid}</span>
                     </div>
-                    <div>
-                        <span>Confirmation Number:</span>
+                    <div style={{padding: '20px',}}>
+                        <span style={{paddingRight: '10px', fontWeight: 'bold'}}>Confirmation Number:</span>
                         <span>{result.confNo}</span>
                     </div>
-                    <div>
-                        <span>Insurance Cost:</span>
-                        <span>{result.insuranceCost}</span>
+                    <div style={{padding: '20px',}}>
+                        <span style={{paddingRight: '10px', fontWeight: 'bold'}}>Insurance Cost:</span>
+                        <span>{insuranceCost}</span>
                     </div>
-                    <div>
-                        <span>Vehicle Cost:</span>
-                        <span>{result.vehicleCost}</span>
+                    <div style={{padding: '20px',}}>
+                        <span style={{paddingRight: '10px', fontWeight: 'bold'}}>Vehicle Cost:</span>
+                        <span>{vehicleCost}</span>
                     </div>
-                    <div>
-                        <span>Total Cost:</span>
-                        <span>{result.totalCost}</span>
+                    <div style={{padding: '20px',}}>
+                        <span style={{paddingRight: '10px', fontWeight: 'bold'}}>Total Cost:</span>
+                        <span>{totalCost}</span>
                     </div>
                 </div>
             );

@@ -29,7 +29,7 @@ router.post('/', (req, res) => {
       rid,
       datetime,
       odometer,
-      fulltank,
+      fullTank,
       totalcost
     )
     VALUES ( $1, $2, $3, $4, $5, $6 )
@@ -39,7 +39,7 @@ router.post('/', (req, res) => {
         req.body.rid,
         req.body.datetime,
         req.body.odometer,
-        req.body.fulltank,
+        req.body.fullTank,
         req.body.totalcost,
     ];
     database
