@@ -98,18 +98,18 @@ router.post('/generate-report', (req, res) => {
     switch (reportType) {
         case "daily-rentals": {
             text = `
-            SELECT R.location, R.rid, V.vtname, Count (*) AS NumRentals
+            SELECT R.location, V.vtname, Count (*) AS NumRentals
             FROM Rentals R, Vehicles V
-            WHERE TO_CHAR(R.fromDate, 'MM/DD/YYYY')='${reportDate}' AND R.vid=V.vid'
+            WHERE TO_CHAR(R.fromdatetime, 'MM/DD/YYYY')='${reportDate}' AND R.vid=V.vid
             GROUP BY (R.location, V.vtname)
             `;
             break;
         }
         case "daily-rentals-branch": {
             text = `
-            SELECT R.location, R.rid, VT.vtname Count (*) AS NumRentals
+            SELECT R.location, VT.vtname Count (*) AS NumRentals
             FROM Rentals R, Vehicles V
-            WHERE TO_CHAR(R.fromDate, 'MM/DD/YYYY')='${reportDate}' AND R.location='${location} AND R.vid=V.vid'
+            WHERE TO_CHAR(R.fromdatetime, 'MM/DD/YYYY')='${reportDate}' AND R.location='${location}' AND R.vid=V.vid
             )}
             GROUP BY (V.vtname)
             `;
@@ -117,18 +117,18 @@ router.post('/generate-report', (req, res) => {
         }
         case "daily-returns": {
             text = `
-            SELECT R.location, R.rid, V.vtname, Count (*) AS NumRentals
+            SELECT R.location, V.vtname, Count (*) AS NumRentals
             FROM Returns R, Rentals R1, Vehicles V
-            WHERE TO_CHAR(R.fromDate, 'MM/DD/YYYY')='${reportDate}' AND R1.vid=V.vid AND R.rid=R1.rid'
+            WHERE TO_CHAR(R.datetime, 'MM/DD/YYYY')='${reportDate}' AND R1.vid=V.vid AND R.rid=R1.rid
             GROUP BY (R.location, V.vtname)
             `;
             break;
         }
         case "daily-returns-branch": {
             text = `
-            SELECT R.location, R.rid, VT.vtname Count (*) AS NumRentals
+            SELECT R.location, VT.vtname Count (*) AS NumRentals
             FROM Returns R, Rentals R1, Vehicles V
-            WHERE TO_CHAR(R.fromDate, 'MM/DD/YYYY')='${reportDate}' AND R.location='${location} AND R1.vid=V.vid AND R.rid=R1.rid'
+            WHERE TO_CHAR(R.datetime, 'MM/DD/YYYY')='${reportDate}' AND R.location='${location}' AND R1.vid=V.vid AND R.rid=R1.rid
             )}
             GROUP BY (V.vtname)
             `;
