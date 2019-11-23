@@ -29,7 +29,7 @@ class GenerateReport extends Component {
         this.getSetLocOptions();
         window.$('#reportDatePicker').datetimepicker({
             useCurrent: false,
-            format: 'MM/DD/YYYY HH:mm',
+            format: 'MM/DD/YYYY',
         });
     }
 
@@ -64,7 +64,7 @@ class GenerateReport extends Component {
         const newSubmission = {
             reportType: this.state.reportType,
             location: this.state.location,
-            toDateTime: window.$('#reportDatePicker').data('date'),
+            reportDate: window.$('#reportDatePicker').data('date'),
         };
         this.setState({submission: newSubmission});
         axios.post('/clerk-actions/generate-report', newSubmission)

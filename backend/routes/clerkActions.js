@@ -90,7 +90,7 @@ router.post('/generate-report', (req, res) => {
     let {
         reportType,
         location,
-        date
+        reportDate
     } = req.body;
 
     let text;
@@ -100,7 +100,7 @@ router.post('/generate-report', (req, res) => {
             text = `
             SELECT R.location, R.rid, V.vtname, Count (*) AS NumRentals
             FROM Rentals R, Vehicles V
-            WHERE R.fromDate='${date}' AND R.vid=V.vid'
+            WHERE TO_CHAR(R.fromDate, 'MM/DD/YYYY')='${reportDate}' AND R.vid=V.vid'
             GROUP BY (R.location, V.vtname)
             `;
             break;
@@ -109,7 +109,7 @@ router.post('/generate-report', (req, res) => {
             text = `
             SELECT R.location, R.rid, VT.vtname Count (*) AS NumRentals
             FROM Rentals R, Vehicles V
-            WHERE R.fromDate='${date}' AND R.location='${location} AND R.vid=V.vid'
+            WHERE TO_CHAR(R.fromDate, 'MM/DD/YYYY')='${reportDate}' AND R.location='${location} AND R.vid=V.vid'
             )}
             GROUP BY (V.vtname)
             `;
@@ -119,7 +119,7 @@ router.post('/generate-report', (req, res) => {
             text = `
             SELECT R.location, R.rid, V.vtname, Count (*) AS NumRentals
             FROM Returns R, Rentals R1, Vehicles V
-            WHERE R.fromDate='${date}' AND R1.vid=V.vid AND R.rid=R1.rid'
+            WHERE TO_CHAR(R.fromDate, 'MM/DD/YYYY')='${reportDate}' AND R1.vid=V.vid AND R.rid=R1.rid'
             GROUP BY (R.location, V.vtname)
             `;
             break;
@@ -128,7 +128,7 @@ router.post('/generate-report', (req, res) => {
             text = `
             SELECT R.location, R.rid, VT.vtname Count (*) AS NumRentals
             FROM Returns R, Rentals R1, Vehicles V
-            WHERE R.fromDate='${date}' AND R.location='${location} AND R1.vid=V.vid AND R.rid=R1.rid'
+            WHERE TO_CHAR(R.fromDate, 'MM/DD/YYYY')='${reportDate}' AND R.location='${location} AND R1.vid=V.vid AND R.rid=R1.rid'
             )}
             GROUP BY (V.vtname)
             `;
