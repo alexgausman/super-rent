@@ -13,114 +13,128 @@ router.post('/return-vehicle', (req, res) => {
         tankFull
     } = req.body;
 
-    const input_errors = {};
-    if (!rentalID) {
-      input_errors.rid = 'Rental ID is required';
-    }
-    if (!returnOdometer) {
-      input_errors.odometer = 'Odometer value is required';
-    } else if (isNaN(parseInt(returnOdometer))) {
-      input_errors.odometer = 'Odometer value is invalid';
-    }
-    if (!returnDateTime) {
-      input_errors.dateTime = 'Return time is required';
-    } else if (isNaN(new Date(returnDateTime).valueOf())) {
-      input_errors.dateTime = 'Return time is invalid';
-    }
-    if (Object.keys(input_errors).length > 0) {
-      return res.status(400).json({
-          input_errors: input_errors,
-      });
-    }
-    const q1 = `
+    const q0 = `
       SELECT *
-      FROM Rentals R, Vehicles V, VehicleTypes VT, Customers C
-      WHERE R.rid = ${rentalID} AND R.vid = V.vid AND V.vtname = VT.vtname AND C.cellphone = R.cellphone
+      FROM Returns
     `;
     database
-        .query(q1)
-        .then(result => {
-            const combinedInfo = result.rows[0];
-            let start, end, duration;
-            if (!combinedInfo) {
-              input_errors.rid = 'RID not found';
-            } else {
-              if (!(returnOdometer >= combinedInfo.odometer)) {
-                input_errors.odometer = 'Odometer must be > starting value';
-              }
-              start = new Date(combinedInfo.fromdatetime);
-              end = new Date(returnDateTime);
-              duration = (end.valueOf() - start.valueOf());
-              if (!(duration > 0)) {
-                input_errors.dateTime = 'Return time must be after start time';
-              }
-            }
-            if (Object.keys(input_errors).length > 0) {
-              return res.status(400).json({
-                  query: formatQuery(q1),
-                  input_errors: input_errors,
-              });
-            }
-            const durationHrs = duration / 3600000;
-            const weeks = Math.trunc(durationHrs / 168);
-            let remainingHrs = Math.trunc(durationHrs % 168);
-            const days = Math.trunc(remainingHrs / 24);
-            const hours = Math.trunc(remainingHrs % 24);
-            // TODO Something with the tank emptiness
-            const getRate = strRate => parseFloat(strRate.substring(1));
-            let carCost = getRate(combinedInfo.wrate) * weeks;
-            carCost += getRate(combinedInfo.drate) * days;
-            carCost += getRate(combinedInfo.hrate) * hours;
-            let insuranceCost = getRate(combinedInfo.wirate) * weeks;
-            insuranceCost += getRate(combinedInfo.dirate) * days;
-            insuranceCost += getRate(combinedInfo.hirate) * hours;
-            const distance = returnOdometer - combinedInfo.odometer;
-            carCost += getRate(combinedInfo.krate) * distance;
-            let totalCost = carCost + insuranceCost;
-            console.log(insuranceCost);
-            console.log(carCost);
-            console.log(totalCost);
-            let confNo = combinedInfo.confno;
+      .query(q0)
+      .then(result => {
+        const currentReturns = result.rows;
+        const input_errors = {};
+        if (!rentalID) {
+          input_errors.rid = 'Rental ID is required';
+        } else if (currentReturns.find(r => r.rid === parseInt(rentalID))) {
+          input_errors.rid = `Return with ID ${rentalID} already exists`;
+        }
+        if (!returnOdometer) {
+          input_errors.odometer = 'Odometer value is required';
+        } else if (isNaN(parseInt(returnOdometer))) {
+          input_errors.odometer = 'Odometer value is invalid';
+        }
+        if (!returnDateTime) {
+          input_errors.dateTime = 'Return time is required';
+        } else if (isNaN(new Date(returnDateTime).valueOf())) {
+          input_errors.dateTime = 'Return time is invalid';
+        }
+        if (Object.keys(input_errors).length > 0) {
+          return res.status(400).json({
+              input_errors: input_errors,
+          });
+        }
+        const q1 = `
+          SELECT *
+          FROM Rentals R, Vehicles V, VehicleTypes VT, Customers C
+          WHERE R.rid = ${rentalID} AND R.vid = V.vid AND V.vtname = VT.vtname AND C.cellphone = R.cellphone
+        `;
+        database
+            .query(q1)
+            .then(result => {
+                const combinedInfo = result.rows[0];
+                let start, end, duration;
+                if (!combinedInfo) {
+                  input_errors.rid = 'RID not found';
+                } else {
+                  if (!(returnOdometer >= combinedInfo.odometer)) {
+                    input_errors.odometer = 'Odometer must be > starting value';
+                  }
+                  start = new Date(combinedInfo.fromdatetime);
+                  end = new Date(returnDateTime);
+                  duration = (end.valueOf() - start.valueOf());
+                  if (!(duration > 0)) {
+                    input_errors.dateTime = 'Return time must be after start time';
+                  }
+                }
+                if (Object.keys(input_errors).length > 0) {
+                  return res.status(400).json({
+                      query: formatQuery(q1),
+                      input_errors: input_errors,
+                  });
+                }
+                const durationHrs = duration / 3600000;
+                const weeks = Math.trunc(durationHrs / 168);
+                let remainingHrs = Math.trunc(durationHrs % 168);
+                const days = Math.trunc(remainingHrs / 24);
+                const hours = Math.trunc(remainingHrs % 24);
+                // TODO Something with the tank emptiness
+                const getRate = strRate => parseFloat(strRate.substring(1));
+                let carCost = getRate(combinedInfo.wrate) * weeks;
+                carCost += getRate(combinedInfo.drate) * days;
+                carCost += getRate(combinedInfo.hrate) * hours;
+                let insuranceCost = getRate(combinedInfo.wirate) * weeks;
+                insuranceCost += getRate(combinedInfo.dirate) * days;
+                insuranceCost += getRate(combinedInfo.hirate) * hours;
+                const distance = returnOdometer - combinedInfo.odometer;
+                carCost += getRate(combinedInfo.krate) * distance;
+                let totalCost = carCost + insuranceCost;
+                let confNo = combinedInfo.confno;
 
-            const q2 = `
-            INSERT INTO Returns (
-              rid,
-              dateTime,
-              odometer,
-              fullTank,
-              totalCost
-            )
-            VALUES
-            (
-              ${rentalID},
-              '${returnDateTime}',
-              ${returnOdometer},
-              ${tankFull},
-              ${totalCost}
-            )
-          `;
-            database
-                .query(q2)
-                .then(result => res.status(200).json({
-                    query: formatQuery(q1 + ' \n\n ' + q2),
-                    success: true,
-                    result: {
-                        rid: rentalID,
-                        confNo: confNo,
-                        vehicleCost: carCost,
-                        insuranceCost: insuranceCost,
-                        totalCost: totalCost
-                    }
-                }))
-                .catch(error => res.status(400).json({
-                    query: formatQuery(q1 + ' \n\n ' + q2),
-                    error_message: error.message,
-                }));
-        })
-        .catch(error => res.status(400).json({
-            query: formatQuery(q1),
-            error_message: error.message,
-        }));
+                const q2 = `
+                INSERT INTO Returns (
+                  rid,
+                  dateTime,
+                  odometer,
+                  fullTank,
+                  totalCost
+                )
+                VALUES
+                (
+                  ${rentalID},
+                  '${returnDateTime}',
+                  ${returnOdometer},
+                  ${tankFull},
+                  ${totalCost}
+                )
+              `;
+                database
+                    .query(q2)
+                    .then(result => res.status(200).json({
+                        query: formatQuery(q1 + ' \n\n ' + q2),
+                        success: true,
+                        result: {
+                            rid: rentalID,
+                            confNo: confNo,
+                            vehicleCost: carCost,
+                            insuranceCost: insuranceCost,
+                            totalCost: totalCost
+                        }
+                    }))
+                    .catch(error => res.status(400).json({
+                        query: formatQuery(q1 + ' \n\n ' + q2),
+                        error_message: error.message,
+                    }));
+            })
+            .catch(error => res.status(400).json({
+                query: formatQuery(q1),
+                error_message: error.message,
+            }));
+      })
+      .catch(error => res.status(400).json({
+        query: formatQuery(q0),
+        error_message: error.message,
+      }));
+
+
 });
 
 router.post('/generate-report', (req, res) => {
