@@ -6,12 +6,13 @@ class ReturnVehicle extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            rid: null,
-            odometer: null,
-            tankFull: null,
+            rid: '',
+            odometer: '',
+            tankFull: 'true',
             rentedVehicleIDs: [],
             submission: null,
             result: null,
+            errors: {},
         };
         this.setup = this.setup.bind(this);
         this.getSetRentedIds = this.getSetRentedIds.bind(this);
@@ -73,16 +74,39 @@ class ReturnVehicle extends Component {
         axios.post('/clerk-actions/return-vehicle', newSubmission)
             .then(res => {
                 this.props.logQuery(res.data.query);
-                this.setState({result: res.data.result});
+                this.setState({
+                  errors: {},
+                  result: res.data.result,
+                });
             })
             .catch(err => {
                 if (err.response && err.response.data) {
-                    const {query, error_message} = err.response.data;
-                    if (query && error_message) {
+                    const {
+                      query,
+                      error_message,
+                      input_errors
+                    } = err.response.data;
+                    if (query) {
+                      if (error_message) {
                         this.props.logQuery(query, error_message);
-                        // TODO
-                        return;
+                      } else {
+                        this.props.logQuery(query);
+                      }
                     }
+                    if (input_errors) {
+                      this.setState({
+                        submission: null,
+                        errors: input_errors,
+                      }, () => {
+                        window.$('#untilDateTimePicker').datetimepicker({
+                            useCurrent: false,
+                            format: 'MM/DD/YYYY HH:mm',
+                            minDate: 'now',
+                            date: newSubmission.returnDateTime,
+                        });
+                      });
+                    }
+                    return;
                 }
                 console.log(err);
             });
@@ -101,9 +125,10 @@ class ReturnVehicle extends Component {
     }
 
     render() {
-        const {submission, rentedVehicleIDs, result} = this.state;
+        const {submission, rentedVehicleIDs, result, errors} = this.state;
         let html;
         if (!submission) {
+            const {rid, odometer, tankFull} = this.state;
             html = (
                 <div style={{
                     width: '450px',
@@ -114,37 +139,80 @@ class ReturnVehicle extends Component {
 
                     <div className="form-group">
                         <label htmlFor="rid">Rental ID</label>
-                        <input placeholder={"Rental ID"} type="int" className="form-control"
-                               onChange={this.handleRIDChange} id="rid"/>
+                        <input
+                          placeholder="Rental ID"
+                          type="int"
+                          className={`form-control ${errors.rid ? 'is-invalid' : ''}`}
+                          value={rid}
+                          onChange={this.handleRIDChange}
+                          id="rid"
+                        />
+                        {errors.rid && (
+                          <div className="invalid-feedback">
+                            {errors.rid}
+                          </div>
+                        )}
                     </div>
 
                     <div className="form-group">
                         <label htmlFor="odometer">Return Odometer</label>
-                        <input placeholder={"Return Odometer"} type="text" className="form-control"
-                               onChange={this.handleOdometerChange} id="odometer"/>
+                        <input
+                          placeholder="Return Odometer"
+                          type="text"
+                          className={`form-control ${errors.odometer ? 'is-invalid' : ''}`}
+                          value={odometer}
+                          onChange={this.handleOdometerChange}
+                          id="odometer"
+                        />
+                        {errors.odometer && (
+                          <div className="invalid-feedback">
+                            {errors.odometer}
+                          </div>
+                        )}
                     </div>
 
                     <div className="form-group">
                         <label htmlFor="tankFull">Tank Full?</label>
-                        <select className="form-control" id="tankFull" onChange={this.handleTankFullChange}>
-                            <option value="true">True</option>
-                            <option value="false">False</option>
+                        <select
+                          className="form-control"
+                          id="tankFull"
+                          value={tankFull}
+                          onChange={this.handleTankFullChange}
+                        >
+                          <option value="true">True</option>
+                          <option value="false">False</option>
                         </select>
                     </div>
 
                     <div className="form-group">
                         <label htmlFor="untilDateTimePicker">Return Time</label>
-                        <input placeholder={"Return Date and Time"} type="text"
-                               className="form-control datetimepicker-input" id="untilDateTimePicker"
-                               data-toggle="datetimepicker" data-target="#untilDateTimePicker" autoComplete="off"/>
+                        <input
+                          placeholder="Return Date and Time"
+                          type="text"
+                          className={`form-control datetimepicker-input ${errors.dateTime ? 'is-invalid' : ''}`}
+                          id="untilDateTimePicker"
+                          data-toggle="datetimepicker"
+                          data-target="#untilDateTimePicker"
+                          autoComplete="off"
+                        />
+                        {errors.dateTime && (
+                          <div className="invalid-feedback">
+                            {errors.dateTime}
+                          </div>
+                        )}
                     </div>
 
-                    <button type="button" className="btn btn-primary" onClick={this.onSubmit} style={{
+                    <button
+                      type="button"
+                      className="btn btn-primary"
+                      onClick={this.onSubmit}
+                      style={{
                         marginTop: '12px',
                         width: '100%',
                         marginBottom: '25px',
-                    }}>
-                        Submit
+                      }}
+                    >
+                      Submit
                     </button>
                 </div>
             );

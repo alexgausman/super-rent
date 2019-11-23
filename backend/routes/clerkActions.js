@@ -23,9 +23,9 @@ router.post('/return-vehicle', (req, res) => {
       input_errors.odometer = 'Odometer value is invalid';
     }
     if (!returnDateTime) {
-      input_errors.untilDateTimePicker = 'Return time is required';
+      input_errors.dateTime = 'Return time is required';
     } else if (isNaN(new Date(returnDateTime).valueOf())) {
-      input_errors.untilDateTimePicker = 'Return time is invalid';
+      input_errors.dateTime = 'Return time is invalid';
     }
     if (Object.keys(input_errors).length > 0) {
       return res.status(400).json({
@@ -52,7 +52,7 @@ router.post('/return-vehicle', (req, res) => {
               end = new Date(returnDateTime);
               duration = (end.valueOf() - start.valueOf());
               if (!(duration > 0)) {
-                input_errors.untilDateTimePicker = 'Return time must be after start time';
+                input_errors.dateTime = 'Return time must be after start time';
               }
             }
             if (Object.keys(input_errors).length > 0) {
