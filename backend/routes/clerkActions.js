@@ -79,56 +79,6 @@ router.post('/return-vehicle', (req, res) => {
             query: formatQuery(q1),
             error_message: error.message,
         }));
-
-
-
-  //   // TODO get start Date from rental table
-  //   const duration = new Date(returnDateTime).valueOf();
-  //   const returnValues = [];
-  //
-  //   // TODO, get Vehicle type using vid -> vtname
-  //   const vtype = null;
-  //   const weeks = Math.trunc(duration / 168);
-  //   let remainingHrs = Math.trunc(duration % 168);
-  //   const days = Math.trunc(remainingHrs / 24);
-  //   const hours = Math.trunc(remainingHrs % 24);
-  //   // TODO Something with the tank emptiness
-  //   let cost = (vtype[2] + vtype[5]) * weeks;
-  //   cost += (vtype[3] + vtype[6]) * days;
-  //   cost += (vtype[4] + vtype[7]) * hours;
-  //   let distance = returnOdometer - startOdometer;
-  //   cost += vtype[7] * distance;
-  //   returnValues.push([
-  //       rentalID,
-  //       returnDateTime,
-  //       returnOdometer,
-  //       tankFull,
-  //       cost,
-  //   ]);
-  //
-  //   const text = `
-  //   INSERT INTO Returns (
-  //     rid,
-  //     dateTime,
-  //     odometer,
-  //     fullTank,
-  //     totalCost
-  //   )
-  //   VALUES
-  //   ${returnValues.map(arr => `(
-  //     ${arr.map(item => item === 'NULL' ? item : `'${item}'`).join(', ')})
-  //       `).join(', ')};
-  // `;
-  //   database
-  //       .query(text)
-  //       .then(result => res.status(200).json({
-  //           query: formatQuery(text),
-  //           result: result.rows,
-  //       }))
-  //       .catch(error => res.status(400).json({
-  //           query: formatQuery(text),
-  //           error_message: error.message,
-  //       }));
 });
 
 router.post('/generate-report', (req, res) => {
