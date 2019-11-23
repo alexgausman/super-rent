@@ -150,9 +150,31 @@ class ReturnVehicle extends Component {
             );
         } else if (result) {
             html = (
-                <h3 className="pb-2" style={{
-                    marginTop: '30px',
-                }}>Rental Reciept: </h3>
+                <div style={{
+                    width: '450px',
+                }}>
+                    <h3 className="pb-2" style={{marginTop: '30px',}}>Rental Reciept: </h3>
+                    <div>
+                        <span>Rental ID:</span>
+                        <span>{result.rid}</span>
+                    </div>
+                    <div>
+                        <span>Confirmation Number:</span>
+                        <span>{result.confNo}</span>
+                    </div>
+                    <div>
+                        <span>Insurance Cost:</span>
+                        <span>{result.insuranceCost}</span>
+                    </div>
+                    <div>
+                        <span>Vehicle Cost:</span>
+                        <span>{result.vehicleCost}</span>
+                    </div>
+                    <div>
+                        <span>Total Cost:</span>
+                        <span>{result.totalCost}</span>
+                    </div>
+                </div>
             );
         }
         return (

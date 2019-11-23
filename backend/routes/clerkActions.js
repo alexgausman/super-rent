@@ -15,29 +15,34 @@ router.post('/return-vehicle', (req, res) => {
 
     const q1 = `
       SELECT *
-      FROM Rentals R, Vehicles V, VehicleTypes VT
-      WHERE R.rid = ${rentalID} AND R.vid = V.vid AND V.vtname = VT.vtname
+      FROM Rentals R, Vehicles V, VehicleTypes VT, Customers C
+      WHERE R.rid = ${rentalID} AND R.vid = V.vid AND V.vtname = VT.vtname AND C.cellphone = R.cellphone
     `;
     database
         .query(q1)
         .then(result => {
-          const d = result.rows[0];
-          const start = new Date(d.fromdatetime)
-          const end = new Date(returnDateTime);
-          let durationHrs = (end.valueOf() - start.valueOf()) / 3600000;
-          const weeks = Math.trunc(durationHrs / 168);
-          let remainingHrs = Math.trunc(durationHrs % 168);
-          const days = Math.trunc(remainingHrs / 24);
-          const hours = Math.trunc(remainingHrs % 24);
-          // TODO Something with the tank emptiness
-          const getRate = strRate => parseFloat(strRate.substring(1));
-          let cost = (getRate(d.wrate) + getRate(d.wirate)) * weeks;
-          cost += (getRate(d.drate) + getRate(d.dirate)) * days;
-          cost += (getRate(d.hrate) + getRate(d.hirate)) * hours;
-          const distance = returnOdometer - d.odometer;
-          cost += getRate(d.krate) * distance;
+            const vehicleType = result.rows[0];
+            const start = new Date(vehicleType.fromdatetime);
+            const end = new Date(returnDateTime);
+            let durationHrs = (end.valueOf() - start.valueOf()) / 3600000;
+            const weeks = Math.trunc(durationHrs / 168);
+            let remainingHrs = Math.trunc(durationHrs % 168);
+            const days = Math.trunc(remainingHrs / 24);
+            const hours = Math.trunc(remainingHrs % 24);
+            // TODO Something with the tank emptiness
+            const getRate = strRate => parseFloat(strRate.substring(1));
+            let carCost = getRate(vehicleType.wrate) * weeks;
+            carCost += getRate(vehicleType.drate) * days;
+            carCost += getRate(vehicleType.hrate) * hours;
+            let insuranceCost = getRate(vehicleType.wirate) * weeks;
+            insuranceCost += getRate(vehicleType.dirate) * days;
+            insuranceCost += getRate(vehicleType.hirate) * hours;
+            const distance = returnOdometer - vehicleType.odometer;
+            carCost += getRate(vehicleType.krate) * distance;
+            let totalCost = carCost + insuranceCost;
+            let confNo = vehicleType.confNo;
 
-          const q2 = `
+            const q2 = `
             INSERT INTO Returns (
               rid,
               dateTime,
@@ -48,22 +53,29 @@ router.post('/return-vehicle', (req, res) => {
             VALUES
             (
               ${rentalID},
-              '${returnDateTime}',
+              ${returnDateTime},
               ${returnOdometer},
               ${tankFull},
-              ${cost}
+              ${totalCost}
             )
           `;
-          database
-              .query(q2)
-              .then(result => res.status(200).json({
-                  query: formatQuery(q1 + ' \n\n ' + q2),
-                  success: true,
-              }))
-              .catch(error => res.status(400).json({
-                  query: formatQuery(q1 + ' \n\n ' + q2),
-                  error_message: error.message,
-              }));
+            database
+                .query(q2)
+                .then(result => res.status(200).json({
+                    query: formatQuery(q1 + ' \n\n ' + q2),
+                    success: true,
+                    result: {
+                        rid: rentalID,
+                        confNo: confNo,
+                        vehicleCost: carCost,
+                        insuranceCost: insuranceCost,
+                        totalCost: totalCost
+                    }
+                }))
+                .catch(error => res.status(400).json({
+                    query: formatQuery(q1 + ' \n\n ' + q2),
+                    error_message: error.message,
+                }));
         })
         .catch(error => res.status(400).json({
             query: formatQuery(q1),
