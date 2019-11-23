@@ -8,7 +8,7 @@ class GenerateReport extends Component {
         this.state = {
             reportType: null,
             locOptions: [],
-            location: null,
+            location: 'all',
             submission: null,
             result: null,
         };
@@ -91,12 +91,12 @@ class GenerateReport extends Component {
 
     handleReportTypeSelection(event) {
         if (event.target.value === 'daily-rentals') {
-            this.state.location = null;
+            this.state.location = 'all';
             this.shouldShowLocationSelection = false;
         } else if (event.target.value === 'daily-rentals-branch') {
             this.shouldShowLocationSelection = true;
         } else if (event.target.value === 'daily-returns') {
-            this.state.location = null;
+            this.state.location = 'all';
             this.shouldShowLocationSelection = false;
         } else if (event.target.value === 'daily-returns-branch') {
             this.shouldShowLocationSelection = true;
@@ -139,8 +139,8 @@ class GenerateReport extends Component {
 
                     <div className="form-group">
                         <label htmlFor="locSelect">Location</label>
-                        <select disabled={this.shouldShowLocationSelection === false} onChange={this.handleLocationChange} className="form-control" id="locSelect">
-                            <option selected={this.shouldShowLocationSelection === false} value="all">All</option>
+                        <select value={this.state.location} disabled={this.shouldShowLocationSelection === false} onChange={this.handleLocationChange} className="form-control" id="locSelect">
+                            <option value="all">All</option>
                             <option disabled>─────────────────────────</option>
                             {this.state.locOptions.map((loc, i) => (
                                 <option key={i} value={loc}>{loc}</option>
