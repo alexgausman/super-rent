@@ -64,18 +64,54 @@ router.post('/return-vehicle', (req, res) => {
 
 router.post('/generate-report', (req, res) => {
     let {
+        reportType,
         location,
         date
     } = req.body;
-    const hasLocation = (location && location !== 'all');
-    const text = `
-    SELECT V.location, V.vtname, Count (*) AS NumVehicles
-    FROM Vehicles V
-    WHERE V.status='for_rent' ${(
-        hasLocation ? `AND V.location='${location}'` : ''
-    )}
-    GROUP BY (V.location, V.vtname)
-  `;
+
+    let text;
+
+    switch (reportType) {
+        case "daily-rentals": {
+            text = `
+            SELECT R.location, R.rid, V.vtname, Count (*) AS NumRentals
+            FROM Rentals R, Vehicles V
+            WHERE R.fromDate='${date}' AND R.vid=V.vid'
+            GROUP BY (R.location, V.vtname)
+            `;
+            break;
+        }
+        case "daily-rentals-branch": {
+            text = `
+            SELECT R.location, R.rid, VT.vtname Count (*) AS NumRentals
+            FROM Rentals R, Vehicles V
+            WHERE R.fromDate='${date}' AND R.location='${location} AND R.vid=V.vid'
+            )}
+            GROUP BY (V.vtname)
+            `;
+            break;
+        }
+        case "daily-returns": {
+            text = `
+            SELECT R.location, R.rid, V.vtname, Count (*) AS NumRentals
+            FROM Returns R, Rentals R1, Vehicles V
+            WHERE R.fromDate='${date}' AND R1.vid=V.vid AND R.rid=R1.rid'
+            GROUP BY (R.location, V.vtname)
+            `;
+            break;
+        }
+        case "daily-returns-branch": {
+            text = `
+            SELECT R.location, R.rid, VT.vtname Count (*) AS NumRentals
+            FROM Returns R, Rentals R1, Vehicles V
+            WHERE R.fromDate='${date}' AND R.location='${location} AND R1.vid=V.vid AND R.rid=R1.rid'
+            )}
+            GROUP BY (V.vtname)
+            `;
+            break;
+        }
+
+    }
     database
         .query(text)
         .then(result => res.status(200).json({
