@@ -65,8 +65,8 @@ class ReturnVehicle extends Component {
     onSubmit() {
         const newSubmission = {
             rentalID: parseInt(this.state.rid),
-            odometer: parseInt(this.state.odometer),
-            toDateTime: window.$('#untilDateTimePicker').data('date'),
+            returnOdometer: parseInt(this.state.odometer),
+            returnDateTime: window.$('#untilDateTimePicker').data('date'),
             tankFull: this.state.tankFull === "true",
         };
         this.setState({submission: newSubmission});

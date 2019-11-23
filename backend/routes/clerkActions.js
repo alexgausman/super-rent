@@ -21,8 +21,8 @@ router.post('/return-vehicle', (req, res) => {
     database
         .query(q1)
         .then(result => {
-            const vehicleType = result.rows[0];
-            const start = new Date(vehicleType.fromdatetime);
+            const combinedInfo = result.rows[0];
+            const start = new Date(combinedInfo.fromdatetime);
             const end = new Date(returnDateTime);
             let durationHrs = (end.valueOf() - start.valueOf()) / 3600000;
             const weeks = Math.trunc(durationHrs / 168);
@@ -31,16 +31,19 @@ router.post('/return-vehicle', (req, res) => {
             const hours = Math.trunc(remainingHrs % 24);
             // TODO Something with the tank emptiness
             const getRate = strRate => parseFloat(strRate.substring(1));
-            let carCost = getRate(vehicleType.wrate) * weeks;
-            carCost += getRate(vehicleType.drate) * days;
-            carCost += getRate(vehicleType.hrate) * hours;
-            let insuranceCost = getRate(vehicleType.wirate) * weeks;
-            insuranceCost += getRate(vehicleType.dirate) * days;
-            insuranceCost += getRate(vehicleType.hirate) * hours;
-            const distance = returnOdometer - vehicleType.odometer;
-            carCost += getRate(vehicleType.krate) * distance;
+            let carCost = getRate(combinedInfo.wrate) * weeks;
+            carCost += getRate(combinedInfo.drate) * days;
+            carCost += getRate(combinedInfo.hrate) * hours;
+            let insuranceCost = getRate(combinedInfo.wirate) * weeks;
+            insuranceCost += getRate(combinedInfo.dirate) * days;
+            insuranceCost += getRate(combinedInfo.hirate) * hours;
+            const distance = returnOdometer - combinedInfo.odometer;
+            carCost += getRate(combinedInfo.krate) * distance;
             let totalCost = carCost + insuranceCost;
-            let confNo = vehicleType.confNo;
+            console.log(insuranceCost);
+            console.log(carCost);
+            console.log(totalCost);
+            let confNo = combinedInfo.confNo;
 
             const q2 = `
             INSERT INTO Returns (
