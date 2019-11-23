@@ -193,7 +193,45 @@ class GenerateReport extends Component {
             this.state.locOptions.forEach((loc, i) => {
                 const data = result.filter(r => r.location === loc);
                 const rows = [];
-                if (data.length > 0) {
+                if (data.length > 0 && submission.reportType.includes("return")) {
+                    tables.push(
+                        <div key={i}>
+                            <h3 className="pb-2" style={{
+                                marginTop: '30px',
+                            }}>{loc}</h3>
+                            <table className="table table-responsive-lg table-hover">
+                                <thead>
+                                <tr>
+                                    <th scope="col">VehicleType</th>
+                                    <th scope="col">Count</th>
+                                    <th scope="col">Revenue</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {this.state.typeOptions.forEach((type, i) => {
+                                    const vtData = data.find(d => d.vtname === type);
+                                    let numVehicles = 0;
+                                    let revenue = '$0';
+                                    if (vtData) {
+                                        numVehicles = vtData.numrentals;
+                                        revenue = vtData.revenue;
+                                    }
+                                    let svt = submission.vehicleType;
+                                    rows.push(
+                                        <tr key={i}>
+                                            <td style={{lineHeight: '1.8'}}>{type}</td>
+                                            <td style={{lineHeight: '1.8'}}>{numVehicles}</td>
+                                            <td style={{lineHeight: '1.8'}}>{revenue}</td>
+                                        </tr>
+                                    );
+                                })}
+                                {rows}
+                                </tbody>
+                            </table>
+                        </div>
+                    );
+                }
+                else if (data.length > 0 && submission.reportType.includes("rental")) {
                     tables.push(
                         <div key={i}>
                             <h3 className="pb-2" style={{
@@ -210,6 +248,7 @@ class GenerateReport extends Component {
                                 {this.state.typeOptions.forEach((type, i) => {
                                     const vtData = data.find(d => d.vtname === type);
                                     let numVehicles = 0;
+                                    let revenue = '$0';
                                     if (vtData) {
                                         numVehicles = vtData.numrentals;
                                     }

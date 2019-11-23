@@ -116,7 +116,7 @@ router.post('/generate-report', (req, res) => {
         }
         case "daily-returns": {
             text = `
-            SELECT R1.location, V.vtname, Count (*) AS NumRentals
+            SELECT R1.location, V.vtname, Count (*) AS NumRentals, Sum (R.totalcost) AS revenue
             FROM Returns R, Rentals R1, Vehicles V
             WHERE TO_CHAR(R.datetime, 'MM/DD/YYYY')='${reportDate}' AND R1.vid=V.vid AND R.rid=R1.rid
             GROUP BY (R1.location, V.vtname)
@@ -125,7 +125,7 @@ router.post('/generate-report', (req, res) => {
         }
         case "daily-returns-branch": {
             text = `
-            SELECT R1.location, V.vtname, Count (*) AS NumRentals
+            SELECT R1.location, V.vtname, Count (*) AS NumRentals, Sum (R.totalcost) AS revenue
             FROM Returns R, Rentals R1, Vehicles V
             WHERE TO_CHAR(R.datetime, 'MM/DD/YYYY')='${reportDate}' AND R1.location='${location}' AND R1.vid=V.vid AND R.rid=R1.rid
             GROUP BY (R1.location, V.vtname)
