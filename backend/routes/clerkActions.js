@@ -110,8 +110,7 @@ router.post('/generate-report', (req, res) => {
             SELECT R.location, VT.vtname Count (*) AS NumRentals
             FROM Rentals R, Vehicles V
             WHERE TO_CHAR(R.fromdatetime, 'MM/DD/YYYY')='${reportDate}' AND R.location='${location}' AND R.vid=V.vid
-            )}
-            GROUP BY (V.vtname)
+            GROUP BY (R.location, V.vtname)
             `;
             break;
         }
@@ -129,8 +128,7 @@ router.post('/generate-report', (req, res) => {
             SELECT R1.location, VT.vtname Count (*) AS NumRentals
             FROM Returns R, Rentals R1, Vehicles V
             WHERE TO_CHAR(R.datetime, 'MM/DD/YYYY')='${reportDate}' AND R.location='${location}' AND R1.vid=V.vid AND R.rid=R1.rid
-            )}
-            GROUP BY (V.vtname)
+            GROUP BY (R1.location, V.vtname)
             `;
             break;
         }
