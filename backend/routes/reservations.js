@@ -1,5 +1,5 @@
 const router = require('express').Router();
-const {database} = require('../config');
+const { database } = require('../config');
 const formatQuery = require('../utils/formatQuery');
 
 // @route   GET reservations
@@ -30,22 +30,22 @@ router.post('/', (req, res) => {
       confno,
       vtname,
       cellphone,
-      fromdate,
-      fromtime,
-      todate,
-      totime
+      fromdatetime,
+      todatetime,
+      location,
+      city
     )
-    VALUES ( $1, $2, $3, $4, $5, $6 )
+    VALUES ( $1, $2, $3, $4, $5, $6, $7 )
     RETURNING *
   `;
     const values = [
         req.body.confno,
         req.body.vtname,
         req.body.cellphone,
-        req.body.fromdate,
-        req.body.fromtime,
-        req.body.todate,
-        req.body.totime
+        req.body.fromdatetime,
+        req.body.todatetime,
+        req.body.location,
+        req.body.city
     ];
     database
         .query(text, values)
@@ -62,7 +62,7 @@ router.post('/', (req, res) => {
 // @route   POST reservations/delete-row
 // @desc    Delete a Reservation
 router.post('/delete-row', (req, res) => {
-    const {confno} = req.body;
+    const { confno } = req.body;
     const text = `
     DELETE
     FROM Reservations

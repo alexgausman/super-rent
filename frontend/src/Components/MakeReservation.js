@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Button, Select, Input, Form, DatePicker, AutoComplete, Card } from 'antd';
+import { Button, Select, Input, Form, DatePicker, AutoComplete, Card, notification } from 'antd';
 import moment from 'moment'
 import 'antd/dist/antd.css';
 import PropTypes from 'prop-types';
@@ -138,38 +138,36 @@ class MakeReservation extends Component {
             if (err) {
                 console.log(err);
             }
-            const unavailable = this.vehicleUnavailable(values);
-            if (unavailable) {
-                // TODO show error of unavailability
-                console.log("Not Available");
-            } else {
-                const existingCustomer = this.state.custOptions.map(cust => cust.cellphone).includes(values.phone);
-                if (!existingCustomer) {
-                    this.addCustomer(values);
-                }
-                console.log('Received values of form: ', values);
-                this.addReservation(values).then(res => {
-                    const newConfno = res;
-                    console.log(newConfno);
-                    // TODO display confno ???
-                    if (!!newConfno) {
-                        this.setState({
-                            submitted: true,
-                            result: {
-                                name: values.name,
-                                phone: values.phone,
-                                address: values.address,
-                                license: values.license,
-                                location: values.location,
-                                confno: newConfno,
-                                vtype: values.type,
-                                toDate: values.until.format("MM/DD/YYYY HH:SS"),
-                                fromDate: values.from.format("MM/DD/YYYY HH:SS")
-                            }
-                        });
+            this.vehicleAvailable(values).then(vu => {
+                const available = vu;
+                if (!available) {
+                    this.openErrorNotification();
+                } else {
+                    const existingCustomer = this.state.custOptions.map(cust => cust.cellphone).includes(values.phone);
+                    if (!existingCustomer) {
+                        this.addCustomer(values);
                     }
-                }); // TODO finsih implementing
-            }
+                    this.addReservation(values).then(res => {
+                        const newConfno = res;
+                        if (!!newConfno) {
+                            this.setState({
+                                submitted: true,
+                                result: {
+                                    name: values.name,
+                                    phone: values.phone,
+                                    address: values.address,
+                                    license: values.license,
+                                    location: values.location,
+                                    confno: newConfno,
+                                    vtype: values.type,
+                                    toDate: values.until.format("MM/DD/YYYY HH:SS"),
+                                    fromDate: values.from.format("MM/DD/YYYY HH:SS")
+                                }
+                            });
+                        }
+                    });
+                }
+            });
         });
     }
 
@@ -198,10 +196,8 @@ class MakeReservation extends Component {
 
     addReservation = (values) => {
         return new Promise((resolve, reject) => {
-            const fromDate = values.from.format("L");
-            const fromTime = values.from.format("HH:MM");
-            const untilDate = values.until.format("L");
-            const untilTime = values.until.format("HH:MM");
+            const fromDate = values.from.format("MM/DD/YYYY HH:SS");
+            const untilDate = values.until.format("MM/DD/YYYY HH:SS");
             let confPromise = this.getConfno();
             let cityPromise = this.getCity(values.location);
             Promise.all([confPromise, cityPromise]).then(pRes => {
@@ -209,12 +205,11 @@ class MakeReservation extends Component {
                     confno: pRes[0],
                     vtname: values.type,
                     cellphone: values.phone,
-                    fromdate: fromDate,
-                    fromtime: fromTime,
-                    todate: untilDate,
-                    totime: untilTime
+                    fromdatetime: fromDate,
+                    todatetime: untilDate,
+                    location: values.location,
+                    city: pRes[1]
                 }
-                console.log("new res: ", newReserv);
                 axios.post('/tables/reservations', newReserv)
                     .then(res => {
                         this.props.logQuery(res.data.query);
@@ -231,6 +226,8 @@ class MakeReservation extends Component {
                         console.log(err);
                         reject(err);
                     });
+            }).catch(err => {
+                console.log(err);
             })
         });
     }
@@ -239,25 +236,38 @@ class MakeReservation extends Component {
         this.props.form.resetFields();
     }
 
-    vehicleUnavailable = (values) => {
-        axios.get('/tables/vehicles')
-            .then(res => {
-                const types = res.data.result.find(v =>
-                    v.location === values.location && v.vtname === values.type && v.status === "for_rent");
-                this.props.logQuery(res.data.query);
-                return !types;
-            })
-            .catch(err => {
-                if (err.response && err.response.data) {
-                    const { query, error_message } = err.response.data;
-                    if (query && error_message) {
-                        this.props.logQuery(query, error_message);
-                        this.setState({ typeOptions: [] });
-                        return;
+    openErrorNotification = () => {
+        notification.error({
+            message: 'Vehicle Unavailable',
+            description:
+                'A vehicle of this type is not currently for rent at this location.',
+            placement: 'topRight',
+            duration: 5
+        });
+    }
+
+    vehicleAvailable = (values) => {
+        return new Promise((resolve, reject) => {
+            axios.get('/tables/vehicles')
+                .then(res => {
+                    const foundVehicle = res.data.result.find(v =>
+                        v.location === values.location && v.vtname === values.type && v.status === "for_rent");
+                    this.props.logQuery(res.data.query);
+                    resolve(foundVehicle);
+                })
+                .catch(err => {
+                    if (err.response && err.response.data) {
+                        const { query, error_message } = err.response.data;
+                        if (query && error_message) {
+                            this.props.logQuery(query, error_message);
+                            this.setState({ typeOptions: [] });
+                            return;
+                        }
                     }
-                }
-                console.log(err);
-            });
+                    console.log(err);
+                    reject(err);
+                });
+        })
     }
 
     getConfno = () => {
@@ -270,7 +280,6 @@ class MakeReservation extends Component {
                             confno = r.confno + 1;
                         }
                     });
-                    console.log("confno 1: ", confno);
                     this.props.logQuery(res.data.query);
                     resolve(confno);
                 })
