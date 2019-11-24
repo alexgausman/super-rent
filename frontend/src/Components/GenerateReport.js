@@ -215,7 +215,7 @@ class GenerateReport extends Component {
                                 </tr>
                                 </thead>
                                 <tbody>
-                                {locationInfo.forEach((v, i) => {
+                                {vehicleInfo.forEach((v, i) => {
                                     vehicleInfoRows.push(
                                         <tr key={i}>
                                             <td style={{lineHeight: '1.8'}}>{v.rid}</td>
