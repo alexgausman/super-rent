@@ -8,6 +8,7 @@ class RentVehicle extends Component {
         this.state = {
             locOptions: [],
             typeOptions: [],
+            vidOptions: [],
             cellNumber: null,
             dliscence: null,
             location: null,
@@ -120,11 +121,11 @@ class RentVehicle extends Component {
     }
 
     handleLocationChange(event) {
-        this.setState({location: event.target.value})
+        this.setState({location: event.target.value});
     }
 
     handleVehicleTypeChange(event) {
-        this.setState({vehicleType: event.target.value})
+        this.setState({vehicleType: event.target.value});
     }
 
     handleConfNumberChange(event) {
@@ -202,15 +203,15 @@ class RentVehicle extends Component {
                     </div>
 
                     <div className="form-group">
-                        <label htmlFor="fromDatePicker">Report Date</label>
-                        <input placeholder={"Report Date"} type="text"
+                        <label htmlFor="fromDatePicker">Rental Date</label>
+                        <input placeholder={"Rental Date"} type="text"
                                className="form-control datetimepicker-input" id="fromDatePicker"
                                data-toggle="datetimepicker" data-target="#fromDatePicker" autoComplete="off"/>
                     </div>
 
                     <div className="form-group">
-                        <label htmlFor="toDatePicker">Report Date</label>
-                        <input placeholder={"Report Date"} type="text"
+                        <label htmlFor="toDatePicker">Return Date</label>
+                        <input placeholder={"Return Date"} type="text"
                                className="form-control datetimepicker-input" id="toDatePicker"
                                data-toggle="datetimepicker" data-target="#toDatePicker" autoComplete="off"/>
                     </div>
@@ -226,8 +227,38 @@ class RentVehicle extends Component {
             );
         } else if (result) {
             html = (
-                <div style={{width: '100%'}}>
-                    PLACEHOLDER
+                <div style={{
+                    width: '450px',
+                }}>
+                    <h3 className="pb-2" style={{marginTop: '30px',}}>Rental Details: </h3>
+                    <div style={{padding: '20px',}}>
+                        <span style={{paddingRight: '10px', fontWeight: 'bold'}}>Rental ID:</span>
+                        <span>{result.customerName}</span>
+                    </div>
+                    <div style={{padding: '20px',}}>
+                        <span style={{paddingRight: '10px', fontWeight: 'bold'}}>Rental ID:</span>
+                        <span>{result.customerNumber}</span>
+                    </div>
+                    <div style={{padding: '20px',}}>
+                        <span style={{paddingRight: '10px', fontWeight: 'bold'}}>Rental ID:</span>
+                        <span>{result.rid}</span>
+                    </div>
+                    <div style={{padding: '20px',}}>
+                        <span style={{paddingRight: '10px', fontWeight: 'bold'}}>Insurance Cost:</span>
+                        <span>{result.vid}</span>
+                    </div>
+                    <div style={{padding: '20px',}}>
+                        <span style={{paddingRight: '10px', fontWeight: 'bold'}}>Vehicle Cost:</span>
+                        <span>{result.rentalDate}</span>
+                    </div>
+                    <div style={{padding: '20px',}}>
+                        <span style={{paddingRight: '10px', fontWeight: 'bold'}}>Total Cost:</span>
+                        <span>{result.location}</span>
+                    </div>
+                    <div style={{padding: '20px',}}>
+                        <span style={{paddingRight: '10px', fontWeight: 'bold'}}>Total Cost:</span>
+                        <span>{result.duration}</span>
+                    </div>
                 </div>
             );
         }
@@ -245,7 +276,6 @@ class RentVehicle extends Component {
                 )}
                 {html}
             </div>
-
         );
     }
 }

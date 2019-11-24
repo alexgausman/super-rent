@@ -262,7 +262,6 @@ class ReturnVehicle extends Component {
                 )}
                 {html}
             </div>
-
         );
     }
 }
