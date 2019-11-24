@@ -2,8 +2,12 @@ const router = require('express').Router();
 const {database} = require('../config');
 const formatQuery = require('../utils/formatQuery');
 const countReqVehicles = require('../utils/countReqVehicles');
+const Chance = require('chance');
+
+const chance = new Chance();
 
 router.post('/rent-vehicle', (req, res) => {
+    console.log(req.body);
     let {
         hasReservation,
         isExistingCustomer,
@@ -17,36 +21,168 @@ router.post('/rent-vehicle', (req, res) => {
         fromDateTime,
         toDateTime,
     } = req.body;
-    let text;
-    if (hasReservation) {
-        text = `
-            SELECT *
-            FROM Reservations R
-            WHERE R.confno='${confNumber}'
+    const q0 = `
+      SELECT *
+      FROM Reservations R
+      ${confNumber ? `WHERE R.confno = ${confNumber}`: ''}
+    `;
+    database
+      .query(q0)
+      .then(result => {
+        const reservation = result.rows[0];
+        const q1 = `
+          SELECT *
+          FROM Customers C
+          WHERE C.cellphone = '${cellNumber}'
+        `;
+        database
+          .query(q1)
+          .then(result => {
+            const customer = result.rows[0];
+            // Business logic
+            let queries = [];
+            // Validate input
+            let input_errors = {};
+            if (hasReservation) {
+              queries.push(q0);
+              if (!reservation) {
+                input_errors.confNumber = 'Reservation not found';
+              }
+            } else {
+              if (isExistingCustomer) {
+                queries.push(q1);
+                if (!customer) {
+                  input_errors.cellNumber = 'Customer not found';
+                }
+              } else {
+                if (customer) {
+                  input_errors.cellNumber = 'Customer already exists';
+                }
+              }
+            }
+            if (Object.keys(input_errors).length > 0) {
+              return res.status(400).json({ input_errors: input_errors });
+            }
+            // Check if rentable vehicle exists
+            const q2 = `
+              SELECT *
+              FROM Vehicles V
+              WHERE V.location = '${location}' AND V.status = 'for_rent' ${
+                vehicleType === 'any' ? '' : `AND V.vtname = '${vehicleType}'`
+              }
             `;
-    } else if (isExistingCustomer) {
-        text = `
-            SELECT * AS Customer
-            FROM Customers C
-            WHERE C.cellphone='${cellNumber}'
-            `;
-    } else {
-        text = `
-            INSERT INTO Customers (
-                cellphone,
-                name,
-                address,
-                dlicense
-            )
-            VALUES
-                (
-                  ${cellNumber},
-                  ${customerName},
-                  ${customerAddress},
-                  ${driversLicense}
-                )
-            `;
-    }
+            database
+              .query(q2)
+              .then(vehicles => {
+                queries.push(q2);
+                if (vehicles.length === 0) {
+                  input_errors.vehicleType = `
+                    No vehicles of this type available at ${location}
+                  `;
+                  return res.status(400).json({
+                    query: formatQuery(q2),
+                    input_errors: input_errors,
+                  });
+                }
+                // Randomly choose a vehicle
+                const vIndex = chance.integer({
+                  min: 0,
+                  max: vehicles.rows.length - 1,
+                })
+                const vehicle = vehicles.rows[vIndex];
+                //TODO: Get next rid
+                const q3 = `
+                  SELECT MAX (rid) AS maxrid
+                  FROM Rentals
+                `;
+                database
+                  .query(q3)
+                  .then(result => {
+                    const newRid = parseInt(result.rows[0].maxrid) + 1;
+                    // Complete queries
+                    let insertQuery = '';
+                    if (!hasReservation && !isExistingCustomer) {
+                      insertQuery += `
+                        INSERT INTO Customers (
+                          cellphone,
+                          name,
+                          address,
+                          dlicense
+                        )
+                        VALUES (
+                          '${cellNumber}',
+                          '${customerName}',
+                          '${customerAddress}',
+                          '${driversLicense}',
+                        )
+                        \n\n
+                      `;
+                    }
+                    insertQuery += `
+                      INSERT INTO Rentals (
+                        rid,
+                        vid,
+                        cellphone,
+                        confno,
+                        fromdatetime,
+                        todatetime,
+                        odometer,
+                        cardname,
+                        cardno,
+                        expdate,
+                        location,
+                        city
+                      )
+                      VALUES (
+                        ${newRid},
+                        '${vehicle.vid}',
+                        '${cellNumber || reservation.cellphone}',
+                        ${hasReservation ? confNumber : 'NULL'},
+                        '${fromDateTime || reservation.fromdatetime}',
+                        '${toDateTime || reservation.todatetime}',
+                        ${vehicle.odometer},
+                        NULL, /* TODO */
+                        NULL, /* TODO */
+                        NULL, /* TODO */
+                        '${location}',
+                        '${vehicle.city}'
+                      )
+                    `;
+                    queries.push(insertQuery);
+                    const queriesString = queries.join(' \n\n ');
+                    database
+                      .query(insertQuery)
+                      .then(result => {
+                        res.status(200).json({
+                          query: formatQuery(queriesString),
+                          success: true,
+                        })
+                      })
+                      .catch(error => res.status(400).json({
+                        query: formatQuery(queriesString),
+                        error_message: error.message,
+                      }));
+
+                  })
+                  .catch(error => res.status(400).json({
+                    query: formatQuery(q3),
+                    error_message: error.message,
+                  }))
+              })
+              .catch(error => res.status(400).json({
+                query: formatQuery(q2),
+                error_message: error.message,
+              }))
+          })
+          .catch(error => res.status(400).json({
+            query: formatQuery(q1),
+            error_message: error.message,
+          }));
+      })
+      .catch(error => res.status(400).json({
+        query: formatQuery(q0),
+        error_message: error.message,
+      }));
 });
 
 // @route   POST find-available-vehicles

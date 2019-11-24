@@ -118,10 +118,14 @@ class RentVehicle extends Component {
         this.setState({submission: newSubmission});
         axios.post('/clerk-actions/rent-vehicle', newSubmission)
             .then(res => {
+                console.log(res);
                 this.props.logQuery(res.data.query);
                 this.setState({result: res.data.result});
+
             })
             .catch(err => {
+                console.log(err);
+                console.log(err.response && err.response.data);
                 if (err.response && err.response.data) {
                     const {query, error_message} = err.response.data;
                     if (query && error_message) {
