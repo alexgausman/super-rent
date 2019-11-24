@@ -191,14 +191,45 @@ class GenerateReport extends Component {
         } else if (result) {
             const tables = [];
             this.state.locOptions.forEach((loc, i) => {
-                const data = result.filter(r => r.location === loc);
-                const rows = [];
-                if (data.length > 0 && submission.reportType.includes("return")) {
+                const vehicleInfo = result.vehicleInfo.filter(r => r.location === loc);
+                const locationByType = result.locationByType.filter(r => r.location === loc);
+                const locationTotals = result.totalAtLocation.filter(r => r.location === loc);
+                const vehicleInfoRows = [];
+                const locationRows = [];
+                const locationTotalRows = [];
+                if (locationByType.length > 0 && submission.reportType.includes("return")) {
                     tables.push(
                         <div key={i}>
                             <h3 className="pb-2" style={{
                                 marginTop: '30px',
                             }}>{loc}</h3>
+                            <table className="table table-responsive-lg table-hover">
+                                <thead>
+                                <tr>
+                                    <th scope="col">Rental ID</th>
+                                    <th scope="col">Vehicle ID</th>
+                                    <th scope="col">Vehicle Type</th>
+                                    <th scope="col">Make</th>
+                                    <th scope="col">Model</th>
+                                    <th scope="col">Color</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {locationInfo.forEach((v, i) => {
+                                    vehicleInfoRows.push(
+                                        <tr key={i}>
+                                            <td style={{lineHeight: '1.8'}}>{v.rid}</td>
+                                            <td style={{lineHeight: '1.8'}}>{v.vid}</td>
+                                            <td style={{lineHeight: '1.8'}}>{v.vtname}</td>
+                                            <td style={{lineHeight: '1.8'}}>{v.make}</td>
+                                            <td style={{lineHeight: '1.8'}}>{v.model}</td>
+                                            <td style={{lineHeight: '1.8'}}>{v.color}</td>
+                                        </tr>
+                                    );
+                                })}
+                                {vehicleInfoRows}
+                                </tbody>
+                            </table>
                             <table className="table table-responsive-lg table-hover">
                                 <thead>
                                 <tr>
@@ -209,7 +240,7 @@ class GenerateReport extends Component {
                                 </thead>
                                 <tbody>
                                 {this.state.typeOptions.forEach((type, i) => {
-                                    const vtData = data.find(d => d.vtname === type);
+                                    const vtData = locationByType.find(d => d.vtname === type);
                                     let numVehicles = 0;
                                     let revenue = '$0';
                                     if (vtData) {
@@ -217,7 +248,7 @@ class GenerateReport extends Component {
                                         revenue = vtData.revenue;
                                     }
                                     let svt = submission.vehicleType;
-                                    rows.push(
+                                    locationRows.push(
                                         <tr key={i}>
                                             <td style={{lineHeight: '1.8'}}>{type}</td>
                                             <td style={{lineHeight: '1.8'}}>{numVehicles}</td>
@@ -225,17 +256,62 @@ class GenerateReport extends Component {
                                         </tr>
                                     );
                                 })}
-                                {rows}
+                                {locationRows}
+                                </tbody>
+                            </table>
+                            <table className="table table-responsive-lg table-hover">
+                                <thead>
+                                <tr>
+                                    <th scope="col">Location</th>
+                                    <th scope="col">Total New Returns</th>
+                                </tr>
+                                </thead>
+                                <tbody>{locationTotals.forEach((v, i) => {
+                                    locationTotalRows.push(
+                                        <tr key={i}>
+                                            <td style={{lineHeight: '1.8'}}>{v.location}</td>
+                                            <td style={{lineHeight: '1.8'}}>{v.totalreturn}</td>
+                                        </tr>
+                                    );
+                                })}
+                                {locationTotalRows}
                                 </tbody>
                             </table>
                         </div>
                     );
-                } else if (data.length > 0 && submission.reportType.includes("rental")) {
+                } else if (locationByType.length > 0 && submission.reportType.includes("rental")) {
                     tables.push(
                         <div key={i}>
                             <h3 className="pb-2" style={{
                                 marginTop: '30px',
                             }}>{loc}</h3>
+                            <table className="table table-responsive-lg table-hover">
+                                <thead>
+                                <tr>
+                                    <th scope="col">Rental ID</th>
+                                    <th scope="col">Vehicle ID</th>
+                                    <th scope="col">Vehicle Type</th>
+                                    <th scope="col">Make</th>
+                                    <th scope="col">Model</th>
+                                    <th scope="col">Color</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {vehicleInfo.forEach((v, i) => {
+                                    vehicleInfoRows.push(
+                                        <tr key={i}>
+                                            <td style={{lineHeight: '1.8'}}>{v.rid}</td>
+                                            <td style={{lineHeight: '1.8'}}>{v.vid}</td>
+                                            <td style={{lineHeight: '1.8'}}>{v.vtname}</td>
+                                            <td style={{lineHeight: '1.8'}}>{v.make}</td>
+                                            <td style={{lineHeight: '1.8'}}>{v.model}</td>
+                                            <td style={{lineHeight: '1.8'}}>{v.color}</td>
+                                        </tr>
+                                    );
+                                })}
+                                {locationRows}
+                                </tbody>
+                            </table>
                             <table className="table table-responsive-lg table-hover">
                                 <thead>
                                 <tr>
@@ -245,20 +321,38 @@ class GenerateReport extends Component {
                                 </thead>
                                 <tbody>
                                 {this.state.typeOptions.forEach((type, i) => {
-                                    const vtData = data.find(d => d.vtname === type);
+                                    const vtData = locationByType.find(d => d.vtname === type);
                                     let numVehicles = 0;
                                     if (vtData) {
                                         numVehicles = vtData.numrentals;
                                     }
                                     let svt = submission.vehicleType;
-                                    rows.push(
+                                    locationRows.push(
                                         <tr key={i}>
                                             <td style={{lineHeight: '1.8'}}>{type}</td>
                                             <td style={{lineHeight: '1.8'}}>{numVehicles}</td>
                                         </tr>
                                     );
                                 })}
-                                {rows}
+                                {locationRows}
+                                </tbody>
+                            </table>
+                            <table className="table table-responsive-lg table-hover">
+                                <thead>
+                                <tr>
+                                    <th scope="col">Location</th>
+                                    <th scope="col">Total New Returns</th>
+                                </tr>
+                                </thead>
+                                <tbody>{locationTotals.forEach((v, i) => {
+                                    locationTotalRows.push(
+                                        <tr key={i}>
+                                            <td style={{lineHeight: '1.8'}}>{v.location}</td>
+                                            <td style={{lineHeight: '1.8'}}>{v.totalreturn}</td>
+                                        </tr>
+                                    );
+                                })}
+                                {locationTotalRows}
                                 </tbody>
                             </table>
                         </div>

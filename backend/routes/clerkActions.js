@@ -24,85 +24,85 @@ router.post('/rent-vehicle', (req, res) => {
     const q0 = `
       SELECT *
       FROM Reservations R
-      ${confNumber ? `WHERE R.confno = ${confNumber}`: ''}
+      ${confNumber ? `WHERE R.confno = ${confNumber}` : ''}
     `;
     database
-      .query(q0)
-      .then(result => {
-        const reservation = result.rows[0];
-        const q1 = `
+        .query(q0)
+        .then(result => {
+            const reservation = result.rows[0];
+            const q1 = `
           SELECT *
           FROM Customers C
           WHERE C.cellphone = '${cellNumber}'
         `;
-        database
-          .query(q1)
-          .then(result => {
-            const customer = result.rows[0];
-            // Business logic
-            let queries = [];
-            // Validate input
-            let input_errors = {};
-            if (hasReservation) {
-              queries.push(q0);
-              if (!reservation) {
-                input_errors.confNumber = 'Reservation not found';
-              }
-            } else {
-              if (isExistingCustomer) {
-                queries.push(q1);
-                if (!customer) {
-                  input_errors.cellNumber = 'Customer not found';
-                }
-              } else {
-                if (customer) {
-                  input_errors.cellNumber = 'Customer already exists';
-                }
-              }
-            }
-            if (Object.keys(input_errors).length > 0) {
-              return res.status(400).json({ input_errors: input_errors });
-            }
-            // Check if rentable vehicle exists
-            const q2 = `
+            database
+                .query(q1)
+                .then(result => {
+                    const customer = result.rows[0];
+                    // Business logic
+                    let queries = [];
+                    // Validate input
+                    let input_errors = {};
+                    if (hasReservation) {
+                        queries.push(q0);
+                        if (!reservation) {
+                            input_errors.confNumber = 'Reservation not found';
+                        }
+                    } else {
+                        if (isExistingCustomer) {
+                            queries.push(q1);
+                            if (!customer) {
+                                input_errors.cellNumber = 'Customer not found';
+                            }
+                        } else {
+                            if (customer) {
+                                input_errors.cellNumber = 'Customer already exists';
+                            }
+                        }
+                    }
+                    if (Object.keys(input_errors).length > 0) {
+                        return res.status(400).json({input_errors: input_errors});
+                    }
+                    // Check if rentable vehicle exists
+                    const q2 = `
               SELECT *
               FROM Vehicles V
               WHERE V.location = '${location}' AND V.status = 'for_rent' ${
-                vehicleType === 'any' ? '' : `AND V.vtname = '${vehicleType}'`
-              }
+                        vehicleType === 'any' ? '' : `AND V.vtname = '${vehicleType}'`
+                    }
             `;
-            database
-              .query(q2)
-              .then(vehicles => {
-                queries.push(q2);
-                if (vehicles.length === 0) {
-                  input_errors.vehicleType = `
+                    database
+                        .query(q2)
+                        .then(vehicles => {
+                            queries.push(q2);
+                            if (vehicles.length === 0) {
+                                input_errors.vehicleType = `
                     No vehicles of this type available at ${location}
                   `;
-                  return res.status(400).json({
-                    query: formatQuery(q2),
-                    input_errors: input_errors,
-                  });
-                }
-                // Randomly choose a vehicle
-                const vIndex = chance.integer({
-                  min: 0,
-                  max: vehicles.rows.length - 1,
-                })
-                const vehicle = vehicles.rows[vIndex];
-                //TODO: Get next rid
-                const q3 = `
+                                return res.status(400).json({
+                                    query: formatQuery(q2),
+                                    input_errors: input_errors,
+                                });
+                            }
+                            // Randomly choose a vehicle
+                            const vIndex = chance.integer({
+                                min: 0,
+                                max: vehicles.rows.length - 1,
+                            })
+                            const vehicle = vehicles.rows[vIndex];
+                            //TODO: Get next rid
+                            const q3 = `
                   SELECT MAX (rid) AS maxrid
                   FROM Rentals
                 `;
-                database
-                  .query(q3)
-                  .then(result => {
-                    const newRid = parseInt(result.rows[0].maxrid) + 1;
-                    // Complete queries
-                    let insertQuery = '';
-                    if (!hasReservation && !isExistingCustomer) {
-                      insertQuery += `
+                            database
+                                .query(q3)
+                                .then(result => {
+                                    const newRid = parseInt(result.rows[0].maxrid) + 1;
+                                    // Complete queries
+                                    let insertQuery = '';
+                                    if (!hasReservation && !isExistingCustomer) {
+                                        insertQuery += `
                         INSERT INTO Customers (
                           cellphone,
                           name,
@@ -117,8 +117,8 @@ router.post('/rent-vehicle', (req, res) => {
                         )
                         \n\n
                       `;
-                    }
-                    insertQuery += `
+                                    }
+                                    insertQuery += `
                       INSERT INTO Rentals (
                         rid,
                         vid,
@@ -148,41 +148,41 @@ router.post('/rent-vehicle', (req, res) => {
                         '${vehicle.city}'
                       )
                     `;
-                    queries.push(insertQuery);
-                    const queriesString = queries.join(' \n\n ');
-                    database
-                      .query(insertQuery)
-                      .then(result => {
-                        res.status(200).json({
-                          query: formatQuery(queriesString),
-                          success: true,
-                        })
-                      })
-                      .catch(error => res.status(400).json({
-                        query: formatQuery(queriesString),
-                        error_message: error.message,
-                      }));
+                                    queries.push(insertQuery);
+                                    const queriesString = queries.join(' \n\n ');
+                                    database
+                                        .query(insertQuery)
+                                        .then(result => {
+                                            res.status(200).json({
+                                                query: formatQuery(queriesString),
+                                                success: true,
+                                            })
+                                        })
+                                        .catch(error => res.status(400).json({
+                                            query: formatQuery(queriesString),
+                                            error_message: error.message,
+                                        }));
 
-                  })
-                  .catch(error => res.status(400).json({
-                    query: formatQuery(q3),
+                                })
+                                .catch(error => res.status(400).json({
+                                    query: formatQuery(q3),
+                                    error_message: error.message,
+                                }))
+                        })
+                        .catch(error => res.status(400).json({
+                            query: formatQuery(q2),
+                            error_message: error.message,
+                        }))
+                })
+                .catch(error => res.status(400).json({
+                    query: formatQuery(q1),
                     error_message: error.message,
-                  }))
-              })
-              .catch(error => res.status(400).json({
-                query: formatQuery(q2),
-                error_message: error.message,
-              }))
-          })
-          .catch(error => res.status(400).json({
-            query: formatQuery(q1),
+                }));
+        })
+        .catch(error => res.status(400).json({
+            query: formatQuery(q0),
             error_message: error.message,
-          }));
-      })
-      .catch(error => res.status(400).json({
-        query: formatQuery(q0),
-        error_message: error.message,
-      }));
+        }));
 });
 
 // @route   POST find-available-vehicles
@@ -324,55 +324,122 @@ router.post('/generate-report', (req, res) => {
         reportDate
     } = req.body;
 
-    let text;
+    let q1;
+    let q2;
+    let q3;
 
     switch (reportType) {
         case "daily-rentals": {
-            text = `
+            q1 = `
+            SELECT R.location, R.rid, V.vid, V.vtname, V.make, V.model, V.color
+            FROM Rentals R, Vehicles V
+            WHERE TO_CHAR(R.fromdatetime, 'MM/DD/YYYY')='${reportDate}' AND R.vid=V.vid
+            `;
+            q2 = `
             SELECT R.location, V.vtname, Count (*) AS NumRentals
             FROM Rentals R, Vehicles V
             WHERE TO_CHAR(R.fromdatetime, 'MM/DD/YYYY')='${reportDate}' AND R.vid=V.vid
             GROUP BY (R.location, V.vtname)
             `;
+            q3 = `
+            SELECT R.location, Count (*) AS totalRentals
+            FROM Rentals R
+            WHERE TO_CHAR(R.fromdatetime, 'MM/DD/YYYY')='${reportDate}'
+            GROUP BY (R.location)
+            `;
             break;
         }
         case "daily-rentals-branch": {
-            text = `
+            q1 = `
+            SELECT R.location, R.rid, V.vid, V.vtname, V.make, V.model, V.color
+            FROM Rentals R, Vehicles V
+            WHERE TO_CHAR(R.fromdatetime, 'MM/DD/YYYY')='${reportDate}' AND R.location='${location}' AND R.vid=V.vid
+            `;
+            q2 = `
             SELECT R.location, V.vtname, Count (*) AS NumRentals
             FROM Rentals R, Vehicles V
             WHERE TO_CHAR(R.fromdatetime, 'MM/DD/YYYY')='${reportDate}' AND R.location='${location}' AND R.vid=V.vid
             GROUP BY (R.location, V.vtname)
             `;
+            q3 = `
+            SELECT R.location, Count (*) AS totalRentals
+            FROM Rentals R
+            WHERE TO_CHAR(R.fromdatetime, 'MM/DD/YYYY')='${reportDate}' AND R.location='${location}'
+            GROUP BY (R.location)
+            `;
             break;
         }
         case "daily-returns": {
-            text = `
+            q1 = `
+            SELECT R1.location, R.rid, V.vid, V.vtname, V.make, V.model, V.color
+            FROM Returns R, Rentals R1, Vehicles V
+            WHERE TO_CHAR(R.datetime, 'MM/DD/YYYY')='${reportDate}' AND R1.vid=V.vid AND R.rid=R1.rid
+            `;
+            q2 = `
             SELECT R1.location, V.vtname, Count (*) AS NumRentals, Sum (R.totalcost) AS revenue
             FROM Returns R, Rentals R1, Vehicles V
             WHERE TO_CHAR(R.datetime, 'MM/DD/YYYY')='${reportDate}' AND R1.vid=V.vid AND R.rid=R1.rid
             GROUP BY (R1.location, V.vtname)
             `;
+            q3 = `
+            SELECT R1.location, Count (*) AS totalRentals, Sum (R.totalcost) AS totalRevenue
+            FROM Returns R, Rentals R1
+            WHERE TO_CHAR(R.datetime, 'MM/DD/YYYY')='${reportDate}' AND R.rid=R1.rid
+            GROUP BY (R1.location)
+            `;
             break;
         }
         case "daily-returns-branch": {
-            text = `
+            q1 = `
+            SELECT R1.location, R.rid, V.vid, V.vtname, V.make, V.model, V.color
+            FROM Returns R, Rentals R1, Vehicles V
+            WHERE TO_CHAR(R.datetime, 'MM/DD/YYYY')='${reportDate}' AND R1.location='${location}' AND R1.vid=V.vid AND R.rid=R1.rid
+            `;
+            q2 = `
             SELECT R1.location, V.vtname, Count (*) AS NumRentals, Sum (R.totalcost) AS revenue
             FROM Returns R, Rentals R1, Vehicles V
             WHERE TO_CHAR(R.datetime, 'MM/DD/YYYY')='${reportDate}' AND R1.location='${location}' AND R1.vid=V.vid AND R.rid=R1.rid
             GROUP BY (R1.location, V.vtname)
+            `;
+            q3 = `
+            SELECT R1.location, Count (*) AS totalRentals, Sum (R.totalcost) AS totalRevenue
+            FROM Returns R, Rentals R1, Vehicles V
+            WHERE TO_CHAR(R.datetime, 'MM/DD/YYYY')='${reportDate}' AND R1.location='${location}' AND R.rid=R1.rid
+            GROUP BY (R1.location)
             `;
             break;
         }
 
     }
     database
-        .query(text)
-        .then(result => res.status(200).json({
-            query: formatQuery(text),
-            result: result.rows,
-        }))
+        .query(q1)
+        .then(vehicleInfo => {
+            database
+                .query(q2)
+                .then(locationByType => {
+                    database
+                        .query(q3)
+                        .then(totalAtLocation => res.status(200).json({
+                            query: formatQuery(q1 + ' \n\n ' + q2),
+                            success: true,
+                            result: {
+                                vehicleInfo: vehicleInfo,
+                                locationByType: locationByType,
+                                totalAtLocation: totalAtLocation,
+                            }
+                        }))
+                        .catch(error => res.status(400).json({
+                            query: formatQuery(q3),
+                            error_message: error.message,
+                        }))
+                })
+                .catch(error => res.status(400).json({
+                    query: formatQuery(q2),
+                    error_message: error.message,
+                }))
+        })
         .catch(error => res.status(400).json({
-            query: formatQuery(text),
+            query: formatQuery(q1),
             error_message: error.message,
         }));
 });
