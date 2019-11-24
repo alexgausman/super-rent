@@ -32,74 +32,82 @@ router.post('/rent-vehicle', (req, res) => {
         const reservation = result.rows[0];
         const q1 = `
           SELECT *
-          FROM Customers C
-          WHERE C.cellphone = '${cellNumber}'
+          FROM Rentals R
         `;
         database
           .query(q1)
           .then(result => {
-            const customer = result.rows[0];
-            // Business logic
-            let queries = [];
-            // Validate input
-            let input_errors = {};
-            if (hasReservation) {
-              queries.push(q0);
-              if (!reservation) {
-                input_errors.confNumber = 'Reservation not found';
-              }
-            } else {
-              if (isExistingCustomer) {
-                queries.push(q1);
-                if (!customer) {
-                  input_errors.cellNumber = 'Customer not found';
-                }
-              } else {
-                if (customer) {
-                  input_errors.cellNumber = 'Customer already exists';
-                }
-              }
-            }
-            if (Object.keys(input_errors).length > 0) {
-              return res.status(400).json({ input_errors: input_errors });
-            }
-            // Check if rentable vehicle exists
+            const rentals = result.rows;
             const q2 = `
               SELECT *
-              FROM Vehicles V
-              WHERE V.location = '${location}' AND V.status = 'for_rent' ${
-                vehicleType === 'any' ? '' : `AND V.vtname = '${vehicleType}'`
-              }
+              FROM Customers C
+              WHERE C.cellphone = '${cellNumber}'
             `;
             database
               .query(q2)
-              .then(vehicles => {
-                queries.push(q2);
-                if (vehicles.length === 0) {
-                  input_errors.vehicleType = `
-                    No vehicles of this type available at ${location}
-                  `;
-                  return res.status(400).json({
-                    query: formatQuery(q2),
-                    input_errors: input_errors,
-                  });
+              .then(result => {
+                const customer = result.rows[0];
+                // Business logic
+                let queries = [];
+                // Validate input
+                let input_errors = {};
+                if (hasReservation) {
+                  queries.push(q0);
+                  if (!reservation) {
+                    input_errors.confNumber = 'Reservation not found';
+                  }
+                  const existingRentalWithConfNo = rentals.find(r => {
+                    return r.confno === confNumber;
+                  })
+                  if (existingRentalWithConfNo) {
+                    input_errors.confNumber = 'Reservation already linked to existing rental';
+                  }
+                } else {
+                  if (isExistingCustomer) {
+                    queries.push(q2);
+                    if (!customer) {
+                      input_errors.cellNumber = 'Customer not found';
+                    }
+                  } else {
+                    if (customer) {
+                      input_errors.cellNumber = 'Customer already exists';
+                    }
+                  }
                 }
-                // Randomly choose a vehicle
-                const vIndex = chance.integer({
-                  min: 0,
-                  max: vehicles.rows.length - 1,
-                })
-                const vehicle = vehicles.rows[vIndex];
-                //TODO: Get next rid
+                if (Object.keys(input_errors).length > 0) {
+                  return res.status(400).json({ input_errors: input_errors });
+                }
+                // Check if rentable vehicle exists
                 const q3 = `
-                  SELECT MAX (rid) AS maxrid
-                  FROM Rentals
+                  SELECT *
+                  FROM Vehicles V
+                  WHERE V.location = '${location}' AND V.status = 'for_rent' ${
+                    vehicleType === 'any' ? '' : `AND V.vtname = '${vehicleType}'`
+                  }
                 `;
                 database
                   .query(q3)
-                  .then(result => {
-                    const newRid = parseInt(result.rows[0].maxrid) + 1;
-                    // Complete queries
+                  .then(vehicles => {
+                    queries.push(q3);
+                    if (vehicles.length === 0) {
+                      input_errors.vehicleType = `No vehicles of this type available at ${location}`;
+                      return res.status(400).json({
+                        query: formatQuery(q3),
+                        input_errors: input_errors,
+                      });
+                    }
+                    // Randomly choose a vehicle
+                    const vIndex = chance.integer({
+                      min: 0,
+                      max: vehicles.rows.length - 1,
+                    })
+                    const vehicle = vehicles.rows[vIndex];
+                    // Get next available rid
+                    const maxRid = rentals.reduce((acc, rental) => {
+                      return Math.max(acc, rental.rid);
+                    }, 0);
+                    const newRid = maxRid + 1;
+
                     let insertQuery = '';
                     if (!hasReservation && !isExistingCustomer) {
                       insertQuery += `
@@ -114,7 +122,7 @@ router.post('/rent-vehicle', (req, res) => {
                           '${customerName}',
                           '${customerAddress}',
                           '${driversLicense}',
-                        )
+                        );
                         \n\n
                       `;
                     }
@@ -147,6 +155,7 @@ router.post('/rent-vehicle', (req, res) => {
                         '${location}',
                         '${vehicle.city}'
                       )
+                      RETURNING *
                     `;
                     queries.push(insertQuery);
                     const queriesString = queries.join(' \n\n ');
@@ -155,7 +164,7 @@ router.post('/rent-vehicle', (req, res) => {
                       .then(result => {
                         res.status(200).json({
                           query: formatQuery(queriesString),
-                          success: true,
+                          result: result.rows[0],
                         })
                       })
                       .catch(error => res.status(400).json({
@@ -172,7 +181,9 @@ router.post('/rent-vehicle', (req, res) => {
               .catch(error => res.status(400).json({
                 query: formatQuery(q2),
                 error_message: error.message,
-              }))
+              }));
+
+
           })
           .catch(error => res.status(400).json({
             query: formatQuery(q1),
@@ -224,13 +235,13 @@ router.post('/return-vehicle', (req, res) => {
                     input_errors: input_errors,
                 });
             }
-            const q1 = `
+            const q2 = `
           SELECT *
           FROM Rentals R, Vehicles V, VehicleTypes VT, Customers C
           WHERE R.rid = ${rentalID} AND R.vid = V.vid AND V.vtname = VT.vtname AND C.cellphone = R.cellphone
         `;
             database
-                .query(q1)
+                .query(q2)
                 .then(result => {
                     const combinedInfo = result.rows[0];
                     let start, end, duration;
@@ -249,7 +260,7 @@ router.post('/return-vehicle', (req, res) => {
                     }
                     if (Object.keys(input_errors).length > 0) {
                         return res.status(400).json({
-                            query: formatQuery(q1),
+                            query: formatQuery(q2),
                             input_errors: input_errors,
                         });
                     }
@@ -271,7 +282,7 @@ router.post('/return-vehicle', (req, res) => {
                     let totalCost = carCost + insuranceCost;
                     let confNo = combinedInfo.confno;
 
-                    const q2 = `
+                    const q3 = `
                 INSERT INTO Returns (
                   rid,
                   dateTime,
@@ -289,9 +300,9 @@ router.post('/return-vehicle', (req, res) => {
                 )
               `;
                     database
-                        .query(q2)
+                        .query(q3)
                         .then(result => res.status(200).json({
-                            query: formatQuery(q1 + ' \n\n ' + q2),
+                            query: formatQuery(q2 + ' \n\n ' + q3),
                             success: true,
                             result: {
                                 rid: rentalID,
@@ -302,12 +313,12 @@ router.post('/return-vehicle', (req, res) => {
                             }
                         }))
                         .catch(error => res.status(400).json({
-                            query: formatQuery(q1 + ' \n\n ' + q2),
+                            query: formatQuery(q2 + ' \n\n ' + q3),
                             error_message: error.message,
                         }));
                 })
                 .catch(error => res.status(400).json({
-                    query: formatQuery(q1),
+                    query: formatQuery(q2),
                     error_message: error.message,
                 }));
         })
