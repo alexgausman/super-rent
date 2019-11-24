@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import axios from 'axios';
 import pluralize from 'pluralize';
+import formatDate from '../utils/formatDate';
 
 class DataTable extends Component {
   constructor(props) {
@@ -158,7 +159,11 @@ class DataTable extends Component {
           return (
             <tr key={i}>
               {tableInfo.columns.map((c, i) => {
-                const val = r[c.column_name];
+                let val = r[c.column_name];
+                if (c.column_name.includes('datetime') && val) {
+                  val = new Date(val);
+                  val = formatDate(val);
+                }
                 const text = val || (
                   <span className="font-italic font-weight-light text-muted">
                     NULL
