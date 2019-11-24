@@ -230,8 +230,7 @@ class GenerateReport extends Component {
                             </table>
                         </div>
                     );
-                }
-                else if (data.length > 0 && submission.reportType.includes("rental")) {
+                } else if (data.length > 0 && submission.reportType.includes("rental")) {
                     tables.push(
                         <div key={i}>
                             <h3 className="pb-2" style={{
@@ -248,7 +247,6 @@ class GenerateReport extends Component {
                                 {this.state.typeOptions.forEach((type, i) => {
                                     const vtData = data.find(d => d.vtname === type);
                                     let numVehicles = 0;
-                                    let revenue = '$0';
                                     if (vtData) {
                                         numVehicles = vtData.numrentals;
                                     }
@@ -265,13 +263,33 @@ class GenerateReport extends Component {
                             </table>
                         </div>
                     );
+                } else {
+                    if (submission.reportType === 'daily-rentals') {
+                        html = (
+                            <span> No Rentals on the selected Date </span>
+                        );
+                    } else if (submission.reportType === 'daily-rentals-branch') {
+                        html = (
+                            <span> No Rentals at the specified location on the selected Date </span>
+                        );
+                    } else if (submission.reportType === 'daily-returns') {
+                        html = (
+                            <span> No Returns on the selected Date </span>
+                        );
+                    } else if (submission.reportType === 'daily-returns-branch') {
+                        html = (
+                            <span> No Returns at the specified location on the selected Date </span>
+                        );
+                    }
                 }
             });
-            html = (
-                <div style={{width: '100%'}}>
-                    {tables}
-                </div>
-            );
+            if (tables.length > 0) {
+                html = (
+                    <div style={{width: '100%'}}>
+                        {tables}
+                    </div>
+                );
+            }
         }
         return (
             <div style={{
