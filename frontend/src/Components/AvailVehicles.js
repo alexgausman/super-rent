@@ -22,15 +22,15 @@ class AvailVehicles extends Component {
     this.getSetTypeOptions();
     window.$('select').selectpicker();
     window.$('#fromDateTimePicker').datetimepicker({
-		  //locale: 'nl',
-		  useCurrent: true,
-		  format: 'MM/DD/YYYY HH:mm',
-		});
+      //locale: 'nl',
+      useCurrent: true,
+      format: 'MM/DD/YYYY HH:mm',
+    });
     window.$('#untilDateTimePicker').datetimepicker({
-		  //locale: 'nl',
-		  useCurrent: true,
-		  format: 'MM/DD/YYYY HH:mm',
-		});
+      //locale: 'nl',
+      useCurrent: true,
+      format: 'MM/DD/YYYY HH:mm',
+    });
   }
 
   componentDidUpdate(prevProps, prevState) {
@@ -116,8 +116,6 @@ class AvailVehicles extends Component {
         console.log(err);
       });
   }
-
-
 
   render() {
     let html = (
