@@ -248,6 +248,10 @@ class RentVehicle extends Component {
                         <span>{result.vid}</span>
                     </div>
                     <div style={{padding: '20px',}}>
+                        <span style={{paddingRight: '10px', fontWeight: 'bold'}}>Insurance Cost:</span>
+                        <span>{result.vehicleType}</span>
+                    </div>
+                    <div style={{padding: '20px',}}>
                         <span style={{paddingRight: '10px', fontWeight: 'bold'}}>Vehicle Cost:</span>
                         <span>{result.rentalDate}</span>
                     </div>
