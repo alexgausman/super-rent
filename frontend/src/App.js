@@ -11,6 +11,7 @@ import DataTable from './Components/DataTable';
 import AvailVehicles from './Components/AvailVehicles';
 import ReturnVehicle from './Components/ReturnVehicle';
 import GenerateReport from "./Components/GenerateReport";
+import RentVehicle from "./Components/RentVehicle";
 
 class App extends Component {
   constructor() {
@@ -222,7 +223,7 @@ class App extends Component {
                     <span>TODO</span>
                   </Route>
                   <Route path="/clerk-actions/rent-vehicle">
-                    <span>TODO</span>
+                    <RentVehicle logQuery={this.logQuery}/>
                   </Route>
                   <Route path="/clerk-actions/return-vehicle">
                     <ReturnVehicle logQuery={this.logQuery}/>

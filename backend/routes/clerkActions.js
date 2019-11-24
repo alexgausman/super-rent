@@ -3,6 +3,17 @@ const {database} = require('../config');
 const formatQuery = require('../utils/formatQuery');
 const countReqVehicles = require('../utils/countReqVehicles');
 
+router.post('/rent-vehicle', (req, res) => {
+    let {
+        confNumber,
+        cellNumber,
+        location,
+        vehicleType,
+        fromDateTime,
+        toDateTime,
+    } = req.body;
+});
+
 // @route   POST find-available-vehicles
 // @desc    List available vehicles
 router.post('/return-vehicle', (req, res) => {
