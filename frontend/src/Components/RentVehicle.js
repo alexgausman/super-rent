@@ -10,7 +10,9 @@ class RentVehicle extends Component {
             typeOptions: [],
             vidOptions: [],
             cellNumber: null,
-            dliscence: null,
+            customerName: null,
+            customerAddress: null,
+            driversLicense: null,
             location: null,
             vehicleType: null,
             submission: null,
@@ -24,6 +26,9 @@ class RentVehicle extends Component {
         this.handleVehicleTypeChange = this.handleVehicleTypeChange.bind(this);
         this.handleCellNumberChange = this.handleCellNumberChange.bind(this);
         this.handleConfNumberChange = this.handleConfNumberChange.bind(this);
+        this.handleCustomerNameChange = this.handleCustomerNameChange.bind(this);
+        this.handleCustomerAddressChange = this.handleCustomerAddressChange.bind(this);
+        this.handleDriversLicenseChange = this.handleDriversLicenseChange.bind(this);
         this.goBack = this.goBack.bind(this);
         this.onSubmit = this.onSubmit.bind(this);
     }
@@ -96,6 +101,9 @@ class RentVehicle extends Component {
         const newSubmission = {
             confNumber: this.state.confNumber,
             cellNumber: this.state.cellNumber,
+            customerName: this.state.customerName,
+            customerAddress: this.state.customerAddress,
+            driversLicense: this.state.driversLicense,
             location: this.state.location,
             vehicleType: this.state.vehicleType,
             fromDateTime: window.$('#fromDatePicker').data('date'),
@@ -134,6 +142,18 @@ class RentVehicle extends Component {
 
     handleCellNumberChange(event) {
         this.setState({cellNumber: event.target.value})
+    }
+
+    handleCustomerNameChange(event) {
+        this.setState({customerName: event.target.value})
+    }
+
+    handleCustomerAddressChange(event) {
+        this.setState({customerAddress: event.target.value})
+    }
+
+    handleDriversLicenseChange(event) {
+        this.setState({driversLicense: event.target.value})
     }
 
     render() {
@@ -176,6 +196,54 @@ class RentVehicle extends Component {
                         {errors.cellNumber && (
                             <div className="invalid-feedback">
                                 {errors.cellNumber}
+                            </div>
+                        )}
+                    </div>
+
+                    <div className="form-group">
+                        <label htmlFor="name">Name</label>
+                        <input
+                            placeholder="Customer Name"
+                            type="text"
+                            className={`form-control ${errors.customerName ? 'is-invalid' : ''}`}
+                            onChange={this.handleCustomerNameChange}
+                            id="customerName"
+                        />
+                        {errors.customerName && (
+                            <div className="invalid-feedback">
+                                {errors.customerName}
+                            </div>
+                        )}
+                    </div>
+
+                    <div className="form-group">
+                        <label htmlFor="customerAddress">Address</label>
+                        <input
+                            placeholder="Customer Address"
+                            type="text"
+                            className={`form-control ${errors.customerAddress ? 'is-invalid' : ''}`}
+                            onChange={this.handleCustomerAddressChange}
+                            id="customerAddress"
+                        />
+                        {errors.customerAddress && (
+                            <div className="invalid-feedback">
+                                {errors.customerAddress}
+                            </div>
+                        )}
+                    </div>
+
+                    <div className="form-group">
+                        <label htmlFor="dlicense">Drivers License</label>
+                        <input
+                            placeholder="Customer Drivers License"
+                            type="text"
+                            className={`form-control ${errors.dlicense ? 'is-invalid' : ''}`}
+                            onChange={this.handleDriversLicenseChange}
+                            id="dlicense"
+                        />
+                        {errors.dlicense && (
+                            <div className="invalid-feedback">
+                                {errors.dlicense}
                             </div>
                         )}
                     </div>

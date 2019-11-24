@@ -7,6 +7,9 @@ router.post('/rent-vehicle', (req, res) => {
     let {
         confNumber,
         cellNumber,
+        customerName,
+        customerAddress,
+        driversLicense,
         location,
         vehicleType,
         fromDateTime,
