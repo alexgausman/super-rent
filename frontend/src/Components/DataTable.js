@@ -89,7 +89,7 @@ class DataTable extends Component {
   insertRow() {
     const newItem = {};
     const inputs = document.getElementsByClassName('new-item-input');
-    for(let i = 0; i < inputs.length; i++) {
+    for (let i = 0; i < inputs.length; i++) {
       const input = inputs[i];
       if (input.value) {
         const name = input.getAttribute('placeholder');
@@ -155,10 +155,10 @@ class DataTable extends Component {
     )
     if (tableInfo && this.state.rows) {
       const items = (
-        this.state.rows.map((r,i) => {
+        this.state.rows.map((r, i) => {
           return (
             <tr key={i}>
-              {tableInfo.columns.map((c,i) => {
+              {tableInfo.columns.map((c, i) => {
                 let val = r[c.column_name];
                 if (c.data_type.includes('timestamp') && val) {
                   val = new Date(val);
@@ -203,7 +203,7 @@ class DataTable extends Component {
           <table className="table table-responsive-lg table-hover">
             <thead>
               <tr>
-                {tableInfo.columns.map((c,i) => (
+                {tableInfo.columns.map((c, i) => (
                   <th key={i} scope="col">{c.column_name}</th>
                 ))}
                 <th key="actions" scope="col" className="font-weight-normal">
@@ -246,7 +246,7 @@ class DataTable extends Component {
                 </div>
                 <div className="modal-body">
                   <form>
-                    {tableInfo.columns.map((c,i) => (
+                    {tableInfo.columns.map((c, i) => (
                       <div className="form-group" key={i}>
                         <input
                           type="text"

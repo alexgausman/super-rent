@@ -26,15 +26,15 @@ class AvailVehicles extends Component {
     this.getSetLocOptions();
     this.getSetTypeOptions();
     window.$('#fromDateTimePicker').datetimepicker({
-		  useCurrent: false,
-		  format: 'MM/DD/YYYY HH:mm',
+      useCurrent: false,
+      format: 'MM/DD/YYYY HH:mm',
       minDate: 'now',
-		});
+    });
     window.$('#untilDateTimePicker').datetimepicker({
-		  useCurrent: false,
-		  format: 'MM/DD/YYYY HH:mm',
+      useCurrent: false,
+      format: 'MM/DD/YYYY HH:mm',
       minDate: 'now',
-		});
+    });
   }
 
   getSetLocOptions() {
@@ -113,8 +113,6 @@ class AvailVehicles extends Component {
         console.log(err);
       });
   }
-
-
 
   render() {
     const { submission, locOptions, typeOptions, result } = this.state;

@@ -12,6 +12,7 @@ import AvailVehicles from './Components/AvailVehicles';
 import ReturnVehicle from './Components/ReturnVehicle';
 import GenerateReport from "./Components/GenerateReport";
 import RentVehicle from "./Components/RentVehicle";
+import MakeReservation from './Components/MakeReservation';
 
 class App extends Component {
   constructor() {
@@ -38,12 +39,12 @@ class App extends Component {
   }
 
   getSetTablesInfo() {
-    this.setState({ loading: true}, () => {
+    this.setState({ loading: true }, () => {
       axios.get('/admin/db-tables-list')
         .then(res => {
           const tables = [];
           res.data.forEach(d => tables.push({ name: d.table_name }));
-          this.setState({tables: tables}, () => {
+          this.setState({ tables: tables }, () => {
             this.state.tables.forEach(t => {
               this.getSetTableColumns(t.name);
               this.getSetTableRowCount(t.name);
@@ -217,10 +218,10 @@ class App extends Component {
                     )}
                   />
                   <Route exact path="/customer-actions/view-available-vehicles">
-                    <AvailVehicles logQuery={this.logQuery}/>
+                    <AvailVehicles logQuery={this.logQuery} />
                   </Route>
                   <Route exact path="/customer-actions/make-a-reservation">
-                    <span>TODO</span>
+                    <MakeReservation logQuery={this.logQuery} />
                   </Route>
                   <Route path="/clerk-actions/rent-vehicle">
                     <RentVehicle logQuery={this.logQuery}/>
