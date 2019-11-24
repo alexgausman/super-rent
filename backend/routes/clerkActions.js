@@ -5,6 +5,8 @@ const countReqVehicles = require('../utils/countReqVehicles');
 
 router.post('/rent-vehicle', (req, res) => {
     let {
+        hasReservation,
+        isExistingCustomer,
         confNumber,
         cellNumber,
         customerName,
@@ -147,8 +149,6 @@ router.post('/return-vehicle', (req, res) => {
         query: formatQuery(q0),
         error_message: error.message,
       }));
-
-
 });
 
 router.post('/generate-report', (req, res) => {

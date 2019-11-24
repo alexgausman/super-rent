@@ -114,12 +114,12 @@ class GenerateReport extends Component {
 
     handleReportTypeSelection(event) {
         if (event.target.value === 'daily-rentals') {
-            this.state.location = 'all';
+            this.setState({location: 'all'});
             this.shouldShowLocationSelection = false;
         } else if (event.target.value === 'daily-rentals-branch') {
             this.shouldShowLocationSelection = true;
         } else if (event.target.value === 'daily-returns') {
-            this.state.location = 'all';
+            this.setState({location: 'all'});
             this.shouldShowLocationSelection = false;
         } else if (event.target.value === 'daily-returns-branch') {
             this.shouldShowLocationSelection = true;

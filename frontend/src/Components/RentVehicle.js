@@ -6,6 +6,8 @@ class RentVehicle extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            hasNoReservation: false,
+            isNotExistingCustomer: false,
             locOptions: [],
             typeOptions: [],
             vidOptions: [],
@@ -13,7 +15,7 @@ class RentVehicle extends Component {
             customerName: null,
             customerAddress: null,
             driversLicense: null,
-            location: null,
+            location: 'Choose a location',
             vehicleType: null,
             submission: null,
             result: null,
@@ -22,6 +24,8 @@ class RentVehicle extends Component {
         this.setup = this.setup.bind(this);
         this.getSetLocOptions = this.getSetLocOptions.bind(this);
         this.getSetTypeOptions = this.getSetTypeOptions.bind(this);
+        this.handleHasNoReservationChange = this.handleHasNoReservationChange.bind(this);
+        this.handleIsNotExistingCustomer = this.handleIsNotExistingCustomer.bind(this);
         this.handleLocationChange = this.handleLocationChange.bind(this);
         this.handleVehicleTypeChange = this.handleVehicleTypeChange.bind(this);
         this.handleCellNumberChange = this.handleCellNumberChange.bind(this);
@@ -99,6 +103,8 @@ class RentVehicle extends Component {
 
     onSubmit() {
         const newSubmission = {
+            hasReservation: !this.state.hasNoReservation,
+            isExistingCustomer: !this.state.isNotExistingCustomer,
             confNumber: this.state.confNumber,
             cellNumber: this.state.cellNumber,
             customerName: this.state.customerName,
@@ -156,6 +162,14 @@ class RentVehicle extends Component {
         this.setState({driversLicense: event.target.value})
     }
 
+    handleHasNoReservationChange(event) {
+        this.setState({hasNoReservation: !this.state.hasNoReservation})
+    }
+
+    handleIsNotExistingCustomer(event) {
+        this.setState({isNotExistingCustomer: !this.state.isNotExistingCustomer})
+    }
+
     render() {
         const {submission, result, errors} = this.state;
         let html;
@@ -168,85 +182,126 @@ class RentVehicle extends Component {
                         Rent a Vehicle
                     </h3>
 
-                    <div className="form-group">
-                        <label htmlFor="confNo">Confirmation Number</label>
-                        <input
-                            placeholder="Reservation Confirmation Number"
-                            type="text"
-                            className={`form-control ${errors.confNo ? 'is-invalid' : ''}`}
-                            onChange={this.handleConfNumberChange}
-                            id="confNo"
-                        />
-                        {errors.confNo && (
-                            <div className="invalid-feedback">
-                                {errors.confNo}
+                    {
+                        !this.state.hasNoReservation ?
+                            <div className="form-group">
+                                <label htmlFor="confNo">Confirmation Number</label>
+                                <input
+                                    placeholder="Reservation Confirmation Number"
+                                    type="text"
+                                    className={`form-control ${errors.confNo ? 'is-invalid' : ''}`}
+                                    onChange={this.handleConfNumberChange}
+                                    id="confNo"
+                                />
+                                {errors.confNo && (
+                                    <div className="invalid-feedback">
+                                        {errors.confNo}
+                                    </div>
+                                )}
                             </div>
-                        )}
-                    </div>
+                            : null
+                    }
 
                     <div className="form-group">
-                        <label htmlFor="cellNumber">Cell Number</label>
-                        <input
-                            placeholder="Customer Cellphone Number"
-                            type="text"
-                            className={`form-control ${errors.cellNumber ? 'is-invalid' : ''}`}
-                            onChange={this.handleCellNumberChange}
-                            id="cellNumber"
-                        />
-                        {errors.cellNumber && (
-                            <div className="invalid-feedback">
-                                {errors.cellNumber}
-                            </div>
-                        )}
+                        <div style={{display: 'flex', alignItems: 'baseline'}}>
+                            <input style={{marginRight: '10px'}}
+                                   type="checkbox" name="hasNoReservation" onChange={this.handleHasNoReservationChange}/>
+                            No Reservation
+                        </div>
                     </div>
 
-                    <div className="form-group">
-                        <label htmlFor="name">Name</label>
-                        <input
-                            placeholder="Customer Name"
-                            type="text"
-                            className={`form-control ${errors.customerName ? 'is-invalid' : ''}`}
-                            onChange={this.handleCustomerNameChange}
-                            id="customerName"
-                        />
-                        {errors.customerName && (
-                            <div className="invalid-feedback">
-                                {errors.customerName}
+                    {
+                        this.state.hasNoReservation ?
+                            <div className="form-group">
+                                <label htmlFor="cellNumber">Cell Number</label>
+                                <input
+                                    placeholder="Customer Cellphone Number"
+                                    type="text"
+                                    className={`form-control ${errors.cellNumber ? 'is-invalid' : ''}`}
+                                    onChange={this.handleCellNumberChange}
+                                    id="cellNumber"
+                                />
+                                {errors.cellNumber && (
+                                    <div className="invalid-feedback">
+                                        {errors.cellNumber}
+                                    </div>
+                                )}
                             </div>
-                        )}
-                    </div>
+                            : null
+                    }
 
-                    <div className="form-group">
-                        <label htmlFor="customerAddress">Address</label>
-                        <input
-                            placeholder="Customer Address"
-                            type="text"
-                            className={`form-control ${errors.customerAddress ? 'is-invalid' : ''}`}
-                            onChange={this.handleCustomerAddressChange}
-                            id="customerAddress"
-                        />
-                        {errors.customerAddress && (
-                            <div className="invalid-feedback">
-                                {errors.customerAddress}
+                    {
+                        this.state.hasNoReservation ?
+                            <div className="form-group">
+                                <div style={{display: 'flex', alignItems: 'baseline'}}>
+                                    <input style={{marginRight: '10px'}}
+                                           type="checkbox" name="isNotExistingCustomer"
+                                           onChange={this.handleIsNotExistingCustomer}/>
+                                    Not an existing customer
+                                </div>
                             </div>
-                        )}
-                    </div>
+                            : null
+                    }
 
-                    <div className="form-group">
-                        <label htmlFor="dlicense">Drivers License</label>
-                        <input
-                            placeholder="Customer Drivers License"
-                            type="text"
-                            className={`form-control ${errors.dlicense ? 'is-invalid' : ''}`}
-                            onChange={this.handleDriversLicenseChange}
-                            id="dlicense"
-                        />
-                        {errors.dlicense && (
-                            <div className="invalid-feedback">
-                                {errors.dlicense}
+                    {
+                        this.state.isNotExistingCustomer ?
+                            <div className="form-group">
+                                <label htmlFor="name">Name</label>
+                                <input
+                                    placeholder="Customer Name"
+                                    type="text"
+                                    className={`form-control ${errors.customerName ? 'is-invalid' : ''}`}
+                                    onChange={this.handleCustomerNameChange}
+                                    id="customerName"
+                                />
+                                {errors.customerName && (
+                                    <div className="invalid-feedback">
+                                        {errors.customerName}
+                                    </div>
+                                )}
                             </div>
-                        )}
-                    </div>
+                            : null
+                    }
+
+                    {
+                        this.state.isNotExistingCustomer ?
+                            <div className="form-group">
+                                <label htmlFor="customerAddress">Address</label>
+                                <input
+                                    placeholder="Customer Address"
+                                    type="text"
+                                    className={`form-control ${errors.customerAddress ? 'is-invalid' : ''}`}
+                                    onChange={this.handleCustomerAddressChange}
+                                    id="customerAddress"
+                                />
+                                {errors.customerAddress && (
+                                    <div className="invalid-feedback">
+                                        {errors.customerAddress}
+                                    </div>
+                                )}
+                            </div>
+                            : null
+                    }
+
+                    {
+                        this.state.isNotExistingCustomer ?
+                            <div className="form-group">
+                                <label htmlFor="dlicense">Drivers License</label>
+                                <input
+                                    placeholder="Customer Drivers License"
+                                    type="text"
+                                    className={`form-control ${errors.dlicense ? 'is-invalid' : ''}`}
+                                    onChange={this.handleDriversLicenseChange}
+                                    id="dlicense"
+                                />
+                                {errors.dlicense && (
+                                    <div className="invalid-feedback">
+                                        {errors.dlicense}
+                                    </div>
+                                )}
+                            </div>
+                            : null
+                    }
 
                     <div className="form-group">
                         <label htmlFor="locSelect">Location</label>
