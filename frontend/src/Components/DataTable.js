@@ -160,9 +160,11 @@ class DataTable extends Component {
             <tr key={i}>
               {tableInfo.columns.map((c, i) => {
                 let val = r[c.column_name];
-                if (c.column_name.includes('datetime') && val) {
+                if (c.data_type.includes('timestamp') && val) {
                   val = new Date(val);
                   val = formatDate(val);
+                } else if (typeof val === "boolean") {
+                  val = val.toString();
                 }
                 const text = val || (
                   <span className="font-italic font-weight-light text-muted">

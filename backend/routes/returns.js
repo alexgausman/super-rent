@@ -27,22 +27,20 @@ router.post('/', (req, res) => {
     const text = `
     INSERT INTO Returns (
       rid,
-      date,
-      time,
+      datetime,
       odometer,
-      fulltank,
-      value
+      fullTank,
+      totalcost
     )
     VALUES ( $1, $2, $3, $4, $5, $6 )
     RETURNING *
   `;
     const values = [
         req.body.rid,
-        req.body.date,
-        req.body.time,
+        req.body.datetime,
         req.body.odometer,
-        req.body.fulltank,
-        req.body.value,
+        req.body.fullTank,
+        req.body.totalcost,
     ];
     database
         .query(text, values)

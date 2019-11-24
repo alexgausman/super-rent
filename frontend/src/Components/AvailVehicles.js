@@ -23,7 +23,7 @@ class AvailVehicles extends Component {
   }
 
   setup() {
-    this.getSetLocOptions()
+    this.getSetLocOptions();
     this.getSetTypeOptions();
     window.$('#fromDateTimePicker').datetimepicker({
       useCurrent: false,
@@ -136,6 +136,7 @@ class AvailVehicles extends Component {
               ))}
             </select>
           </div>
+
           <div className="form-group">
             <label htmlFor="typeSelect">Type</label>
             <select className="form-control" id="typeSelect">

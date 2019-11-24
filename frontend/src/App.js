@@ -9,6 +9,9 @@ import LogPanel from './Components/LogPanel';
 import Dashboard from './Components/Dashboard';
 import DataTable from './Components/DataTable';
 import AvailVehicles from './Components/AvailVehicles';
+import ReturnVehicle from './Components/ReturnVehicle';
+import GenerateReport from "./Components/GenerateReport";
+import RentVehicle from "./Components/RentVehicle";
 import MakeReservation from './Components/MakeReservation';
 
 class App extends Component {
@@ -220,8 +223,14 @@ class App extends Component {
                   <Route exact path="/customer-actions/make-a-reservation">
                     <MakeReservation logQuery={this.logQuery} />
                   </Route>
-                  <Route path="/clerk-actions/:action">
-                    <span>TODO</span>
+                  <Route path="/clerk-actions/rent-vehicle">
+                    <RentVehicle logQuery={this.logQuery}/>
+                  </Route>
+                  <Route path="/clerk-actions/return-vehicle">
+                    <ReturnVehicle logQuery={this.logQuery}/>
+                  </Route>
+                  <Route path="/clerk-actions/generate-report">
+                    <GenerateReport logQuery={this.logQuery}/>
                   </Route>
                 </div>
                 <LogPanel
