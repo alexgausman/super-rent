@@ -13,6 +13,9 @@ class RentVehicle extends Component {
             typeOptions: [],
             vidOptions: [],
             confNumber: '',
+            creditCardType: '',
+            creditCardNumber: '',
+            creditCardExp: '',
             cellNumber: '',
             customerName: '',
             customerAddress: '',
@@ -28,6 +31,9 @@ class RentVehicle extends Component {
         this.getSetTypeOptions = this.getSetTypeOptions.bind(this);
         this.handleHasNoReservationChange = this.handleHasNoReservationChange.bind(this);
         this.handleIsNotExistingCustomer = this.handleIsNotExistingCustomer.bind(this);
+        this.handleCreditCardNumberChange = this.handleCreditCardNumberChange.bind(this);
+        this.handleCreditCardTypeChange = this.handleCreditCardTypeChange.bind(this);
+        this.handleCreditCardExpChange = this.handleCreditCardExpChange.bind(this);
         this.handleLocationChange = this.handleLocationChange.bind(this);
         this.handleVehicleTypeChange = this.handleVehicleTypeChange.bind(this);
         this.handleCellNumberChange = this.handleCellNumberChange.bind(this);
@@ -108,6 +114,9 @@ class RentVehicle extends Component {
             hasReservation: !this.state.hasNoReservation,
             isExistingCustomer: !this.state.isNotExistingCustomer,
             confNumber: this.state.confNumber,
+            creditCardNumber: this.state.creditCardNumber,
+            creditCardType: this.state.creditCardType,
+            creditCardExp: this.state.creditCardExp,
             cellNumber: this.state.cellNumber,
             customerName: this.state.customerName,
             customerAddress: this.state.customerAddress,
@@ -172,6 +181,18 @@ class RentVehicle extends Component {
 
     handleConfNumberChange(event) {
         this.setState({confNumber: event.target.value})
+    }
+
+    handleCreditCardNumberChange(event) {
+        this.setState({creditCardNumber: event.target.value})
+    }
+
+    handleCreditCardTypeChange(event) {
+        this.setState({creditCardType: event.target.value})
+    }
+
+    handleCreditCardExpChange(event) {
+        this.setState({creditCardExp: event.target.value})
     }
 
     handleCellNumberChange(event) {
@@ -340,51 +361,118 @@ class RentVehicle extends Component {
                             : null
                     }
 
-                    <div className="form-group">
-                        <label htmlFor="locSelect">Location</label>
-                        <select value={this.state.location} onChange={this.handleLocationChange}
-                                className="form-control" id="locSelect">
-                            {this.state.locOptions.map((loc, i) => (
-                                <option key={i} value={loc}>{loc}</option>
-                            ))}
-                        </select>
-                    </div>
+                    {
+                        this.state.hasNoReservation ?
+                            <div className="form-group">
+                                <label htmlFor="locSelect">Location</label>
+                                <select value={this.state.location} onChange={this.handleLocationChange}
+                                        className="form-control" id="locSelect">
+                                    {this.state.locOptions.map((loc, i) => (
+                                        <option key={i} value={loc}>{loc}</option>
+                                    ))}
+                                </select>
+                            </div>
+                            : null
+                    }
+
+                    {
+                        this.state.hasNoReservation ?
+                            <div className="form-group">
+                                <label htmlFor="typeSelect">Type</label>
+                                <select value={this.state.vehicleType} onChange={this.handleVehicleTypeChange}
+                                        className="form-control" id="typeSelect">
+                                    <option value="any">Any</option>
+                                    <option disabled>─────────────────────────</option>
+                                    {this.state.typeOptions.map((type, i) => (
+                                        <option key={i} value={type}>{type}</option>
+                                    ))}
+                                </select>
+                            </div>
+                            : null
+                    }
+
+                    {
+                        this.state.hasNoReservation ?
+                            <div className="form-group">
+                                <label htmlFor="fromDatePicker">Rental Date</label>
+                                <input
+                                    placeholder={"Rental Date"}
+                                    type="text"
+                                    className="form-control datetimepicker-input"
+                                    id="fromDatePicker"
+                                    data-toggle="datetimepicker"
+                                    data-target="#fromDatePicker"
+                                    autoComplete="off"
+                                />
+                            </div>
+                            : null
+                    }
+
+                    {
+                        this.state.hasNoReservation ?
+                            <div className="form-group">
+                                <label htmlFor="toDatePicker">Return Date</label>
+                                <input
+                                    placeholder={"Return Date"}
+                                    type="text"
+                                    className="form-control datetimepicker-input"
+                                    id="toDatePicker"
+                                    data-toggle="datetimepicker"
+                                    data-target="#toDatePicker"
+                                    autoComplete="off"/>
+                            </div>
+                            : null
+                    }
 
                     <div className="form-group">
-                        <label htmlFor="typeSelect">Type</label>
-                        <select value={this.state.vehicleType} onChange={this.handleVehicleTypeChange}
-                                className="form-control" id="typeSelect">
-                            <option value="any">Any</option>
-                            <option disabled>─────────────────────────</option>
-                            {this.state.typeOptions.map((type, i) => (
-                                <option key={i} value={type}>{type}</option>
-                            ))}
-                        </select>
-                    </div>
-
-                    <div className="form-group">
-                        <label htmlFor="fromDatePicker">Rental Date</label>
+                        <label htmlFor="creditCard">Credit Card Number</label>
                         <input
-                          placeholder={"Rental Date"}
-                          type="text"
-                          className="form-control datetimepicker-input"
-                          id="fromDatePicker"
-                          data-toggle="datetimepicker"
-                          data-target="#fromDatePicker"
-                          autoComplete="off"
+                            placeholder="Credit Card Number"
+                            type="text"
+                            className={`form-control ${errors.creditcard ? 'is-invalid' : ''}`}
+                            onChange={this.handleCreditCardNumberChange}
+                            value={this.state.creditCardNumber}
+                            id="creditCard"
                         />
+                        {errors.creditcard && (
+                            <div className="invalid-feedback">
+                                {errors.creditcard}
+                            </div>
+                        )}
                     </div>
 
                     <div className="form-group">
-                        <label htmlFor="toDatePicker">Return Date</label>
+                        <label htmlFor="creditCardType">Credit Card Type</label>
                         <input
-                          placeholder={"Return Date"}
-                          type="text"
-                          className="form-control datetimepicker-input"
-                          id="toDatePicker"
-                          data-toggle="datetimepicker"
-                          data-target="#toDatePicker"
-                          autoComplete="off"/>
+                            placeholder="Credit Card Type"
+                            type="text"
+                            className={`form-control ${errors.creditcardtype ? 'is-invalid' : ''}`}
+                            onChange={this.handleCreditCardTypeChange}
+                            value={this.state.creditCardType}
+                            id="creditCardType"
+                        />
+                        {errors.creditcardtype && (
+                            <div className="invalid-feedback">
+                                {errors.creditcardtype}
+                            </div>
+                        )}
+                    </div>
+
+                    <div className="form-group">
+                        <label htmlFor="creditCardExp">Credit Card Expiry Date</label>
+                        <input
+                            placeholder="MM/YYYY"
+                            type="text"
+                            className={`form-control ${errors.creditCardExp ? 'is-invalid' : ''}`}
+                            onChange={this.handleCreditCardExpChange}
+                            value={this.state.creditCardExp}
+                            id="creditCardExp"
+                        />
+                        {errors.creditCardExp && (
+                            <div className="invalid-feedback">
+                                {errors.creditCardExp}
+                            </div>
+                        )}
                     </div>
 
                     <button type="button" className="btn btn-primary" onClick={this.onSubmit} style={{
