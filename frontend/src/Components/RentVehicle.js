@@ -15,7 +15,7 @@ class RentVehicle extends Component {
             confNumber: '',
             creditCardType: '',
             creditCardNumber: '',
-            creditCardExp: null,
+            creditCardExp: '',
             cellNumber: '',
             customerName: '',
             customerAddress: '',
@@ -33,6 +33,7 @@ class RentVehicle extends Component {
         this.handleIsNotExistingCustomer = this.handleIsNotExistingCustomer.bind(this);
         this.handleCreditCardNumberChange = this.handleCreditCardNumberChange.bind(this);
         this.handleCreditCardTypeChange = this.handleCreditCardTypeChange.bind(this);
+        this.handleCreditCardExpChange = this.handleCreditCardExpChange.bind(this);
         this.handleLocationChange = this.handleLocationChange.bind(this);
         this.handleVehicleTypeChange = this.handleVehicleTypeChange.bind(this);
         this.handleCellNumberChange = this.handleCellNumberChange.bind(this);
@@ -51,10 +52,6 @@ class RentVehicle extends Component {
     setup() {
         this.getSetLocOptions();
         this.getSetTypeOptions();
-        window.$('#creditCardExp').datetimepicker({
-            useCurrent: false,
-            format: 'MM/YYYY',
-        });
         window.$('#fromDatePicker').datetimepicker({
             useCurrent: false,
             format: 'MM/DD/YYYY HH:mm',
@@ -119,7 +116,7 @@ class RentVehicle extends Component {
             confNumber: this.state.confNumber,
             creditCardNumber: this.state.creditCardNumber,
             creditCardType: this.state.creditCardType,
-            creditCardExp: window.$('#creditCardExp').data('date'),
+            creditCardExp: this.state.creditCardExp,
             cellNumber: this.state.cellNumber,
             customerName: this.state.customerName,
             customerAddress: this.state.customerAddress,
@@ -192,6 +189,10 @@ class RentVehicle extends Component {
 
     handleCreditCardTypeChange(event) {
         this.setState({creditCardType: event.target.value})
+    }
+
+    handleCreditCardExpChange(event) {
+        this.setState({creditCardExp: event.target.value})
     }
 
     handleCellNumberChange(event) {
@@ -460,14 +461,18 @@ class RentVehicle extends Component {
                     <div className="form-group">
                         <label htmlFor="creditCardExp">Credit Card Expiry Date</label>
                         <input
-                            placeholder={"MM/YYYY"}
+                            placeholder="MM/YYYY"
                             type="text"
-                            className="form-control datetimepicker-input"
+                            className={`form-control ${errors.creditCardExp ? 'is-invalid' : ''}`}
+                            onChange={this.handleCreditCardExpChange}
+                            value={this.state.creditCardExp}
                             id="creditCardExp"
-                            data-toggle="datetimepicker"
-                            data-target="#fromDatePicker"
-                            autoComplete="off"
                         />
+                        {errors.creditCardExp && (
+                            <div className="invalid-feedback">
+                                {errors.creditCardExp}
+                            </div>
+                        )}
                     </div>
 
                     <button type="button" className="btn btn-primary" onClick={this.onSubmit} style={{
