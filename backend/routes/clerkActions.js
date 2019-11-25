@@ -382,7 +382,7 @@ router.post('/generate-report', (req, res) => {
             GROUP BY (R1.location, V.vtname)
             `;
             q3 = `
-            SELECT R1.location, Count (*) AS totalRentals, Sum (R.totalcost) AS totalRevenue
+            SELECT R1.location, Count (*) AS totalReturns, Sum (R.totalcost) AS totalRevenue
             FROM Returns R, Rentals R1
             WHERE TO_CHAR(R.datetime, 'MM/DD/YYYY')='${reportDate}' AND R.rid=R1.rid
             GROUP BY (R1.location)
@@ -402,7 +402,7 @@ router.post('/generate-report', (req, res) => {
             GROUP BY (R1.location, V.vtname)
             `;
             q3 = `
-            SELECT R1.location, Count (*) AS totalRentals, Sum (R.totalcost) AS totalRevenue
+            SELECT R1.location, Sum (*) AS totalReturns, Sum (R.totalcost) AS totalRevenue
             FROM Returns R, Rentals R1, Vehicles V
             WHERE TO_CHAR(R.datetime, 'MM/DD/YYYY')='${reportDate}' AND R1.location='${location}' AND R.rid=R1.rid
             GROUP BY (R1.location)

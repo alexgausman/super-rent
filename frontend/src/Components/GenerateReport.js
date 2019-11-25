@@ -191,9 +191,9 @@ class GenerateReport extends Component {
         } else if (result) {
             const tables = [];
             this.state.locOptions.forEach((loc, i) => {
-                const vehicleInfo = result.vehicleInfo.filter(r => r.location === loc);
-                const locationByType = result.locationByType.filter(r => r.location === loc);
-                const locationTotals = result.totalAtLocation.filter(r => r.location === loc);
+                const vehicleInfo = result.vehicleInfo.rows.filter(r => r.location === loc);
+                const locationByType = result.locationByType.rows.filter(r => r.location === loc);
+                const locationTotals = result.totalAtLocation.rows.filter(r => r.location === loc);
                 const vehicleInfoRows = [];
                 const locationRows = [];
                 const locationTotalRows = [];
@@ -202,7 +202,15 @@ class GenerateReport extends Component {
                         <div key={i}>
                             <h3 className="pb-2" style={{
                                 marginTop: '30px',
+                                marginBottom: '30px',
                             }}>{loc}</h3>
+
+                            <h5 className="pb-2" style={{
+                                marginTop: '30px',
+                                marginBottom: '30px',
+                                marginLeft: '30px',
+                            }}>Vehicles Returned at {loc}</h5>
+
                             <table className="table table-responsive-lg table-hover">
                                 <thead>
                                 <tr>
@@ -230,6 +238,13 @@ class GenerateReport extends Component {
                                 {vehicleInfoRows}
                                 </tbody>
                             </table>
+
+                            <h5 className="pb-2" style={{
+                                marginTop: '30px',
+                                marginBottom: '30px',
+                                marginLeft: '30px',
+                            }}>Vehicles Types Returned at {loc}</h5>
+
                             <table className="table table-responsive-lg table-hover">
                                 <thead>
                                 <tr>
@@ -259,18 +274,27 @@ class GenerateReport extends Component {
                                 {locationRows}
                                 </tbody>
                             </table>
+
+                            <h5 className="pb-2" style={{
+                                marginTop: '30px',
+                                marginBottom: '30px',
+                                marginLeft: '30px',
+                            }}>Total Vehicles Returned at {loc}</h5>
+
                             <table className="table table-responsive-lg table-hover">
                                 <thead>
                                 <tr>
                                     <th scope="col">Location</th>
-                                    <th scope="col">Total New Returns</th>
+                                    <th scope="col">Total Returns</th>
+                                    <th scope="col">Total Revenue</th>
                                 </tr>
                                 </thead>
                                 <tbody>{locationTotals.forEach((v, i) => {
                                     locationTotalRows.push(
                                         <tr key={i}>
                                             <td style={{lineHeight: '1.8'}}>{v.location}</td>
-                                            <td style={{lineHeight: '1.8'}}>{v.totalreturn}</td>
+                                            <td style={{lineHeight: '1.8'}}>{v.totalReturns}</td>
+                                            <td style={{lineHeight: '1.8'}}>{v.totalRevenue}</td>
                                         </tr>
                                     );
                                 })}
@@ -285,6 +309,13 @@ class GenerateReport extends Component {
                             <h3 className="pb-2" style={{
                                 marginTop: '30px',
                             }}>{loc}</h3>
+
+                            <h5 className="pb-2" style={{
+                                marginTop: '30px',
+                                marginBottom: '30px',
+                                marginLeft: '30px',
+                            }}>Vehicles Rented at {loc}</h5>
+
                             <table className="table table-responsive-lg table-hover">
                                 <thead>
                                 <tr>
@@ -309,9 +340,16 @@ class GenerateReport extends Component {
                                         </tr>
                                     );
                                 })}
-                                {locationRows}
+                                {vehicleInfoRows}
                                 </tbody>
                             </table>
+
+                            <h5 className="pb-2" style={{
+                                marginTop: '30px',
+                                marginBottom: '30px',
+                                marginLeft: '30px',
+                            }}>Vehicles Types Rented at {loc}</h5>
+
                             <table className="table table-responsive-lg table-hover">
                                 <thead>
                                 <tr>
@@ -337,18 +375,25 @@ class GenerateReport extends Component {
                                 {locationRows}
                                 </tbody>
                             </table>
+
+                            <h5 className="pb-2" style={{
+                                marginTop: '30px',
+                                marginBottom: '30px',
+                                marginLeft: '30px',
+                            }}>Total Vehicles Rented at {loc}</h5>
+
                             <table className="table table-responsive-lg table-hover">
                                 <thead>
                                 <tr>
                                     <th scope="col">Location</th>
-                                    <th scope="col">Total New Returns</th>
+                                    <th scope="col">Total New Rentals</th>
                                 </tr>
                                 </thead>
                                 <tbody>{locationTotals.forEach((v, i) => {
                                     locationTotalRows.push(
                                         <tr key={i}>
                                             <td style={{lineHeight: '1.8'}}>{v.location}</td>
-                                            <td style={{lineHeight: '1.8'}}>{v.totalreturn}</td>
+                                            <td style={{lineHeight: '1.8'}}>{v.totalRentals}</td>
                                         </tr>
                                     );
                                 })}
