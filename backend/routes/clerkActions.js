@@ -23,13 +23,13 @@ router.post('/rent-vehicle', (req, res) => {
     const q0 = `
       SELECT *
       FROM Reservations R
-      ${confNumber ? `WHERE R.confno = ${confNumber}`: ''}
+      ${confNumber ? `WHERE R.confno = ${confNumber}` : ''}
     `;
     database
-      .query(q0)
-      .then(result => {
-        const reservation = result.rows[0];
-        const q1 = `
+        .query(q0)
+        .then(result => {
+            const reservation = result.rows[0];
+            const q1 = `
           SELECT *
           FROM Rentals R
         `;
@@ -127,8 +127,8 @@ router.post('/rent-vehicle', (req, res) => {
                         );
                         \n\n
                       `;
-                    }
-                    insertQuery += `
+                                    }
+                                    insertQuery += `
                       INSERT INTO Rentals (
                         rid,
                         vid,
@@ -342,55 +342,153 @@ router.post('/generate-report', (req, res) => {
         reportDate
     } = req.body;
 
-    let text;
+    let q1;
+    let q2;
+    let q3;
+    let q4;
 
     switch (reportType) {
         case "daily-rentals": {
-            text = `
+            q1 = `
+            SELECT R.location, R.rid, V.vid, V.vtname, V.make, V.model, V.color
+            FROM Rentals R, Vehicles V
+            WHERE TO_CHAR(R.fromdatetime, 'MM/DD/YYYY')='${reportDate}' AND R.vid=V.vid
+            `;
+            q2 = `
             SELECT R.location, V.vtname, Count (*) AS NumRentals
             FROM Rentals R, Vehicles V
             WHERE TO_CHAR(R.fromdatetime, 'MM/DD/YYYY')='${reportDate}' AND R.vid=V.vid
             GROUP BY (R.location, V.vtname)
             `;
+            q3 = `
+            SELECT R.location, Count (*) AS totalRentals
+            FROM Rentals R
+            WHERE TO_CHAR(R.fromdatetime, 'MM/DD/YYYY')='${reportDate}'
+            GROUP BY (R.location)
+            `;
+            q4 = `
+            SELECT Count (*) AS overallRentals
+            FROM Rentals R
+            WHERE TO_CHAR(R.fromdatetime, 'MM/DD/YYYY')='${reportDate}'
+            `;
             break;
         }
         case "daily-rentals-branch": {
-            text = `
+            q1 = `
+            SELECT R.location, R.rid, V.vid, V.vtname, V.make, V.model, V.color
+            FROM Rentals R, Vehicles V
+            WHERE TO_CHAR(R.fromdatetime, 'MM/DD/YYYY')='${reportDate}' AND R.location='${location}' AND R.vid=V.vid
+            `;
+            q2 = `
             SELECT R.location, V.vtname, Count (*) AS NumRentals
             FROM Rentals R, Vehicles V
             WHERE TO_CHAR(R.fromdatetime, 'MM/DD/YYYY')='${reportDate}' AND R.location='${location}' AND R.vid=V.vid
             GROUP BY (R.location, V.vtname)
             `;
+            q3 = `
+            SELECT R.location, Count (*) AS totalRentals
+            FROM Rentals R
+            WHERE TO_CHAR(R.fromdatetime, 'MM/DD/YYYY')='${reportDate}' AND R.location='${location}'
+            GROUP BY (R.location)
+            `;
+            q4 = `
+            SELECT Count (*) AS overallRentals
+            FROM Rentals R
+            WHERE TO_CHAR(R.fromdatetime, 'MM/DD/YYYY')='${reportDate}' AND R.location='${location}'
+            `;
             break;
         }
         case "daily-returns": {
-            text = `
+            q1 = `
+            SELECT R1.location, R.rid, V.vid, V.vtname, V.make, V.model, V.color
+            FROM Returns R, Rentals R1, Vehicles V
+            WHERE TO_CHAR(R.datetime, 'MM/DD/YYYY')='${reportDate}' AND R1.vid=V.vid AND R.rid=R1.rid
+            `;
+            q2 = `
             SELECT R1.location, V.vtname, Count (*) AS NumRentals, Sum (R.totalcost) AS revenue
             FROM Returns R, Rentals R1, Vehicles V
             WHERE TO_CHAR(R.datetime, 'MM/DD/YYYY')='${reportDate}' AND R1.vid=V.vid AND R.rid=R1.rid
             GROUP BY (R1.location, V.vtname)
             `;
+            q3 = `
+            SELECT R1.location, Count (*) AS totalReturns, Sum (R.totalcost) AS totalRevenue
+            FROM Returns R, Rentals R1
+            WHERE TO_CHAR(R.datetime, 'MM/DD/YYYY')='${reportDate}' AND R.rid=R1.rid
+            GROUP BY (R1.location)
+            `;
+            q4 = `
+            SELECT Count (*) AS overallReturns, Sum (R.totalcost) AS overallRevenue
+            FROM Returns R, Rentals R1
+            WHERE TO_CHAR(R.datetime, 'MM/DD/YYYY')='${reportDate}' AND R.rid=R1.rid
+            `;
             break;
         }
         case "daily-returns-branch": {
-            text = `
+            q1 = `
+            SELECT R1.location, R.rid, V.vid, V.vtname, V.make, V.model, V.color
+            FROM Returns R, Rentals R1, Vehicles V
+            WHERE TO_CHAR(R.datetime, 'MM/DD/YYYY')='${reportDate}' AND R1.location='${location}' AND R1.vid=V.vid AND R.rid=R1.rid
+            `;
+            q2 = `
             SELECT R1.location, V.vtname, Count (*) AS NumRentals, Sum (R.totalcost) AS revenue
             FROM Returns R, Rentals R1, Vehicles V
             WHERE TO_CHAR(R.datetime, 'MM/DD/YYYY')='${reportDate}' AND R1.location='${location}' AND R1.vid=V.vid AND R.rid=R1.rid
             GROUP BY (R1.location, V.vtname)
+            `;
+            q3 = `
+            SELECT R1.location, Count (*) AS totalReturns, Sum (R.totalcost) AS totalRevenue
+            FROM Returns R, Rentals R1, Vehicles V
+            WHERE TO_CHAR(R.datetime, 'MM/DD/YYYY')='${reportDate}' AND R1.location='${location}' AND R.rid=R1.rid
+            GROUP BY (R1.location)
+            `;
+            q4 = `
+            SELECT Count (*) AS overallReturns, Sum (R.totalcost) AS overallRevenue
+            FROM Returns R, Rentals R1, Vehicles V
+            WHERE TO_CHAR(R.datetime, 'MM/DD/YYYY')='${reportDate}' AND R1.location='${location}' AND R.rid=R1.rid
             `;
             break;
         }
 
     }
     database
-        .query(text)
-        .then(result => res.status(200).json({
-            query: formatQuery(text),
-            result: result.rows,
-        }))
+        .query(q1)
+        .then(vehicleInfo => {
+            database
+                .query(q2)
+                .then(locationByType => {
+                    database
+                        .query(q3)
+                        .then(totalAtLocation => {
+                            database
+                                .query(q4)
+                                .then(overallTotal => res.status(200).json({
+                                    query: formatQuery(q1 + ' \n\n ' + q2),
+                                    success: true,
+                                    result: {
+                                        vehicleInfo: vehicleInfo,
+                                        locationByType: locationByType,
+                                        totalAtLocation: totalAtLocation,
+                                        overallTotal: overallTotal,
+                                    }
+                                }))
+                                .catch(error => res.status(400).json({
+                                    query: formatQuery(q4),
+                                    error_message: error.message,
+                                }))
+
+                        })
+                        .catch(error => res.status(400).json({
+                            query: formatQuery(q3),
+                            error_message: error.message,
+                        }))
+                })
+                .catch(error => res.status(400).json({
+                    query: formatQuery(q2),
+                    error_message: error.message,
+                }))
+        })
         .catch(error => res.status(400).json({
-            query: formatQuery(text),
+            query: formatQuery(q1),
             error_message: error.message,
         }));
 });
