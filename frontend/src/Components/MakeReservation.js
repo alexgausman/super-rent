@@ -337,17 +337,6 @@ class MakeReservation extends Component {
 
     render() {
         const { getFieldDecorator } = this.props.form;
-        const formItemLayout = {
-            labelCol: {
-                xs: { span: 24 },
-                sm: { span: 8 },
-            },
-            wrapperCol: {
-                xs: { span: 24 },
-                sm: { span: 16 },
-            },
-            align: "center"
-        };
         const localOptions = this.state.locOptions.map(loc => <Option key={loc}>{loc}</Option>);
         const vehTypeOptions = this.state.typeOptions.map(vt => <Option key={vt}>{vt}</Option>);
 
@@ -355,12 +344,12 @@ class MakeReservation extends Component {
             <div style={{
                 width: '450px',
             }}>
-                <Form {...formItemLayout} onSubmit={this.handleSubmit}>
-                    <h3 style={{ textAlign: 'center', marginBottom: '28px' }}>
+                <Form onSubmit={this.handleSubmit}>
+                    <h3 style={{ textAlign: 'center' }}>
                         Make a Reservation
                     </h3>
 
-                    <Form.Item label="Location">
+                    <Form.Item colon={false} label="Location">
                         {getFieldDecorator('location', {
                             rules: [
                                 {
@@ -368,11 +357,11 @@ class MakeReservation extends Component {
                                     message: "Please input location"
                                 }
                             ]
-                        })(<Select style={{ width: 450, marginBottom: '14px' }}>
+                        })(<Select>
                             {localOptions}
                         </Select>)}
                     </Form.Item>
-                    <Form.Item label="Type">
+                    <Form.Item colon={false} label="Vehicle Type">
                         {getFieldDecorator('type', {
                             rules: [
                                 {
@@ -380,11 +369,11 @@ class MakeReservation extends Component {
                                     message: "Please input vehicle type"
                                 }
                             ]
-                        })(<Select style={{ width: 450, marginBottom: '14px' }}>
+                        })(<Select>
                             {vehTypeOptions}
                         </Select>)}
                     </Form.Item>
-                    <Form.Item label="From">
+                    <Form.Item colon={false} label="From">
                         {getFieldDecorator('from', {
                             rules: [
                                 {
@@ -392,9 +381,9 @@ class MakeReservation extends Component {
                                     message: "Please pick a from date and time"
                                 }
                             ]
-                        })(<DatePicker format="YYYY-MM-DD HH:mm:ss" showTime={{ defaultValue: moment('00:00:00', 'HH:mm:ss') }} />)}
+                        })(<DatePicker format="YYYY/MM/DD HH:mm:ss" showTime={{ defaultValue: moment('00:00:00', 'HH:mm:ss') }} />)}
                     </Form.Item>
-                    <Form.Item label="Until">
+                    <Form.Item colon={false} label="Until">
                         {getFieldDecorator('until', {
                             rules: [
                                 {
@@ -402,13 +391,13 @@ class MakeReservation extends Component {
                                     message: "Please input an until date and time"
                                 }
                             ]
-                        })(<DatePicker format="YYYY-MM-DD HH:mm:ss" showTime={{ defaultValue: moment('00:00:00', 'HH:mm:ss') }} />)}
+                        })(<DatePicker format="YYYY/MM/DD HH:mm:ss" showTime={{ defaultValue: moment('00:00:00', 'HH:mm:ss') }} />)}
                     </Form.Item>
 
-                    <h3 style={{ textAlign: 'center', marginBottom: '28px' }}>
+                    <h3 style={{ textAlign: 'center' }}>
                         Customer
                     </h3>
-                    <Form.Item label="Cell Phone">
+                    <Form.Item colon={false} label="Cell Phone">
                         {getFieldDecorator('phone', {
                             rules: [
                                 {
@@ -423,7 +412,7 @@ class MakeReservation extends Component {
                             onSearch={this.handleSearch}
                         />)}
                     </Form.Item>
-                    <Form.Item label="Name">
+                    <Form.Item colon={false} label="Name">
                         {getFieldDecorator('name', {
                             rules: [
                                 {
@@ -431,9 +420,9 @@ class MakeReservation extends Component {
                                     message: "Please input a name"
                                 }
                             ]
-                        })(<Input style={{ width: 450, marginBottom: '14px' }} />)}
+                        })(<Input />)}
                     </Form.Item>
-                    <Form.Item label="License">
+                    <Form.Item colon={false} label="License">
                         {getFieldDecorator('license', {
                             rules: [
                                 {
@@ -441,9 +430,9 @@ class MakeReservation extends Component {
                                     message: "Please input a license number"
                                 }
                             ]
-                        })(<Input style={{ width: 450, marginBottom: '14px' }} />)}
+                        })(<Input />)}
                     </Form.Item>
-                    <Form.Item label="Address">
+                    <Form.Item colon={false} label="Address">
                         {getFieldDecorator('address', {
                             rules: [
                                 {
@@ -451,10 +440,10 @@ class MakeReservation extends Component {
                                     message: "Please input an address"
                                 }
                             ]
-                        })(<Input style={{ width: 450, marginBottom: '14px' }} />)}
+                        })(<Input />)}
                     </Form.Item>
                     <Form.Item>
-                        <Button type="primary" style={{ width: 450, marginBottom: '14px' }} htmlType="submit">
+                        <Button type="primary" style={{ width: '450px' }} htmlType="submit">
                             Submit
                         </Button>
                     </Form.Item>
