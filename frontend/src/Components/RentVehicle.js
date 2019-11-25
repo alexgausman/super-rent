@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import axios from 'axios';
+import formatDate from '../utils/formatDate';
 
 class RentVehicle extends Component {
     constructor(props) {
@@ -11,14 +12,15 @@ class RentVehicle extends Component {
             locOptions: [],
             typeOptions: [],
             vidOptions: [],
-            cellNumber: null,
-            customerName: null,
-            customerAddress: null,
-            driversLicense: null,
-            location: 'Choose a location',
-            vehicleType: null,
-            submission: null,
-            result: null,
+            confNumber: '',
+            cellNumber: '',
+            customerName: '',
+            customerAddress: '',
+            driversLicense: '',
+            location: 'Kitsilano',
+            vehicleType: 'any',
+            submission: '',
+            result: '',
             errors: {},
         };
         this.setup = this.setup.bind(this);
@@ -123,12 +125,38 @@ class RentVehicle extends Component {
             })
             .catch(err => {
                 if (err.response && err.response.data) {
-                    const {query, error_message} = err.response.data;
-                    if (query && error_message) {
+                    const {
+                      query,
+                      error_message,
+                      input_errors
+                    } = err.response.data;
+                    if (query) {
+                      if (error_message) {
                         this.props.logQuery(query, error_message);
-                        // TODO
-                        return;
+                      } else {
+                        this.props.logQuery(query);
+                      }
                     }
+                    if (input_errors) {
+                      this.setState({
+                        submission: null,
+                        errors: input_errors,
+                      }, () => {
+                        window.$('#fromDatePicker').datetimepicker({
+                            useCurrent: false,
+                            format: 'MM/DD/YYYY HH:mm',
+                            minDate: 'now',
+                            date: newSubmission.fromDateTime,
+                        });
+                        window.$('#toDatePicker').datetimepicker({
+                            useCurrent: false,
+                            format: 'MM/DD/YYYY HH:mm',
+                            minDate: 'now',
+                            date: newSubmission.toDateTime,
+                        });
+                      });
+                    }
+                    return;
                 }
                 console.log(err);
             });
@@ -189,13 +217,14 @@ class RentVehicle extends Component {
                                 <input
                                     placeholder="Reservation Confirmation Number"
                                     type="text"
-                                    className={`form-control ${errors.confNo ? 'is-invalid' : ''}`}
+                                    className={`form-control ${errors.confNumber ? 'is-invalid' : ''}`}
                                     onChange={this.handleConfNumberChange}
+                                    value={this.state.confNumber}
                                     id="confNo"
                                 />
-                                {errors.confNo && (
+                                {errors.confNumber && (
                                     <div className="invalid-feedback">
-                                        {errors.confNo}
+                                        {errors.confNumber}
                                     </div>
                                 )}
                             </div>
@@ -204,8 +233,12 @@ class RentVehicle extends Component {
 
                     <div className="form-group">
                         <div style={{display: 'flex', alignItems: 'baseline'}}>
-                            <input style={{marginRight: '10px'}}
-                                   type="checkbox" name="hasNoReservation" onChange={this.handleHasNoReservationChange}/>
+                            <input
+                              style={{marginRight: '10px'}}
+                              type="checkbox"
+                              name="hasNoReservation"
+                              onChange={this.handleHasNoReservationChange}
+                            />
                             No Reservation
                         </div>
                     </div>
@@ -219,6 +252,7 @@ class RentVehicle extends Component {
                                     type="text"
                                     className={`form-control ${errors.cellNumber ? 'is-invalid' : ''}`}
                                     onChange={this.handleCellNumberChange}
+                                    value={this.state.cellNumber}
                                     id="cellNumber"
                                 />
                                 {errors.cellNumber && (
@@ -252,6 +286,7 @@ class RentVehicle extends Component {
                                     type="text"
                                     className={`form-control ${errors.customerName ? 'is-invalid' : ''}`}
                                     onChange={this.handleCustomerNameChange}
+                                    value={this.state.customerName}
                                     id="customerName"
                                 />
                                 {errors.customerName && (
@@ -272,6 +307,7 @@ class RentVehicle extends Component {
                                     type="text"
                                     className={`form-control ${errors.customerAddress ? 'is-invalid' : ''}`}
                                     onChange={this.handleCustomerAddressChange}
+                                    value={this.state.customerAddress}
                                     id="customerAddress"
                                 />
                                 {errors.customerAddress && (
@@ -292,6 +328,7 @@ class RentVehicle extends Component {
                                     type="text"
                                     className={`form-control ${errors.dlicense ? 'is-invalid' : ''}`}
                                     onChange={this.handleDriversLicenseChange}
+                                    value={this.state.driversLicense}
                                     id="dlicense"
                                 />
                                 {errors.dlicense && (
@@ -327,16 +364,27 @@ class RentVehicle extends Component {
 
                     <div className="form-group">
                         <label htmlFor="fromDatePicker">Rental Date</label>
-                        <input placeholder={"Rental Date"} type="text"
-                               className="form-control datetimepicker-input" id="fromDatePicker"
-                               data-toggle="datetimepicker" data-target="#fromDatePicker" autoComplete="off"/>
+                        <input
+                          placeholder={"Rental Date"}
+                          type="text"
+                          className="form-control datetimepicker-input"
+                          id="fromDatePicker"
+                          data-toggle="datetimepicker"
+                          data-target="#fromDatePicker"
+                          autoComplete="off"
+                        />
                     </div>
 
                     <div className="form-group">
                         <label htmlFor="toDatePicker">Return Date</label>
-                        <input placeholder={"Return Date"} type="text"
-                               className="form-control datetimepicker-input" id="toDatePicker"
-                               data-toggle="datetimepicker" data-target="#toDatePicker" autoComplete="off"/>
+                        <input
+                          placeholder={"Return Date"}
+                          type="text"
+                          className="form-control datetimepicker-input"
+                          id="toDatePicker"
+                          data-toggle="datetimepicker"
+                          data-target="#toDatePicker"
+                          autoComplete="off"/>
                     </div>
 
                     <button type="button" className="btn btn-primary" onClick={this.onSubmit} style={{
@@ -349,6 +397,9 @@ class RentVehicle extends Component {
                 </div>
             );
         } else if (result) {
+            console.log(result);
+            const fromDate = formatDate(new Date(result.fromdatetime));
+            const toDate = formatDate(new Date(result.todatetime));
             html = (
                 <div style={{
                     width: '450px',
@@ -356,35 +407,23 @@ class RentVehicle extends Component {
                     <h3 className="pb-2" style={{marginTop: '30px',}}>Rental Details: </h3>
                     <div style={{padding: '20px',}}>
                         <span style={{paddingRight: '10px', fontWeight: 'bold'}}>Rental ID:</span>
-                        <span>{result.customerName}</span>
-                    </div>
-                    <div style={{padding: '20px',}}>
-                        <span style={{paddingRight: '10px', fontWeight: 'bold'}}>Rental ID:</span>
-                        <span>{result.customerNumber}</span>
-                    </div>
-                    <div style={{padding: '20px',}}>
-                        <span style={{paddingRight: '10px', fontWeight: 'bold'}}>Rental ID:</span>
                         <span>{result.rid}</span>
                     </div>
                     <div style={{padding: '20px',}}>
-                        <span style={{paddingRight: '10px', fontWeight: 'bold'}}>Insurance Cost:</span>
-                        <span>{result.vid}</span>
-                    </div>
-                    <div style={{padding: '20px',}}>
-                        <span style={{paddingRight: '10px', fontWeight: 'bold'}}>Insurance Cost:</span>
-                        <span>{result.vehicleType}</span>
-                    </div>
-                    <div style={{padding: '20px',}}>
-                        <span style={{paddingRight: '10px', fontWeight: 'bold'}}>Vehicle Cost:</span>
-                        <span>{result.rentalDate}</span>
-                    </div>
-                    <div style={{padding: '20px',}}>
-                        <span style={{paddingRight: '10px', fontWeight: 'bold'}}>Total Cost:</span>
+                        <span style={{paddingRight: '10px', fontWeight: 'bold'}}>Location:</span>
                         <span>{result.location}</span>
                     </div>
                     <div style={{padding: '20px',}}>
-                        <span style={{paddingRight: '10px', fontWeight: 'bold'}}>Total Cost:</span>
-                        <span>{result.duration}</span>
+                        <span style={{paddingRight: '10px', fontWeight: 'bold'}}>Vehicle type:</span>
+                        <span>{result.vehicleType}</span>
+                    </div>
+                    <div style={{padding: '20px',}}>
+                        <span style={{paddingRight: '10px', fontWeight: 'bold'}}>Start date:</span>
+                        <span>{fromDate}</span>
+                    </div>
+                    <div style={{padding: '20px',}}>
+                        <span style={{paddingRight: '10px', fontWeight: 'bold'}}>End date:</span>
+                        <span>{toDate}</span>
                     </div>
                 </div>
             );
