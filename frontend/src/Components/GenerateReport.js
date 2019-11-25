@@ -423,9 +423,27 @@ class GenerateReport extends Component {
                     }
                 }
             });
+            let header;
+            let overalls = null;
+            if (submission.reportType === 'daily-rentals') {
+                header = <h2> Overall Daily Rental Report on {submission.reportDate} </h2>
+                overalls = <span> Total Rentals on {submission.reportDate}: {result.overallTotal.overallrentals} </span>
+            } else if (submission.reportType === 'daily-rentals-branch') {
+                header = <h2> Overall Daily Rental Report for {submission.location} on {submission.reportDate} </h2>
+            } else if (submission.reportType === 'daily-returns') {
+                header = <h2> Overall Daily Returns Report on {submission.reportDate} </h2>
+                overalls = <div>
+                    <span> Total Returns on {submission.reportDate}: {result.overallTotal.overallreturns} </span>
+                    <span> Total Revenues on {submission.reportDate}: {result.overallTotal.overallrevenue} </span>
+                </div>
+            } else if (submission.reportType === 'daily-returns-branch') {
+                header = <h2> Overall Daily Returns Report for {submission.location} on {submission.reportDate}</h2>
+            }
             if (tables.length > 0) {
                 html = (
                     <div style={{width: '100%'}}>
+                        {header}
+                        {overalls}
                         {tables}
                     </div>
                 );

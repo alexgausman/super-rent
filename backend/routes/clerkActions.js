@@ -327,6 +327,7 @@ router.post('/generate-report', (req, res) => {
     let q1;
     let q2;
     let q3;
+    let q4;
 
     switch (reportType) {
         case "daily-rentals": {
@@ -346,6 +347,11 @@ router.post('/generate-report', (req, res) => {
             FROM Rentals R
             WHERE TO_CHAR(R.fromdatetime, 'MM/DD/YYYY')='${reportDate}'
             GROUP BY (R.location)
+            `;
+            q4 = `
+            SELECT Count (*) AS overallRentals
+            FROM Rentals R
+            WHERE TO_CHAR(R.fromdatetime, 'MM/DD/YYYY')='${reportDate}'
             `;
             break;
         }
@@ -367,6 +373,11 @@ router.post('/generate-report', (req, res) => {
             WHERE TO_CHAR(R.fromdatetime, 'MM/DD/YYYY')='${reportDate}' AND R.location='${location}'
             GROUP BY (R.location)
             `;
+            q4 = `
+            SELECT Count (*) AS overallRentals
+            FROM Rentals R
+            WHERE TO_CHAR(R.fromdatetime, 'MM/DD/YYYY')='${reportDate}' AND R.location='${location}'
+            `;
             break;
         }
         case "daily-returns": {
@@ -386,6 +397,11 @@ router.post('/generate-report', (req, res) => {
             FROM Returns R, Rentals R1
             WHERE TO_CHAR(R.datetime, 'MM/DD/YYYY')='${reportDate}' AND R.rid=R1.rid
             GROUP BY (R1.location)
+            `;
+            q4 = `
+            SELECT Count (*) AS overallReturns, Sum (R.totalcost) AS overallRevenue
+            FROM Returns R, Rentals R1
+            WHERE TO_CHAR(R.datetime, 'MM/DD/YYYY')='${reportDate}' AND R.rid=R1.rid
             `;
             break;
         }
@@ -407,6 +423,11 @@ router.post('/generate-report', (req, res) => {
             WHERE TO_CHAR(R.datetime, 'MM/DD/YYYY')='${reportDate}' AND R1.location='${location}' AND R.rid=R1.rid
             GROUP BY (R1.location)
             `;
+            q4 = `
+            SELECT Count (*) AS overallReturns, Sum (R.totalcost) AS overallRevenue
+            FROM Returns R, Rentals R1, Vehicles V
+            WHERE TO_CHAR(R.datetime, 'MM/DD/YYYY')='${reportDate}' AND R1.location='${location}' AND R.rid=R1.rid
+            `;
             break;
         }
 
@@ -419,15 +440,25 @@ router.post('/generate-report', (req, res) => {
                 .then(locationByType => {
                     database
                         .query(q3)
-                        .then(totalAtLocation => res.status(200).json({
-                            query: formatQuery(q1 + ' \n\n ' + q2),
-                            success: true,
-                            result: {
-                                vehicleInfo: vehicleInfo,
-                                locationByType: locationByType,
-                                totalAtLocation: totalAtLocation,
-                            }
-                        }))
+                        .then(totalAtLocation => {
+                            database
+                                .query(q4)
+                                .then(overallTotal => res.status(200).json({
+                                    query: formatQuery(q1 + ' \n\n ' + q2),
+                                    success: true,
+                                    result: {
+                                        vehicleInfo: vehicleInfo,
+                                        locationByType: locationByType,
+                                        totalAtLocation: totalAtLocation,
+                                        overallTotal: overallTotal,
+                                    }
+                                }))
+                                .catch(error => res.status(400).json({
+                                    query: formatQuery(q4),
+                                    error_message: error.message,
+                                }))
+
+                        })
                         .catch(error => res.status(400).json({
                             query: formatQuery(q3),
                             error_message: error.message,
