@@ -461,7 +461,7 @@ class RentVehicle extends Component {
                     <div className="form-group">
                         <label htmlFor="creditCardExp">Credit Card Expiry Date</label>
                         <input
-                            placeholder="MM/YYYY"
+                            placeholder="MM/YY"
                             type="text"
                             className={`form-control ${errors.creditCardExp ? 'is-invalid' : ''}`}
                             onChange={this.handleCreditCardExpChange}

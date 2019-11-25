@@ -160,9 +160,9 @@ router.post('/rent-vehicle', (req, res) => {
                         '${fromDateTime}',
                         '${toDateTime}',
                         ${vehicle.odometer},
-                        NULL, /* TODO */
-                        NULL, /* TODO */
-                        NULL, /* TODO */
+                        '${creditCardType}',
+                        '${creditCardNumber}',
+                        '${creditCardExp.split('/').join('')}',
                         '${location}',
                         '${vehicle.city}'
                       )
