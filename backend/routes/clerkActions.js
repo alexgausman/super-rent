@@ -7,7 +7,6 @@ const Chance = require('chance');
 const chance = new Chance();
 
 router.post('/rent-vehicle', (req, res) => {
-    console.log(req.body);
     let {
         hasReservation,
         isExistingCustomer,
@@ -124,7 +123,7 @@ router.post('/rent-vehicle', (req, res) => {
                           '${cellNumber}',
                           '${customerName}',
                           '${customerAddress}',
-                          '${driversLicense}',
+                          '${driversLicense}'
                         );
                         \n\n
                       `;
@@ -165,6 +164,11 @@ router.post('/rent-vehicle', (req, res) => {
                     database
                       .query(insertQuery)
                       .then(result => {
+                        if (result.length) {
+                          result = result[result.length -1];
+                        }
+                        console.log(result);
+                        result.rows[0].vehicleType = vehicle.vtname;
                         res.status(200).json({
                           query: formatQuery(queriesString),
                           result: result.rows[0],

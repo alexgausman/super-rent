@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import axios from 'axios';
+import formatDate from '../utils/formatDate';
 
 class RentVehicle extends Component {
     constructor(props) {
@@ -116,7 +117,6 @@ class RentVehicle extends Component {
             fromDateTime: window.$('#fromDatePicker').data('date'),
             toDateTime: window.$('#toDatePicker').data('date'),
         };
-        console.log(newSubmission);
         this.setState({submission: newSubmission});
         axios.post('/clerk-actions/rent-vehicle', newSubmission)
             .then(res => {
@@ -138,7 +138,6 @@ class RentVehicle extends Component {
                       }
                     }
                     if (input_errors) {
-                      console.log(input_errors)
                       this.setState({
                         submission: null,
                         errors: input_errors,
@@ -398,6 +397,9 @@ class RentVehicle extends Component {
                 </div>
             );
         } else if (result) {
+            console.log(result);
+            const fromDate = formatDate(new Date(result.fromdatetime));
+            const toDate = formatDate(new Date(result.todatetime));
             html = (
                 <div style={{
                     width: '450px',
@@ -405,35 +407,23 @@ class RentVehicle extends Component {
                     <h3 className="pb-2" style={{marginTop: '30px',}}>Rental Details: </h3>
                     <div style={{padding: '20px',}}>
                         <span style={{paddingRight: '10px', fontWeight: 'bold'}}>Rental ID:</span>
-                        <span>{result.customerName}</span>
-                    </div>
-                    <div style={{padding: '20px',}}>
-                        <span style={{paddingRight: '10px', fontWeight: 'bold'}}>Rental ID:</span>
-                        <span>{result.customerNumber}</span>
-                    </div>
-                    <div style={{padding: '20px',}}>
-                        <span style={{paddingRight: '10px', fontWeight: 'bold'}}>Rental ID:</span>
                         <span>{result.rid}</span>
                     </div>
                     <div style={{padding: '20px',}}>
-                        <span style={{paddingRight: '10px', fontWeight: 'bold'}}>Insurance Cost:</span>
-                        <span>{result.vid}</span>
-                    </div>
-                    <div style={{padding: '20px',}}>
-                        <span style={{paddingRight: '10px', fontWeight: 'bold'}}>Insurance Cost:</span>
-                        <span>{result.vehicleType}</span>
-                    </div>
-                    <div style={{padding: '20px',}}>
-                        <span style={{paddingRight: '10px', fontWeight: 'bold'}}>Vehicle Cost:</span>
-                        <span>{result.rentalDate}</span>
-                    </div>
-                    <div style={{padding: '20px',}}>
-                        <span style={{paddingRight: '10px', fontWeight: 'bold'}}>Total Cost:</span>
+                        <span style={{paddingRight: '10px', fontWeight: 'bold'}}>Location:</span>
                         <span>{result.location}</span>
                     </div>
                     <div style={{padding: '20px',}}>
-                        <span style={{paddingRight: '10px', fontWeight: 'bold'}}>Total Cost:</span>
-                        <span>{result.duration}</span>
+                        <span style={{paddingRight: '10px', fontWeight: 'bold'}}>Vehicle type:</span>
+                        <span>{result.vehicleType}</span>
+                    </div>
+                    <div style={{padding: '20px',}}>
+                        <span style={{paddingRight: '10px', fontWeight: 'bold'}}>Start date:</span>
+                        <span>{fromDate}</span>
+                    </div>
+                    <div style={{padding: '20px',}}>
+                        <span style={{paddingRight: '10px', fontWeight: 'bold'}}>End date:</span>
+                        <span>{toDate}</span>
                     </div>
                 </div>
             );
