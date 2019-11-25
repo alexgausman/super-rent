@@ -8,12 +8,15 @@ class AvailVehicles extends Component {
     this.state = {
       locOptions: [],
       typeOptions: [],
+      vehicles: [],
       submission: null,
       result: null,
+      seeDetails: false,
     };
     this.setup = this.setup.bind(this);
     this.getSetLocOptions = this.getSetLocOptions.bind(this);
     this.getSetTypeOptions = this.getSetTypeOptions.bind(this);
+    this.getVehicles = this.getVehicles.bind(this);
     this.goBack = this.goBack.bind(this);
     this.onSubmit = this.onSubmit.bind(this);
   }
@@ -25,6 +28,7 @@ class AvailVehicles extends Component {
   setup() {
     this.getSetLocOptions()
     this.getSetTypeOptions();
+    this.getVehicles();
     window.$('#fromDateTimePicker').datetimepicker({
       useCurrent: false,
       format: 'MM/DD/YYYY HH:mm',
@@ -77,6 +81,24 @@ class AvailVehicles extends Component {
       });
   }
 
+  getVehicles() {
+    axios.get('/tables/vehicles')
+      .then(res => {
+        this.setState({ vehicles: res.data.result });
+        this.props.logQuery(res.data.query);
+      })
+      .catch(err => {
+        if (err.response && err.response.data) {
+          const { query, error_message } = err.response.data;
+          if (query && error_message) {
+            this.props.logQuery(query, error_message);
+            return;
+          }
+        }
+        console.log(err);
+      });
+  }
+
   goBack() {
     const { submission } = this.state;
     this.setState({ submission: null }, () => {
@@ -114,8 +136,12 @@ class AvailVehicles extends Component {
       });
   }
 
+  viewDetails = () => {
+    this.setState({ seeDetails: !this.state.seeDetails });
+  }
+
   render() {
-    const { submission, locOptions, typeOptions, result } = this.state;
+    const { submission, locOptions, typeOptions, result, seeDetails, vehicles } = this.state;
     let html;
     if (!submission) {
       html = (
@@ -168,50 +194,91 @@ class AvailVehicles extends Component {
       );
     } else if (result) {
       const tables = [];
-      locOptions.forEach((loc, i) => {
-        const data = result.filter(r => r.location === loc);
+      if (seeDetails) {
+        const data = vehicles.filter(v => v.location === submission.location && v.vtname === submission.vehicleType);
         const rows = [];
         if (data.length > 0) {
           tables.push(
-            <div key={i}>
+            <div key={1}>
               <h3 className="pb-2" style={{
                 marginTop: '30px',
-              }}>{loc}</h3>
+              }}>{submission.location}</h3>
               <table className="table table-responsive-lg table-hover">
                 <thead>
                   <tr>
                     <th scope="col">VehicleType</th>
-                    <th scope="col">Count</th>
+                    <th scope="col">Make</th>
+                    <th scope="col">Model</th>
+                    <th scope="col">Color</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {typeOptions.forEach((type, i) => {
-                    const vtData = data.find(d => d.vtname === type);
-                    let numVehicles = 0;
-                    if (vtData) {
-                      numVehicles = vtData.numvehicles;
-                    }
-                    let svt = submission.vehicleType;
-                    if (svt === 'any' || svt === type) {
-                      rows.push(
-                        <tr key={i}>
-                          <td style={{ lineHeight: '1.8' }}>{type}</td>
-                          <td style={{ lineHeight: '1.8' }}>{numVehicles}</td>
-                        </tr>
-                      );
-                    }
+                  {data.forEach((vehicle, i) => {
+                    rows.push(
+                      <tr key={i}>
+                        <td style={{ lineHeight: '1.8' }}>{vehicle.vtname}</td>
+                        <td style={{ lineHeight: '1.8' }}>{vehicle.make}</td>
+                        <td style={{ lineHeight: '1.8' }}>{vehicle.model}</td>
+                        <td style={{ lineHeight: '1.8' }}>{vehicle.color}</td>
+                      </tr>
+                    );
                   })}
                   {rows}
                 </tbody>
               </table>
             </div>
-          );
+          )
         }
-      });
+      } else {
+        locOptions.forEach((loc, i) => {
+          const data = result.filter(r => r.location === loc);
+          const rows = [];
+          if (data.length > 0) {
+            tables.push(
+              <div key={i}>
+                <h3 className="pb-2" style={{
+                  marginTop: '30px',
+                }}>{loc}</h3>
+                <table className="table table-responsive-lg table-hover">
+                  <thead>
+                    <tr>
+                      <th scope="col">VehicleType</th>
+                      <th scope="col">Count</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {typeOptions.forEach((type, i) => {
+                      const vtData = data.find(d => d.vtname === type);
+                      let numVehicles = 0;
+                      if (vtData) {
+                        numVehicles = vtData.numvehicles;
+                      }
+                      let svt = submission.vehicleType;
+                      if (svt === 'any' || svt === type) {
+                        rows.push(
+                          <tr key={i}>
+                            <td style={{ lineHeight: '1.8' }}>{type}</td>
+                            <td style={{ lineHeight: '1.8' }}>{numVehicles}</td>
+                          </tr>
+                        );
+                      }
+                    })}
+                    {rows}
+                  </tbody>
+                </table>
+              </div>
+            );
+          }
+        });
+      }
       html = (
         <div style={{ width: '100%' }}>
           {tables}
+          <div>
+            <button onClick={this.viewDetails}>{seeDetails ? "Hide Details" : "View Details"}</button>
+          </div>
         </div>
+
       );
     }
     return (
