@@ -3,6 +3,7 @@ const {database} = require('../config');
 const formatQuery = require('../utils/formatQuery');
 const countReqVehicles = require('../utils/countReqVehicles');
 const Chance = require('chance');
+const formatDate = require('../utils/formatDate');
 
 const chance = new Chance();
 
@@ -82,6 +83,11 @@ router.post('/rent-vehicle', (req, res) => {
                 if (Object.keys(input_errors).length > 0) {
                   return res.status(400).json({ input_errors: input_errors });
                 }
+                // Updaes dates
+                if (hasReservation) {
+                  fromDateTime = formatDate(new Date(reservation.fromdatetime));
+                  toDateTime = formatDate(new Date(reservation.todatetime));
+                }
                 // Check if rentable vehicle exists
                 const q3 = `
                   SELECT *
@@ -151,8 +157,8 @@ router.post('/rent-vehicle', (req, res) => {
                         '${vehicle.vid}',
                         '${cellNumber || reservation.cellphone}',
                         ${hasReservation ? confNumber : 'NULL'},
-                        '${fromDateTime || reservation.fromdatetime}',
-                        '${toDateTime || reservation.todatetime}',
+                        '${fromDateTime}',
+                        '${toDateTime}',
                         ${vehicle.odometer},
                         NULL, /* TODO */
                         NULL, /* TODO */
@@ -465,7 +471,7 @@ router.post('/generate-report', (req, res) => {
                             database
                                 .query(q4)
                                 .then(overallTotal => res.status(200).json({
-                                    query: formatQuery(q1 + ' \n\n ' + q2),
+                                    query: formatQuery(q1 + ' \n\n ' + q2 + ' \n\n ' + q3),
                                     success: true,
                                     result: {
                                         vehicleInfo: vehicleInfo,
