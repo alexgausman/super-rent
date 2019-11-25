@@ -52,7 +52,11 @@ router.post('/rent-vehicle', (req, res) => {
                 // Validate input
                 let input_errors = {};
                 if (hasReservation) {
-                  queries.push(q0);
+                  if (!confNumber) {
+                    input_errors.confNumber = 'Confirmation number is required';
+                  } else if (isNaN(parseInt(confNumber))) {
+                    input_errors.confNumber = 'Confirmation number is invalid';
+                  }
                   if (!reservation) {
                     input_errors.confNumber = 'Reservation not found';
                   }
@@ -64,8 +68,7 @@ router.post('/rent-vehicle', (req, res) => {
                   }
                 } else {
                   if (isExistingCustomer) {
-                    queries.push(q2);
-                    if (!customer) {
+                     if (!customer) {
                       input_errors.cellNumber = 'Customer not found';
                     }
                   } else {

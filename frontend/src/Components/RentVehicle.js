@@ -11,6 +11,7 @@ class RentVehicle extends Component {
             locOptions: [],
             typeOptions: [],
             vidOptions: [],
+            confNumber: '',
             cellNumber: '',
             customerName: '',
             customerAddress: '',
@@ -115,6 +116,7 @@ class RentVehicle extends Component {
             fromDateTime: window.$('#fromDatePicker').data('date'),
             toDateTime: window.$('#toDatePicker').data('date'),
         };
+        console.log(newSubmission);
         this.setState({submission: newSubmission});
         axios.post('/clerk-actions/rent-vehicle', newSubmission)
             .then(res => {
@@ -136,6 +138,7 @@ class RentVehicle extends Component {
                       }
                     }
                     if (input_errors) {
+                      console.log(input_errors)
                       this.setState({
                         submission: null,
                         errors: input_errors,
@@ -215,14 +218,14 @@ class RentVehicle extends Component {
                                 <input
                                     placeholder="Reservation Confirmation Number"
                                     type="text"
-                                    className={`form-control ${errors.confNo ? 'is-invalid' : ''}`}
+                                    className={`form-control ${errors.confNumber ? 'is-invalid' : ''}`}
                                     onChange={this.handleConfNumberChange}
                                     value={this.state.confNumber}
                                     id="confNo"
                                 />
-                                {errors.confNo && (
+                                {errors.confNumber && (
                                     <div className="invalid-feedback">
-                                        {errors.confNo}
+                                        {errors.confNumber}
                                     </div>
                                 )}
                             </div>
