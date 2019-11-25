@@ -462,7 +462,7 @@ router.post('/generate-report', (req, res) => {
                             database
                                 .query(q4)
                                 .then(overallTotal => res.status(200).json({
-                                    query: formatQuery(q1 + ' \n\n ' + q2),
+                                    query: formatQuery(q1 + ' \n\n ' + q2 + ' \n\n ' + q3),
                                     success: true,
                                     result: {
                                         vehicleInfo: vehicleInfo,
