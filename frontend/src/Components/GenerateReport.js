@@ -293,8 +293,8 @@ class GenerateReport extends Component {
                                     locationTotalRows.push(
                                         <tr key={i}>
                                             <td style={{lineHeight: '1.8'}}>{v.location}</td>
-                                            <td style={{lineHeight: '1.8'}}>{v.totalReturns}</td>
-                                            <td style={{lineHeight: '1.8'}}>{v.totalRevenue}</td>
+                                            <td style={{lineHeight: '1.8'}}>{v.totalreturns}</td>
+                                            <td style={{lineHeight: '1.8'}}>{v.totalrevenue}</td>
                                         </tr>
                                     );
                                 })}
@@ -389,11 +389,12 @@ class GenerateReport extends Component {
                                     <th scope="col">Total New Rentals</th>
                                 </tr>
                                 </thead>
-                                <tbody>{locationTotals.forEach((v, i) => {
+                                <tbody>
+                                {locationTotals.forEach((v, i) => {
                                     locationTotalRows.push(
                                         <tr key={i}>
                                             <td style={{lineHeight: '1.8'}}>{v.location}</td>
-                                            <td style={{lineHeight: '1.8'}}>{v.totalRentals}</td>
+                                            <td style={{lineHeight: '1.8'}}>{v.totalrentals}</td>
                                         </tr>
                                     );
                                 })}
